@@ -1,9 +1,9 @@
 declare const _default: import("vue").DefineComponent<{}, {
     $emit: (event: "followUpClicked", ...args: any[]) => void;
-    message: Record<string, any>;
+    followUpPrompts: unknown[];
     isEmpty: boolean;
     $props: {
-        readonly message?: Record<string, any> | undefined;
+        readonly followUpPrompts?: unknown[] | undefined;
         readonly isEmpty?: boolean | undefined;
     };
 }, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{}>>, {}, {}>;

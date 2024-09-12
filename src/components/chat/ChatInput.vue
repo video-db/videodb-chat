@@ -1,5 +1,3 @@
-<!-- #TODO: Think/Add prop:channelName Support -->
-<!-- placeholder can be taken from props-->
 <template>
   <div class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-h-full vdb-c-w-full vdb-c-px-10 vdb-c-py-8 md:vdb-c-p-18">
     <div
@@ -97,13 +95,9 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  collectionName: {
+  placeHolder: {
     type: String,
-    default: "",
-  },
-  isSingleVideo: {
-    type: Boolean,
-    default: false,
+    default: "Ask a question",
   },
   isTablet: {
     type: Boolean,
@@ -124,16 +118,6 @@ const isInputDisabled = computed(() => {
   return props.inputDisabled || charCount.value < 1 || charCount.value > 150;
 });
 
-const placeHolder = computed(() => {
-  if (props.inputDisabled) return "Generating a response...";
-  if (props.isSingleVideo) return "Search or ask a follow-up question...";
-  return `Search ${
-    props.isMobile || props.isTablet
-      ? ""
-      : (props.collectionName || "this collection") +
-        " or ask a follow-up question..."
-  }`;
-});
 
 const handleInput = (e) => {
   const val = e.target.value;

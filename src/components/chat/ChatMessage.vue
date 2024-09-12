@@ -1,6 +1,3 @@
-<!-- #TODO: figure out followup content
-  - as per current logic if there are three messages, and each contain followup content, then followup would be show for all
- -->
 <template>
   <div
     v-if="!isSystem"
@@ -110,8 +107,6 @@ const props = defineProps({
 
 const { messageHandlers } = useVideoDBChat();
 
-const emit = defineEmits(["feedbackSubmit"]);
-
 const textBool = ref(false);
 
 const isUser = computed(() => props.message.sender === "user");
@@ -132,9 +127,6 @@ const lastMessageLoaded = computed(
     props.messageList[props.currentIndex - 1].status !== "progress",
 );
 
-const showFeedback = computed(
-  () => isAssistant.value && !props.isStaticPage && !props.messageLoading,
-);
 const showText = computed(() =>
   isUser.value
     ? props.message.content
@@ -162,8 +154,6 @@ const getImageSrc = computed(() =>
       : props.assistantImage
     : undefined,
 );
-
-const handleFeedbackSubmit = (val) => emit("feedbackSubmit", val);
 
 watch(
   showText,

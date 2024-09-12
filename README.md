@@ -11,7 +11,7 @@
   <img src="https://media.tenor.com/dt1etVruHGAAAAAi/rylsee-tooshytorap.gif" alt="Animated GIF">
 </p>
 
-[npm-shield]: https://img.shields.io/npm/v/videodb-chat?style=for-the-badge
+[npm-shield]: https://img.shields.io/npm/v/@videodb/chat-vue?style=for-the-badge
 [npm-url]: https://www.npmjs.com/package/@videodb/chat-vue
 [discord-shield]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&url=https://discord.com/api/invites/py9P639jGz?with_counts=true&query=$.approximate_member_count&logo=discord&logoColor=blue&color=green&label=discord
 [discord-url]: https://discord.com/invite/py9P639jGz

@@ -1,8 +1,10 @@
-<!-- #TODO: think how, channelId and collectionId can decoupled-->
-<!-- #TODO: Check how, follwup is working-->
 <template>
   <section
-    class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64 vdb-c-text-textdark md:vdb-c-p-20 md:vdb-c-pl-40"
+    :class="{
+      'vdb-c-fixed': size === 'full',
+      'vdb-c-absolute': size === 'embedded'
+    }"
+    class="vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64 vdb-c-text-textdark md:vdb-c-p-20 md:vdb-c-pl-40"
   >
     <div
       class="vdb-c-z-10 vdb-c-flex vdb-c-h-auto vdb-c-w-full vdb-c-justify-between vdb-c-bg-kilvish-300 vdb-c-px-10 vdb-c-py-6 md:vdb-c-hidden md:vdb-c-bg-transparent md:vdb-c-px-0 md:vdb-c-py-0"
@@ -45,14 +47,22 @@
             <div
               class="vdb-c-mb-30 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-20"
             >
-              <spext-logo-blue />
+              <component
+                :is="emptyContainerLogo"
+                v-if="typeof emptyContainerLogo === 'object'"
+              />
+              <img
+                :src="emptyContainerLogo"
+                v-else-if="typeof emptyContainerLogo === 'string'"
+                alt="Logo"
+              />
             </div>
             <div
               class="vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0"
             >
               <follow-up-container
-                :message="suggestions"
-                :is-empty="true"
+                :follow-up-prompts="searchSuggestions"
+                :is-empty="showEmptyContainer"
                 @followUpClicked="handleFollowUp"
               />
             </div>
@@ -65,7 +75,6 @@
             :conversation="conversations[key]"
             :user-image="userImage"
             :assistant-image="assistantImage"
-            :latest-user-msg="latestUserMessage"
             :is-static-page="isStaticPage"
             :is-last-conv="i === Object.keys(conversations).length - 1"
           />
@@ -77,15 +86,14 @@
         class="vdb-c-chat-input-container vdb-c-relative vdb-c-rounded-b-20 vdb-c-border vdb-c-border-kilvish-300 vdb-c-bg-white vdb-c-shadow-minimal-up"
       >
         <chat-input
-          :input-disabled="messageLoading"
+          :input-disabled="chatLoading"
           :is-single-video="isSingleVideo"
-          :collection-name="collectionName"
-          @onSubmit="handlePromptSubmit"
+          :placeholder="chatInputPlaceholder"
+          @onSubmit="addMessage({ content: $event })"
         />
       </div>
 
       <!-- Share & Back buttons -->
-
       <div
         class="vdb-c-absolute vdb-c--right-46 vdb-c-top-20 vdb-c-hidden vdb-c-w-56 vdb-c-flex-col vdb-c-gap-18 vdb-c-rounded-r-16 vdb-c-bg-white vdb-c-px-8 vdb-c-py-20 md:vdb-c-flex"
       >
@@ -103,7 +111,10 @@
 
 <script setup>
 import { ref, computed, watch, provide, nextTick } from "vue";
+import { v4 as uuidv4 } from "uuid";
+
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
+import { useChatInterface } from "../hooks/useChatInterface";
 
 import ChatInput from "./ChatInput.vue";
 
@@ -118,14 +129,14 @@ import RedShareButton from "../buttons/RedShareButton.vue";
 import ShareButton from "../buttons/ShareButton.vue";
 
 import ChatChevronLeft from "../icons/ChatChevronLeft.vue";
-import SpextLogoBlue from "../icons/SpextLogoBlue.vue";
 import ChatUser from "../icons/ChatUser.vue";
 import AssistantIcon from "../icons/AssistantIcon.vue";
+import SpextLogoBlue from "../icons/SpextLogoBlue.vue";
 
 const props = defineProps({
-  sessionId: {
-    type: String,
-    required: true,
+  isSingleVideo: {
+    type: Boolean,
+    default: false,
   },
   userImage: {
     type: [String, Object],
@@ -135,55 +146,52 @@ const props = defineProps({
     type: [String, Object],
     default: AssistantIcon,
   },
+  emptyContainerLogo: {
+    type: [String, Object],
+    default: SpextLogoBlue,
+  },
+  chatInputPlaceholder: {
+    type: String,
+    default: "Ask a question",
+  },
   searchSuggestions: {
     type: Array,
     default: () => [],
-  },
-  isSingleVideo: {
-    type: Boolean,
-    default: false,
-  },
-  parentQuery: {
-    type: String,
-    default: "",
-  },
-  collectionId: {
-    type: String,
-    required: true,
-  },
-  collectionName: {
-    type: String,
-    default: "",
-  },
-  videoId: {
-    type: String,
-    default: "",
   },
   shareUrl: {
     type: String,
     default: "",
   },
-  useCustomAgent: {
+  customChatHook: {
     type: Function,
     default: null,
   },
+  chatHookConfig: {
+    type: Object,
+    default: () => ({
+      url: "http://127.0.0.1:5000/chat",
+      sessionId: uuidv4(),
+      collectionId: null,
+      videoId: null,
+    }),
+  },
+  size: {
+    type: String,
+    default: 'full',
+    validator: (value) => ['full', 'embedded'].includes(value)
+  },
 });
 
-const useVideoAgent = props.useCustomAgent || useVideoDBAgent;
-const {
-  isConnected,
-  addMessage,
-  conversations,
-  messageLoading,
-  bindEvents,
-  messageHandlers,
-  registerMessageHandler,
-} = useVideoAgent(props.sessionId);
+const useChatHook = props.customChatHook || useVideoDBAgent;
+const { addMessage, conversations, chatLoading } = useChatHook(
+  props.chatHookConfig,
+);
 
-if (!props.useCustomAgent) {
+const { messageHandlers, registerMessageHandler } = useChatInterface();
+
+if (!props.customChatHook) {
   registerMessageHandler("search", ChatSearchResults);
   registerMessageHandler("search", ChatVideo);
-  // registerMessageHandler("thumbnail", ChatSearchResults);
 }
 
 const isStaticPage = ref(false);
@@ -201,84 +209,38 @@ const scrollToBottom = () => {
   });
 };
 
-watch(messageLoading, (val) => {
+watch(chatLoading, (val) => {
   if (val) {
     scrollToBottom();
   }
 });
 
-const suggestions = computed(() => {
-  const msg = {
-    conv_id: "init_followup",
-    followup_content: [],
-    msg_id: "init_followup",
-    sender: "assistant",
-    session_id: props.sessionId,
-    type: "output",
-  };
-  props.searchSuggestions.forEach((elm, i) => {
-    if (i > 2) return;
-    msg.followup_content.push({
-      search_query: elm.text,
-      sender: "user",
-      session_id: props.sessionId,
-      type: "input",
-    });
-  });
-  return msg;
-});
-
-const latestUserMessage = ref("");
 const showShareButton = computed(
   () => Object.keys(conversations).length && props.shareUrl,
 );
 
-watch(isConnected, () => {
-  if (props.parentQuery) {
-    handlePromptSubmit(props.parentQuery);
-  }
-});
-
-const emit = defineEmits(["connect", "chat", "backBtnClick"]);
-
-watch(
-  () => props.sessionId,
-  (val) => {
-    if (!val) return;
-    bindEvents(["connect", "chat"], emit);
-  },
-  { immediate: true },
-);
-
-const handlePromptSubmit = (val) => {
-  latestUserMessage.value = val.trim();
-  addMessage({
-    agent_name: null,
-    content: val,
-    collection_id: props?.collectionId || null,
-    video_id: props?.videoId || null,
-  });
-};
+const emit = defineEmits(["backBtnClick"]);
 
 const handleFollowUp = (val) => {
-  if (val.search_query) {
-    handlePromptSubmit(val.search_query);
+  if (val.text) {
+    addMessage({ content: val.text });
   }
 };
 
-
 defineExpose({
+  conversations,
+  chatLoading,
   messageHandlers,
   registerMessageHandler,
+  addMessage,
 });
 
 provide("videodb-chat", {
-  addMessage,
   conversations,
-  messageLoading,
-  bindEvents,
+  chatLoading,
   messageHandlers,
   registerMessageHandler,
+  addMessage,
 });
 </script>
 

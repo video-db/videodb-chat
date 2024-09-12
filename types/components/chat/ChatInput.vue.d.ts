@@ -1,14 +1,12 @@
 declare const _default: import("vue").DefineComponent<{}, {
     $emit: (event: "onSubmit", ...args: any[]) => void;
-    isSingleVideo: boolean;
-    collectionName: string;
     inputDisabled: boolean;
+    placeHolder: string;
     isTablet: boolean;
     isMobile: boolean;
     $props: {
-        readonly isSingleVideo?: boolean | undefined;
-        readonly collectionName?: string | undefined;
         readonly inputDisabled?: boolean | undefined;
+        readonly placeHolder?: string | undefined;
         readonly isTablet?: boolean | undefined;
         readonly isMobile?: boolean | undefined;
     };
