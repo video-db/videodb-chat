@@ -1,5 +1,7 @@
 <template>
-  <div class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-h-full vdb-c-w-full vdb-c-px-10 vdb-c-py-8 md:vdb-c-p-18">
+  <div
+    class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-h-full vdb-c-w-full vdb-c-px-10 vdb-c-py-8 md:vdb-c-p-18"
+  >
     <div
       class="vdb-c-br-50 vdb-c-relative vdb-c-h-full vdb-c-w-full"
       :class="{
@@ -11,8 +13,10 @@
         class="vdb-c-br-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-justify-between vdb-c-overflow-hidden vdb-c-border vdb-c-border-solid vdb-c-bg-white"
         :class="{
           'vdb-c-border-primary': charCount.value > 150,
-          'vdb-c-border-kilvish-500': inputFocused.value && charCount.value <= 150,
-          'vdb-c-border-kilvish-400': !inputFocused.value && charCount.value === 0,
+          'vdb-c-border-kilvish-500':
+            inputFocused.value && charCount.value <= 150,
+          'vdb-c-border-kilvish-400':
+            !inputFocused.value && charCount.value === 0,
         }"
         autocomplete="off"
         @submit="handleSubmit"
@@ -26,12 +30,14 @@
         >
           <chat-input-icon
             :class-name="`${
-              charCount.value > 150 ? 'vdb-c-text-white' : 'vdb-c-text-kilvish-800'
+              charCount.value > 150
+                ? 'vdb-c-text-white'
+                : 'vdb-c-text-kilvish-800'
             }`"
           />
         </div>
         <input
-          class="vdb-c-chat-input vdb-c-h-full vdb-c-bg-white vdb-c-pl-18 vdb-c-pr-8 vdb-c-font-medium vdb-c-placeholder-kilvish-500 focus:outline-none"
+          class="vdb-c-chat-input vdb-c-h-full vdb-c-bg-white vdb-c-pl-18 vdb-c-pr-8 vdb-c-font-medium vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
           name="prompt"
           :placeholder="placeHolder"
           autocomplete="off"
@@ -53,13 +59,14 @@
               'vdb-c-text-red': charCount.value > 150,
             }"
           >
-            {{ charCount.value }}/150
+            {{ charCount }}/150
           </div>
           <button
             :disabled="isInputDisabled.value"
             class="vdb-c-font-sans vdb-c-mx-8 vdb-c-hidden vdb-c-h-40 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-p-12 vdb-c-text-sm vdb-c-font-bold vdb-c-uppercase vdb-c-text-white vdb-c-transition md:vdb-c-flex"
             :class="{
-              'vdb-c-cursor-not-allowed vdb-c-bg-kilvish-400': isInputDisabled.value,
+              'vdb-c-cursor-not-allowed vdb-c-bg-kilvish-400':
+                isInputDisabled.value,
               'vdb-c-cursor-pointer vdb-c-bg-primary hover:vdb-c-bg-primary-800':
                 !isInputDisabled.value,
             }"
@@ -72,7 +79,8 @@
             class="vdb-c-mobile-send vdb-c-flex vdb-c-border-none vdb-c-bg-transparent vdb-c-p-8 vdb-c-pr-12 md:vdb-c-hidden"
             :class="{
               'vdb-c-text-kilvish-400': isInputDisabled.value,
-              'vdb-c-mobile-send vdb-c-text-others-nightwing': !isInputDisabled.value,
+              'vdb-c-mobile-send vdb-c-text-others-nightwing':
+                !isInputDisabled.value,
             }"
             type="submit"
           >
@@ -109,7 +117,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["onSubmit"]);
+const emit = defineEmits(["onSubmit", "onChange"]);
 
 const charCount = ref(0);
 const inputFocused = ref(false);
@@ -118,8 +126,8 @@ const isInputDisabled = computed(() => {
   return props.inputDisabled || charCount.value < 1 || charCount.value > 150;
 });
 
-
 const handleInput = (e) => {
+  emit("onChange", e.target.value);
   const val = e.target.value;
   charCount.value = val.length;
 };

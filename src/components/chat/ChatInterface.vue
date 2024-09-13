@@ -2,7 +2,6 @@
   <section
     :class="{
       'vdb-c-fixed': size === 'full',
-      'vdb-c-absolute': size === 'embedded'
     }"
     class="vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64 vdb-c-text-textdark md:vdb-c-p-20 md:vdb-c-pl-40"
   >
@@ -14,9 +13,7 @@
         @click="$emit('backBtnClick')"
       >
         <chat-chevron-left class-name="vdb-c-w-16 vdb-c-h-16 vdb-c-mr-8" />
-        <span class="vdb-c-text-xs vdb-c-font-medium"
-          >Back to {{ isSingleVideo ? "Video" : "Collection" }}</span
-        >
+        <span class="vdb-c-text-xs vdb-c-font-medium">Back</span>
       </button>
       <red-share-button
         v-show="showShareButton"
@@ -75,6 +72,7 @@
             :conversation="conversations[key]"
             :user-image="userImage"
             :assistant-image="assistantImage"
+            :search-term="searchTerm"
             :is-static-page="isStaticPage"
             :is-last-conv="i === Object.keys(conversations).length - 1"
           />
@@ -87,8 +85,8 @@
       >
         <chat-input
           :input-disabled="chatLoading"
-          :is-single-video="isSingleVideo"
           :placeholder="chatInputPlaceholder"
+          @onChange="searchTerm = $event"
           @onSubmit="addMessage({ content: $event })"
         />
       </div>
@@ -134,10 +132,6 @@ import AssistantIcon from "../icons/AssistantIcon.vue";
 import SpextLogoBlue from "../icons/SpextLogoBlue.vue";
 
 const props = defineProps({
-  isSingleVideo: {
-    type: Boolean,
-    default: false,
-  },
   userImage: {
     type: [String, Object],
     default: ChatUser,
@@ -173,12 +167,13 @@ const props = defineProps({
       sessionId: uuidv4(),
       collectionId: null,
       videoId: null,
+      debug: false,
     }),
   },
   size: {
     type: String,
-    default: 'full',
-    validator: (value) => ['full', 'embedded'].includes(value)
+    default: "full",
+    validator: (value) => ["full", "embedded"].includes(value),
   },
 });
 
@@ -196,6 +191,7 @@ if (!props.customChatHook) {
 
 const isStaticPage = ref(false);
 const chatWindow = ref(null);
+const searchTerm = ref("");
 
 const showEmptyContainer = computed(
   () => Object.keys(conversations).length === 0,

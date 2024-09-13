@@ -16,6 +16,7 @@
         :message-list="messages"
         :current-index="i"
         :message-loading="messageLoading"
+        :search-term="searchTerm"
       />
     </div>
   </div>
@@ -45,6 +46,10 @@ const props = defineProps({
   isLastConv: {
     type: Boolean,
     default: false,
+  },
+  searchTerm: {
+    type: String,
+    default: "",
   },
 });
 

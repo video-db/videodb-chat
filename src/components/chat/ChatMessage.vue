@@ -41,7 +41,11 @@
           v-for="(handler, index) in messageHandlers[message.agent_type]"
           :key="index"
         >
-          <component :is="handler" :message="message" />
+          <component
+            :is="handler"
+            :message="message"
+            :search-term="searchTerm"
+          />
         </div>
       </template>
 
@@ -103,9 +107,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  searchTerm: {
+    type: String,
+    default: "",
+  },
 });
 
-const { messageHandlers } = useVideoDBChat();
+const { messageHandlers, searchTerm } = useVideoDBChat();
 
 const textBool = ref(false);
 

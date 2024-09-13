@@ -1,5 +1,7 @@
 <template>
-  <div class="vdb-c-relative vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-12 md:vdb-c-p-24">
+  <div
+    class="vdb-c-relative vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-12 md:vdb-c-p-24"
+  >
     <div v-if="message.status === 'progress'" class="vdb-c-py-10">
       <bouncing-ellipses />
     </div>
@@ -7,7 +9,9 @@
       v-else-if="message.status === 'not_generated' || !message?.data?.shots"
       class="vdb-c-flex vdb-c-flex-col"
     >
-      <div class="vdb-c-mb-8 vdb-c-flex vdb-c-text-subheader vdb-c-text-steelblue-600">
+      <div
+        class="vdb-c-mb-8 vdb-c-flex vdb-c-text-subheader vdb-c-text-steelblue-600"
+      >
         No relevant results were found
       </div>
       <p class="vdb-c-markdown-body vdb-c-text-kilvish-900">
@@ -18,9 +22,8 @@
     <div v-else-if="message.status === 'success'">
       <search-list-item
         :search-results="adjustedSearchResults"
-        :search-term="latestUserMsg"
+        :search-term="searchTerm"
         :is-contractable="isContractable"
-        :channel-name="channelName"
       />
     </div>
   </div>
@@ -36,11 +39,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  latestUserMsg: {
-    type: String,
-    default: "",
-  },
-  channelName: {
+  searchTerm: {
     type: String,
     default: "",
   },
