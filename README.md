@@ -29,14 +29,10 @@
 
 These are Chat UI components to use with [Video Agents](https://github.com/video-db/video-agents).
 
-# ✨ See it in Action
-
-Demo Goes here
 
 # 🚀 Quickstart
 
 ### Installation
-
 ```
 npm install @videodb/chat-vue
 ```
@@ -48,7 +44,7 @@ Import the necessary components and styles. ( Currently supports Vue.js only )
 > If you are using default ChatHook, make sure your backend is running and the socket url is correct  
 > Checkout [video-agents](https://github.com/video-db/video-agents) for more details of backend setup for default ChatHook.
 
-> If you want to setup your own chatHook, checkout [using custom chatHook](#using-custom-chatHook) section
+> If you want to setup with your own backend, checkout [using custom chatHook](#using-custom-chatHook) section
 
 ```html
 <script setup>
@@ -81,19 +77,8 @@ Import the necessary components and styles. ( Currently supports Vue.js only )
 </template>
 ```
 
-# 📚 Concepts
-
-Session
-
-Conversation
-
-Message
-
-Message handlers
-
 # 🧑‍💻 Advanced Usage
 
-Please go through [concepts section](#-concepts) before going through this section
 
 ### Leveraging Custom Hooks
 
@@ -123,57 +108,69 @@ Custom message handlers allow you to process various message types from differen
 
 ## ChatInterface
 
+### Props
+
 The ChatInterface component accepts the following props:
 
-`userImage`: String or Component (default: ChatUser Component)
-Specifies the image or component to represent user messages in the chat.
+- `userImage`: String or Component (default: ChatUser Component)
+  Specifies the image or component to represent user messages in the chat.
 
-`assistantImage`: String or Component (default: AssistantIcon Component)
-Defines the image or component for assistant messages.
+- `assistantImage`: String or Component (default: AssistantIcon Component)
+  Defines the image or component for assistant messages.
 
-`emptyContainerLogo`: String or Component (default: SpextLogoBlue Component)
-Sets the logo displayed when the chat is empty.
+- `emptyContainerLogo`: String or Component (default: SpextLogoBlue Component)
+  Sets the logo displayed when the chat is empty.
 
-`chatInputPlaceholder`: String (default: "Ask a question")
+- `chatInputPlaceholder`: String (default: "Ask a question")
 Customizes the placeholder text for the chat input field.
 
-`searchSuggestions`: Array (default: [])
-Provides a list of search suggestions. Each suggestion should be an object with the format `{ "text": "search suggestion" }`.
+- `searchSuggestions`: Array (default: [])
+  Provides a list of search suggestions. Each suggestion should be an object with the format `{ "text": "search suggestion" }`.
 
-`shareUrl`: String (default: "")
-Specifies the URL for sharing the chat.
+- `shareUrl`: String (default: "")
+  Specifies the URL for sharing the chat.
 
-`customChatHook`: Function (default: videoDBChatHook)
-Allows for a custom hook to handle chat functionality.
+- `customChatHook`: Function (default: videoDBChatHook)
+  Allows for a custom hook to handle chat functionality.
 
-`chatHookConfig`: Object
+- `chatHookConfig`: Object
 Configures the chat hook. For the default videoDBChatHook, it includes:
 
-- `url`: String (default: "http://127.0.0.1:5000/chat") - URL for the chat backend socket.
-- `sessionId`: String (default: generated UUID) - Unique identifier for the chat session.
-- `collectionId`: String (default: null) - ID of the collection.
-- `videoId`: String (default: null) - ID of the video.
-- `debug`: Boolean (default: false) - Enables debug mode.
+  - `url`: String (default: `http://127.0.0.1:5000/chat`) - URL for the chat backend socket.
+  - `sessionId`: String (default: generated UUID) - Unique identifier for the chat session.
+  - `collectionId`: String (default: null) - ID of the collection.
+  - `videoId`: String (default: null) - ID of the video.
+  - `debug`: Boolean (default: false) - Enables debug mode.
 
-`size`: String (default: "full")
-Determines the size of the chat interface. Options are "full" or "embedded".
-Full takes up the entire width of the screen.
-Embedded takes up space of the parent container.
+- `size`: String (default: `full`)
+  Determines the size of the chat interface. Options are `full` or `embedded`.
+  Full takes up the entire width of the screen.
+  Embedded takes up space of the parent container.
+
+### Exposed Variables
+
+- `conversations`: Object
+  Contains the conversation data.
+
+- `addMessage`: Function
+  Adds a message to the conversation.
+
 
 ### Conversation
 
-Conversation is a collection of messages between user and agent. Each conversation contains a list of messages objects age
+Conversation is a collection of messages between user and agent of a session. Each conversation contains a list of messages objects 
 
-- `key` :
-  - `agent_type` : Type of the agent that generated the message.
-  - `content` : Text content of the message. (input/output)
-  - `conv_id` : ID of the collection.
-  - `data` : JSON data associated with the agent message.
-  - `msg_id` : ID of the message.
-  - `msg_type` : Type of the message. (input/output)
-  - `session_id` : Unique identifier for the chat session.
-  - `sender` : Sender of the message. (assistant/user)
-  - `status` : Status of the message. (progress/success/error)
+- `conversationId` : ID of the conversation.
+  - `msgId` : ID of the message.
+    - `agent_type` : Type of the agent that generated the message.
+    - `content` : Text content of the message. (input/output)
+    - `conv_id` : ID of the collection.
+    - `data` : JSON data associated with the agent message.
+    - `msg_id` : ID of the message.
+    - `msg_type` : Type of the message. (input/output)
+    - `session_id` : Unique identifier for the chat session.
+    - `sender` : Sender of the message. (assistant/user)
+    - `status` : Status of the message. (progress/success/error)
 
 [npm-shield]: https://img.shields.io/npm/v/@videodb/chat-vue?style=for-the-badge
 [npm-url]: https://www.npmjs.com/package/@videodb/chat-vue
