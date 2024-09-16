@@ -29,9 +29,9 @@ export function useVideoDBAgent(config) {
     if (!lastMessage || !lastMessage.clientLoading) {
       const loadingMsgId = Date.now() + 2;
       conversations[convId][loadingMsgId] = {
-        conv_id: convId,
-        msg_id: loadingMsgId,
-        session_id: session.sessionId,
+        conv_id: String(convId),
+        msg_id: String(loadingMsgId),
+        session_id: String(session.sessionId),
         type: 'output',
         sender: 'assistant',
         clientLoading: true
@@ -53,11 +53,11 @@ export function useVideoDBAgent(config) {
       const _message = {
         type: 'input',
         sender: 'user',
-        conv_id: convId,
-        msg_id: msgId,
-        session_id: session.sessionId,
-        collection_id: session.collectionId,
-        video_id: session.videoId,
+        conv_id: String(convId),
+        msg_id: String(msgId),
+        session_id: String(session.sessionId),
+        collection_id: session.collectionId ? String(session.collectionId) : null,
+        video_id: session.videoId ? String(session.videoId) : null,
         ...message
       };
 
@@ -87,9 +87,9 @@ export function useVideoDBAgent(config) {
     }
   });
 
-  const chatLoading = computed(() => 
-    Object.values(conversations).some(conv => 
-      Object.values(conv).some(content => 
+  const chatLoading = computed(() =>
+    Object.values(conversations).some(conv =>
+      Object.values(conv).some(content =>
         content.status === "progress" || content.clientLoading
       )
     )
