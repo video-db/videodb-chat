@@ -47,25 +47,25 @@ npm install @videodb/chat-vue
 
 Import the necessary components and styles. ( Currently supports Vue.js only )
 
->If you are using default chatHook, make sure your backend is running and the socket url is correct  
->Checkout [video-agents](https://github.com/video-db/video-agents) for more details.  
-> 
+> If you are using default ChatHook, make sure your backend is running and the socket url is correct  
+> Checkout [video-agents](https://github.com/video-db/video-agents) for more details of backend setup for default ChatHook.
+
 > If you want to setup your own chatHook, checkout [using custom chatHook](#using-custom-chatHook) section
 
 ```html
 <script setup>
+  import { ref } from "vue";
   import { ChatInterface } from "@videodb/chat-vue";
   import "@videodb/chat-vue/dist/style.css";
 
   const isChatOpened = ref(true);
-  const sessionId = Date.now()
-  const collectionId = "default" 
+  const sessionId = Date.now();
+  const collectionId = "default";
 
   // Set videoId to Chat With Video
-  const videoId = null
+  const videoId = null;
 
-  const backendUrl = "http://127.0.0.1:5000/chat"
-
+  const backendUrl = "http://127.0.0.1:5000/chat";
 </script>
 
 <template>
@@ -99,11 +99,14 @@ Please go through [concepts section](#-concepts) before going through this secti
 
 ### Leveraging Custom Hooks
 
-Custom hooks offer powerful flexibility for tailoring conversation and message management to your specific needs:
+Custom hooks offer a versatile approach to enhancing chat functionality:
 
-- Implement custom logic for handling backend agent interactions
-- Manage state and side effects specific to your use case
-- Integrate seamlessly with existing application architecture
+- Connect to your own backend, bypassing VideoDB's video agent integration
+- Develop custom logic for agent interactions
+- Control conversation state and manage side effects
+- Seamlessly integrate with your existing application architecture
+
+This flexibility enables you to customize the chat experience to meet your specific requirements while ensuring compatibility with the ChatInterface component.
 
 [View Custom Hook Example on StackBlitz](link-to-stackblitz-example)
 
@@ -160,17 +163,19 @@ Full takes up the entire width of the screen.
 Embedded takes up space of the parent container.
 
 ### Conversation
-Conversation is a collection of messages between user and agent. Each conversation 
-- `key` : 
+
+Conversation is a collection of messages between user and agent. Each conversation contains a list of messages objects age
+
+- `key` :
+  - `agent_type` : Type of the agent that generated the message.
+  - `content` : Text content of the message. (input/output)
+  - `conv_id` : ID of the collection.
+  - `data` : JSON data associated with the agent message.
+  - `msg_id` : ID of the message.
+  - `msg_type` : Type of the message. (input/output)
   - `session_id` : Unique identifier for the chat session.
-  - `conv` : ID of the collection.
-  - `videoId` : ID of the video.
-- `messages` : 
-  - `id` : Message ID
-  - `text` : Message Text
-  - `type` : Message Type
-  - `metadata` : Message Metadata
-  - `createdAt` : Message Created At
+  - `sender` : Sender of the message. (assistant/user)
+  - `status` : Status of the message. (progress/success/error)
 
 [npm-shield]: https://img.shields.io/npm/v/@videodb/chat-vue?style=for-the-badge
 [npm-url]: https://www.npmjs.com/package/@videodb/chat-vue
@@ -182,7 +187,3 @@ Conversation is a collection of messages between user and agent. Each conversati
 [issues-url]: https://github.com/video-db/videodb-chat/issues
 [website-shield]: https://img.shields.io/website?url=https%3A%2F%2Fvideodb.io%2F&style=for-the-badge&label=videodb.io
 [website-url]: https://videodb.io/
-
-```
-
-```
