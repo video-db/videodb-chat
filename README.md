@@ -4,11 +4,9 @@
 [![Website][website-shield]][website-url]
 [![Discord][discord-shield]][discord-url]
 
-<p align="center">
-  <img src="https://media.tenor.com/dt1etVruHGAAAAAi/rylsee-tooshytorap.gif" alt="Animated GIF">
-</p>
 <br />
-<!-- <p align="center">
+
+<p align="center">
   <a href="https://videodb.io/">
     <img src="https://codaio.imgix.net/docs/_s5lUnUCIU/blobs/bl-RgjcFrrJjj/d3cbc44f8584ecd42f2a97d981a144dce6a66d83ddd5864f723b7808c7d1dfbc25034f2f25e1b2188e78f78f37bcb79d3c34ca937cbb08ca8b3da1526c29da9a897ab38eb39d084fd715028b7cc60eb595c68ecfa6fa0bb125ec2b09da65664a4f172c2f" alt="Logo" width="300" height="">
   </a>
@@ -18,14 +16,14 @@
   <p align="center">
     Chat UI Components for <a href="https://github.com/video-db/video-agents">  Video Agents</a>
     <br />
-    <a href=""><strong>View Demo »</strong></a>
+    <a href="https://stackblitz.com/edit/vitejs-vite-zyq2no?file=src%2FApp.vue"><strong>View Demo »</strong></a>
     <br />
     <br />
     <a href="https://github.com/video-db/videodb-chat/issues">Report Bug</a>
     ·
     <a href="https://github.com/video-db/videodb-chat/issues">Request Feature</a>
   </p>
-</p> -->
+</p> 
 
 # 💬 VideoDB Chat
 
@@ -108,7 +106,7 @@ Custom hooks offer a versatile approach to enhancing chat functionality:
 
 This flexibility enables you to customize the chat experience to meet your specific requirements while ensuring compatibility with the ChatInterface component.
 
-[View Custom Hook Example on StackBlitz](link-to-stackblitz-example)
+[View Custom Hook Example on StackBlitz](https://stackblitz.com/edit/vitejs-vite-knrrbv?file=src%2FApp.vue)
 
 ### Implementing Custom Message Handlers
 
@@ -119,7 +117,7 @@ Custom message handlers allow you to process various message types from differen
 - Extensibility to support new agent types or response formats
 - Improved user experience through tailored message rendering
 
-[View Custom Message Handler Example on StackBlitz](link-to-stackblitz-example)
+[View Custom Message Handler Example on StackBlitz](https://stackblitz.com/edit/vitejs-vite-qnka6j?file=src%2FApp.vue)
 
 # 📡 Interface
 
