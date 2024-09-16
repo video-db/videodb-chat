@@ -1,17 +1,22 @@
 <template>
-  <div class="vdb-c-relative vdb-c-h-auto vdb-c-min-h-full vdb-c-w-full vdb-c-pb-10">
-    <div v-for="(message, i) in messages" :key="message.msg_id" class="vdb-c-w-full">
+  <div
+    class="vdb-c-relative vdb-c-h-auto vdb-c-min-h-full vdb-c-w-full vdb-c-pb-10"
+  >
+    <div
+      v-for="(message, i) in messages"
+      :key="message.msg_id"
+      class="vdb-c-w-full"
+    >
       <chat-message
         :message="message"
         :user-image="userImage"
         :assistant-image="assistantImage"
-        :latest-user-msg="latestUserMsg"
         :is-static-page="isStaticPage"
         :is-last-conv="isLastConv"
         :message-list="messages"
         :current-index="i"
         :message-loading="messageLoading"
-        @feedbackSubmit="(val) => $emit('feedbackSubmit', val)"
+        :search-term="searchTerm"
       />
     </div>
   </div>
@@ -34,10 +39,6 @@ const props = defineProps({
     type: [String, Object],
     default: null,
   },
-  latestUserMsg: {
-    type: String,
-    default: "",
-  },
   isStaticPage: {
     type: Boolean,
     default: false,
@@ -45,6 +46,10 @@ const props = defineProps({
   isLastConv: {
     type: Boolean,
     default: false,
+  },
+  searchTerm: {
+    type: String,
+    default: "",
   },
 });
 
@@ -58,8 +63,6 @@ const messageLoading = computed(() => {
     return msg.status === "progress" || msg.loading;
   });
 });
-
-defineEmits(["feedbackSubmit"]);
 </script>
 
 <style>

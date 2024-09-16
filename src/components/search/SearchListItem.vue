@@ -1,15 +1,10 @@
-<!-- #TODO: Add channelName Support -->
 <template>
   <div>
-    <div class="vdb-c-font-sans vdb-c-flex vdb-c-items-center vdb-c-text-subheader vdb-c-text-steelblue-600">
+    <div
+      class="vdb-c-font-sans vdb-c-flex vdb-c-items-center vdb-c-text-subheader vdb-c-text-steelblue-600"
+    >
       <blue-check class-name="vdb-c-mr-8" />
-      <span
-        >Here are some relevant moments
-        <span class="vdb-c-hidden md:vdb-c-inline">{{ channelName ? "from" : "" }}</span>
-        <span class="vdb-c-hidden vdb-c-font-semibold vdb-c-italic md:vdb-c-inline">{{
-          channelName ? `${channelName}` : ""
-        }}</span>
-      </span>
+      <span>Here are some relevant moments </span>
     </div>
     <div class="vdb-c-mt-8">
       <div
@@ -23,7 +18,6 @@
             : 'vdb-c-mb-20 vdb-c-border-b vdb-c-border-outline-xlight'
         }`"
       >
-        <!-- #TODO: Imporve BigCenterButton height & stuff-->
         <div class="vdb-c-col-span-12 md:vdb-c-col-span-3">
           <VideoDBPlayer
             :ref="
@@ -47,8 +41,12 @@
             </template>
           </VideoDBPlayer>
         </div>
-        <div class="vdb-c-col-span-12 vdb-c--mt-20 md:vdb-c-col-span-9 md:vdb-c-mt-0 md:vdb-c-pl-16">
-          <div class="vdb-c-relative vdb-c-rounded-16 vdb-c-border vdb-c-bg-white vdb-c-text-gray-900">
+        <div
+          class="vdb-c-col-span-12 vdb-c--mt-20 md:vdb-c-col-span-9 md:vdb-c-mt-0 md:vdb-c-pl-16"
+        >
+          <div
+            class="vdb-c-relative vdb-c-rounded-16 vdb-c-border vdb-c-bg-white vdb-c-text-gray-900"
+          >
             <search-results
               v-if="true"
               :is-light="true"
@@ -86,7 +84,11 @@
 import { ref } from "vue";
 import DownArrow from "../icons/DownArrow.vue";
 import BlueCheck from "../icons/BlueCheck.vue";
-import { SearchResults, VideoDBPlayer, BigCenterButton } from "@videodb/player-vue";
+import {
+  SearchResults,
+  VideoDBPlayer,
+  BigCenterButton,
+} from "@videodb/player-vue";
 
 const props = defineProps({
   searchResults: {
@@ -100,10 +102,6 @@ const props = defineProps({
   isContractable: {
     type: Boolean,
     default: false,
-  },
-  channelName: {
-    type: String,
-    default: "",
   },
 });
 
