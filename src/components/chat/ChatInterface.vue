@@ -33,46 +33,57 @@
           ref="chatWindow"
           class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
         >
-          <!-- Empty Container; if no messages are there-->
-          <div
-            class="vdb-c-flex vdb-c-w-full vdb-c-transform vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-transition-all vdb-c-duration-500"
-            :class="{
-              'vdb-c-h-full vdb-c-opacity-100': showEmptyContainer,
-              'vdb-c-h-0 vdb-c-opacity-0': !showEmptyContainer,
-            }"
-          >
+          <!-- Empty Container -->
+          <template v-if="Object.keys(conversations).length === 0">
+            <collection-view
+              v-if="currentCollectionId && !currentVideoId"
+              :collection-id="currentCollectionId"
+              @video-click="handleVideoClick"
+            />
+            <video-view
+              v-else-if="currentCollectionId && currentVideoId"
+              :collection-id="currentCollectionId"
+              :video-id="currentVideoId"
+            />
             <div
-              class="vdb-c-mb-30 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-20"
+              v-else
+              class="vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-transform vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-transition-all vdb-c-duration-500"
             >
-              <component
-                :is="emptyContainerLogo"
-                v-if="typeof emptyContainerLogo === 'object'"
-              />
-              <img
-                :src="emptyContainerLogo"
-                v-else-if="typeof emptyContainerLogo === 'string'"
-                alt="Logo"
-              />
+              <div
+                class="vdb-c-mb-30 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-20"
+              >
+                <component
+                  :is="emptyContainerLogo"
+                  v-if="typeof emptyContainerLogo === 'object'"
+                />
+                <img
+                  :src="emptyContainerLogo"
+                  v-else-if="typeof emptyContainerLogo === 'string'"
+                  alt="Logo"
+                />
+              </div>
+              <div
+                v-if="searchSuggestions.length > 0"
+                class="vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0"
+              >
+                <follow-up-container
+                  :follow-up-prompts="searchSuggestions"
+                  :is-empty="true"
+                  @followUpClicked="handleFollowUp"
+                />
+              </div>
             </div>
-            <div
-              class="vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0"
-            >
-              <follow-up-container
-                :follow-up-prompts="searchSuggestions"
-                :is-empty="showEmptyContainer"
-                @followUpClicked="handleFollowUp"
-              />
-            </div>
-          </div>
+          </template>
 
           <!-- Message Container -->
           <chat-message-container
+            v-else
             v-for="(key, i) in Object.keys(conversations)"
             :key="key"
             :conversation="conversations[key]"
             :user-image="userImage"
             :assistant-image="assistantImage"
-            :search-term="searchTerm"
+            :search-term="chatInput"
             :is-static-page="isStaticPage"
             :is-last-conv="i === Object.keys(conversations).length - 1"
           />
@@ -86,8 +97,7 @@
         <chat-input
           :input-disabled="chatLoading"
           :placeholder="chatInputPlaceholder"
-          @onChange="searchTerm = $event"
-          @onSubmit="addMessage({ content: $event })"
+          @onSubmit="handleAddMessage"
         />
       </div>
 
@@ -108,28 +118,25 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, provide, nextTick } from "vue";
+import { ref, computed, watch, provide, nextTick, onMounted } from "vue";
 import { v4 as uuidv4 } from "uuid";
 
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
 import { useChatInterface } from "../hooks/useChatInterface";
 
 import ChatInput from "./ChatInput.vue";
-
 import ChatMessageContainer from "./ChatMessageContainer.vue";
-
 import FollowUpContainer from "./elements/FollowUpContainer.vue";
-
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
-
 import RedShareButton from "../buttons/RedShareButton.vue";
 import ShareButton from "../buttons/ShareButton.vue";
-
 import ChatChevronLeft from "../icons/ChatChevronLeft.vue";
 import ChatUser from "../icons/ChatUser.vue";
 import AssistantIcon from "../icons/AssistantIcon.vue";
 import SpextLogoBlue from "../icons/SpextLogoBlue.vue";
+import CollectionView from "./CollectionView.vue";
+import VideoView from "./VideoView.vue";
 
 const props = defineProps({
   userImage: {
@@ -163,10 +170,8 @@ const props = defineProps({
   chatHookConfig: {
     type: Object,
     default: () => ({
-      url: "http://127.0.0.1:5000/chat",
-      sessionId: uuidv4(),
-      collectionId: null,
-      videoId: null,
+      socketUrl: "http://127.0.0.1:8000/chat",
+      httpUrl: "http://127.0.0.1:8000",
       debug: false,
     }),
   },
@@ -175,27 +180,51 @@ const props = defineProps({
     default: "full",
     validator: (value) => ["full", "embedded"].includes(value),
   },
+  collectionId: {
+    type: String,
+    default: null,
+  },
+  videoId: {
+    type: String,
+    default: null,
+  },
+  sessionId: {
+    type: String,
+    default: null,
+  },
 });
 
-const useChatHook = props.customChatHook || useVideoDBAgent;
-const { addMessage, conversations, chatLoading } = useChatHook(
-  props.chatHookConfig,
-);
+const currentCollectionId = ref(props.collectionId);
+const currentVideoId = ref(props.videoId);
+const currentSessionId = ref(props.sessionId);
 
-const { messageHandlers, registerMessageHandler } = useChatInterface();
+const useChatHook = props.customChatHook || useVideoDBAgent;
+const {
+  session,
+  addMessage,
+  conversations,
+  chatLoading,
+  loadSession,
+  setCollectionId,
+  setVideoId,
+  fetchCollection,
+  fetchCollectionVideo,
+  fetchCollectionVideos,
+} = useChatHook(props.chatHookConfig);
+
+const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
+  useChatInterface();
 
 if (!props.customChatHook) {
   registerMessageHandler("search", ChatSearchResults);
   registerMessageHandler("search", ChatVideo);
+  registerMessageHandler("subtitle", ChatVideo);
+  registerMessageHandler("editing", ChatVideo);
 }
 
 const isStaticPage = ref(false);
 const chatWindow = ref(null);
-const searchTerm = ref("");
-
-const showEmptyContainer = computed(
-  () => Object.keys(conversations).length === 0,
-);
+const sessionLoaded = ref(false);
 
 const scrollToBottom = () => {
   const element = chatWindow.value;
@@ -205,38 +234,99 @@ const scrollToBottom = () => {
   });
 };
 
+watch(conversations, (val) => {
+  emit("updateConversations", val);
+});
+
 watch(chatLoading, (val) => {
   if (val) {
     scrollToBottom();
   }
 });
 
+watch(() => props.collectionId, (newVal) => {
+  currentCollectionId.value = newVal;
+});
+
+watch(() => props.videoId, (newVal) => {
+  currentVideoId.value = newVal;
+});
+
+watch(currentCollectionId, (newVal) => {
+  setCollectionId(newVal);
+});
+
+watch(currentVideoId, (newVal) => {
+  setVideoId(newVal);
+});
+
 const showShareButton = computed(
   () => Object.keys(conversations).length && props.shareUrl,
 );
 
-const emit = defineEmits(["backBtnClick"]);
+const emit = defineEmits(["backBtnClick", "updateConversations"]);
 
 const handleFollowUp = (val) => {
   if (val.text) {
-    addMessage({ content: val.text });
+    handleAddMessage(val.text);
   }
 };
 
+const handleVideoClick = (data) => {
+  currentVideoId.value = data.id;
+};
+
+// #TODO: accept whole object
+const handleAddMessage = (content) => {
+  if (!sessionLoaded.value && Object.keys(conversations).length === 0) {
+    loadSession(currentSessionId.value);
+    sessionLoaded.value = true;
+  }
+  addMessage({ content });
+};
+
+// #TODO: figure out how can loadSession work in both cases, when just sessionId is provided, and when collectionId and videoId are also provided
+onMounted(() => {
+  if (props.sessionId) {
+    loadSession(props.sessionId);
+    sessionLoaded.value = true;
+  }
+  if (props.collectionId) {
+    setCollectionId(props.collectionId);
+  }
+  if (props.videoId) {
+    setVideoId(props.videoId);
+  }
+});
+
 defineExpose({
-  conversations,
+  session,
+  chatInput,
   chatLoading,
+  conversations,
   messageHandlers,
+  addMessage: handleAddMessage,
+  loadSession,
+  setChatInput,
+  fetchCollection,
+  fetchCollectionVideo,
+  fetchCollectionVideos,
   registerMessageHandler,
-  addMessage,
 });
 
 provide("videodb-chat", {
-  conversations,
+  session,
+  chatInput,
   chatLoading,
+  conversations,
   messageHandlers,
+  addMessage: handleAddMessage,
+  loadSession,
+  setChatInput,
+  fetchCollection,
+  fetchCollectionVideo,
+  fetchCollectionVideos,
   registerMessageHandler,
-  addMessage,
 });
 </script>
 

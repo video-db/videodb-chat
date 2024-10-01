@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, watch, nextTick } from "vue";
 import FollowUp from "./FollowUp.vue";
 import ChevronRight from "../../icons/ChevronRight.vue";
 import EnterIcon from "../../icons/EnterIcon.vue";

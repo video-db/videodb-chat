@@ -39,9 +39,10 @@
         <input
           class="vdb-c-chat-input vdb-c-h-full vdb-c-bg-white vdb-c-pl-18 vdb-c-pr-8 vdb-c-font-medium vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
           name="prompt"
-          :placeholder="placeHolder"
+          :placeholder="placeholder"
           autocomplete="off"
           :disabled="inputDisabled"
+          :value="chatInput"
           @input="handleInput"
           @focus="inputFocused = true"
           @blur="inputFocused = false"
@@ -94,6 +95,9 @@
 
 <script setup>
 import { ref, computed } from "vue";
+
+import { useVideoDBChat } from "../../context";
+
 import ChatEnterIcon from "../icons/ChatEnterIcon.vue";
 import ChatInputIcon from "../icons/ChatInputIcon.vue";
 import SendIcon from "../icons/SendIcon.vue";
@@ -103,7 +107,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  placeHolder: {
+  placeholder: {
     type: String,
     default: "Ask a question",
   },
@@ -117,6 +121,8 @@ const props = defineProps({
   },
 });
 
+const { chatInput } = useVideoDBChat();
+
 const emit = defineEmits(["onSubmit", "onChange"]);
 
 const charCount = ref(0);
@@ -127,15 +133,16 @@ const isInputDisabled = computed(() => {
 });
 
 const handleInput = (e) => {
-  emit("onChange", e.target.value);
+  chatInput.value = e.target.value;
   const val = e.target.value;
   charCount.value = val.length;
 };
 
 const handleSubmit = (e) => {
   e.preventDefault();
-  emit("onSubmit", e.target[0].value);
+  emit("onSubmit", chatInput.value);
   e.target.reset();
+  chatInput.value = ""
   charCount.value = 0;
 };
 </script>

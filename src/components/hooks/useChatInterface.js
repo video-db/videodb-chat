@@ -1,8 +1,10 @@
-import { reactive } from "vue";
+import { ref, reactive } from "vue";
 
 
 export function useChatInterface() {
     const messageHandlers = reactive({})
+    const chatInput = ref("");
+
     const registerMessageHandler = (agentName, handler) => {
         if (!messageHandlers[agentName]) {
             messageHandlers[agentName] = []
@@ -11,7 +13,13 @@ export function useChatInterface() {
     }
 
 
+    const setChatInput = (input) => {
+        chatInput.value = input
+    }
+
     return {
+        chatInput,
+        setChatInput,
         messageHandlers,
         registerMessageHandler,
     };

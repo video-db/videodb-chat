@@ -26,6 +26,9 @@
           :stream-url="message.data.stream_url"
           :default-controls="false"
         >
+          <template #controls>
+            <TimeCode />
+          </template>
         </VideoDBPlayer>
       </div>
     </div>
@@ -58,7 +61,7 @@
 
 <script setup>
 import { computed } from "vue";
-import { VideoDBPlayer } from "@videodb/player-vue";
+import { VideoDBPlayer, TimeCode } from "@videodb/player-vue";
 import EllipsesLoading from "../atoms/EllipsesLoading.vue";
 import ChatLoader from "../icons/ChatLoader.vue";
 import RedExclamation from "../icons/RedExclamation.vue";

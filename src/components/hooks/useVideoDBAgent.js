@@ -2,26 +2,100 @@ import { reactive, toRefs, watch, computed } from "vue";
 import io from "socket.io-client";
 
 export function useVideoDBAgent(config) {
-  const { debug = false, url, sessionId, videoId = null, collectionId = null } = config;
+  const { debug = false, socketUrl, httpUrl } = config;
   if (debug) console.log("debug :videodb-chat config", config);
-  const socket = io(url);
+  const socket = io(socketUrl);
 
   const session = reactive({
     isConnected: false,
-    sessionId,
-    videoId,
-    collectionId
+    sessionId: null,
+    videoId: null,
+    collectionId: null,
   });
   const conversations = reactive({});
   const bufferMessages = reactive([]);
 
-  watch(() => session.isConnected, (val) => {
-    if (debug) console.log("debug :videodb-chat session.isConnected :", val);
-  });
+  const loadSession = (sessionId) => {
+    // #TODO: figure out how to load past session, when past session is loaded, set collectionId and videoID here
+    session.sessionId = sessionId;
+    Object.keys(conversations).forEach((key) => delete conversations[key]);
+  };
 
-  watch(() => conversations, (val) => {
-    if (debug) console.log("debug :videodb-chat conversations updated:", val);
-  }, { deep: true });
+  const setCollectionId = (collectionId) => {
+    session.collectionId = collectionId;
+  };
+
+  const setVideoId = (videoId) => {
+    session.videoId = videoId;
+  };
+
+  watch(
+    () => session.isConnected,
+    (val) => {
+      if (debug) console.log("debug :videodb-chat session.isConnected :", val);
+    },
+  );
+
+  watch(
+    () => conversations,
+    (val) => {
+      if (debug) console.log("debug :videodb-chat conversations updated:", val);
+    },
+    { deep: true },
+  );
+
+  // #TODO: figure out how to give user full control over endpoint configuration
+  const fetchCollection = async (collectionId) => {
+    const res = {};
+    try {
+      const response = await fetch(`${httpUrl}/videodb/collection/${collectionId}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      res.status = "success";
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
+  const fetchCollectionVideos = async (collectionId) => {
+    const res = {};
+    try {
+      const response = await fetch(`${httpUrl}/videodb/collection/${collectionId}/video`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      res.status = "success";
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
+  const fetchCollectionVideo = async (collectionId, videoId) => {
+    const res = {};
+    try {
+      const response = await fetch(`${httpUrl}/videodb/collection/${collectionId}/video/${videoId}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      res.status = "success";
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
 
   const addClientLoadingMessage = (convId) => {
     const messages = Object.values(conversations[convId]);
@@ -32,15 +106,17 @@ export function useVideoDBAgent(config) {
         conv_id: String(convId),
         msg_id: String(loadingMsgId),
         session_id: String(session.sessionId),
-        type: 'output',
-        sender: 'assistant',
-        clientLoading: true
+        type: "output",
+        sender: "assistant",
+        clientLoading: true,
       };
     }
   };
 
   const removeClientLoadingMessage = (convId) => {
-    const clientLoadingMessage = Object.values(conversations[convId]).find(msg => msg.clientLoading);
+    const clientLoadingMessage = Object.values(conversations[convId]).find(
+      (msg) => msg.clientLoading,
+    );
     if (clientLoadingMessage) {
       delete conversations[convId][clientLoadingMessage.msg_id];
     }
@@ -51,14 +127,16 @@ export function useVideoDBAgent(config) {
       const convId = Date.now();
       const msgId = convId + 1;
       const _message = {
-        type: 'input',
-        sender: 'user',
+        type: "input",
+        sender: "user",
         conv_id: String(convId),
         msg_id: String(msgId),
         session_id: String(session.sessionId),
-        collection_id: session.collectionId ? String(session.collectionId) : null,
+        collection_id: session.collectionId
+          ? String(session.collectionId)
+          : null,
         video_id: session.videoId ? String(session.videoId) : null,
-        ...message
+        ...message,
       };
 
       conversations[convId] = { [msgId]: _message };
@@ -88,27 +166,34 @@ export function useVideoDBAgent(config) {
   });
 
   const chatLoading = computed(() =>
-    Object.values(conversations).some(conv =>
-      Object.values(conv).some(content =>
-        content.status === "progress" || content.clientLoading
-      )
-    )
+    Object.values(conversations).some((conv) =>
+      Object.values(conv).some(
+        (content) => content.status === "progress" || content.clientLoading,
+      ),
+    ),
   );
 
   const bindEvents = (events, emit) => {
-    events.forEach(customEvent => {
+    events.forEach((customEvent) => {
       socket.on(customEvent, (event) => {
-        if (debug) console.log("debug :videodb-chat triggered", customEvent, event);
+        if (debug)
+          console.log("debug :videodb-chat triggered", customEvent, event);
         emit(customEvent, { event });
       });
     });
   };
 
   return {
-    ...toRefs(session),
+    session,
     conversations,
     chatLoading,
     addMessage,
     bindEvents,
+    loadSession,
+    fetchCollection,
+    fetchCollectionVideos,
+    fetchCollectionVideo,
+    setCollectionId,
+    setVideoId,
   };
 }

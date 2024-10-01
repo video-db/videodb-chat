@@ -39,12 +39,11 @@ npm install @videodb/chat-vue
 
 ### Usage
 
-Import the necessary components and styles. ( Currently supports Vue.js only )
+Import the necessary components and styles. 
 
-> If you are using default ChatHook, make sure your backend is running and the socket url is correct  
-> Checkout [video-agents](https://github.com/video-db/video-agents) for more details of backend setup for default ChatHook.
+If you are using [video-agents backend](https://github.com/video-db/video-agents), make sure it is running and the socket url is correctly passed in `chat-hook-config`  
 
-> If you want to setup with your own backend, checkout [using custom chatHook](#using-custom-chatHook) section
+> If you want to setup videodb-chat with your own backend, checkout [custom chatHook](#custom-chatHook) section
 
 ```html
 <script setup>
@@ -59,7 +58,7 @@ Import the necessary components and styles. ( Currently supports Vue.js only )
   // Set videoId to Chat With Video
   const videoId = null;
 
-  const backendUrl = "http://127.0.0.1:5000/chat";
+  const backendUrl = "http://127.0.0.1:8000/chat";
 </script>
 
 <template>
@@ -79,28 +78,37 @@ Import the necessary components and styles. ( Currently supports Vue.js only )
 
 # 🧑‍💻 Advanced Usage
 
+## Custom ChatHook
 
-### Leveraging Custom Hooks
+The Custom ChatHook is an advanced feature of this package that allows you to:
+- Connect to your own backend, bypassing VideoDB's video agent integration.
+- Develop custom logic for agent interactions.
+- Control conversation state and manage side effects.
 
-Custom hooks offer a versatile approach to enhancing chat functionality:
+To use a Custom Hook, pass a function to the `customChatHook` prop. This function should return an object with the following properties:
 
-- Connect to your own backend, bypassing VideoDB's video agent integration
-- Develop custom logic for agent interactions
-- Control conversation state and manage side effects
-- Seamlessly integrate with your existing application architecture
+- `conversations`: Object (reactive object)  
+  Checkout [conversations](#conversations) section for more details.
 
-This flexibility enables you to customize the chat experience to meet your specific requirements while ensuring compatibility with the ChatInterface component.
+- `addMessage`: Function   
+  Adds a message to the conversation. This function is called when the user clicks the `Send` button or any search suggestion. 
+
+- `chatLoading`: Boolean (reactive value)  
+  Indicates whether the chat is loading.
 
 [View Custom Hook Example on StackBlitz](https://stackblitz.com/edit/vitejs-vite-knrrbv?file=src%2FApp.vue)
 
 ### Implementing Custom Message Handlers
 
-Custom message handlers allow you to process various message types from different agents:
+Custom message handlers allow you to register custom UI components for various message types. This is particularly useful when adding new agents that require UI elements beyond simple text input/output in the chat, such as video, image, audio, etc.
 
-- Render custom UI components for specific agent types
-- Fine-grained control over message processing
-- Extensibility to support new agent types or response formats
-- Improved user experience through tailored message rendering
+The `ChatInterface` component exposes a method `registerMessageHandler` that can be accessed via `ref` to register custom message handlers. This function accepts two arguments:
+- `agentName`: String - The name of the agent for which the message handler is registered. The handler will be used for messages whose `agent_type` matches `agentName`.
+- `handler`: Component - The UI Component to be rendered for the message type.
+
+The handler component will receive the following props:
+- `message`: Object - The message object.
+- `searchTerm`: String - The search term.
 
 [View Custom Message Handler Example on StackBlitz](https://stackblitz.com/edit/vitejs-vite-qnka6j?file=src%2FApp.vue)
 
@@ -112,14 +120,18 @@ Custom message handlers allow you to process various message types from differen
 
 The ChatInterface component accepts the following props:
 
-- `userImage`: String or Component (default: ChatUser Component)
-  Specifies the image or component to represent user messages in the chat.
 
-- `assistantImage`: String or Component (default: AssistantIcon Component)
-  Defines the image or component for assistant messages.
+- `customChatHook`: Function (default: videoDBChatHook)
+  Allows for a custom hook to handle chat functionality.
 
-- `emptyContainerLogo`: String or Component (default: SpextLogoBlue Component)
-  Sets the logo displayed when the chat is empty.
+- `chatHookConfig`: Object
+Configures the chat hook. For the default chat hook, it includes:
+
+  - `url`: String (default: `http://127.0.0.1:8000/chat`) - URL for the chat backend socket.
+  - `sessionId`: String (default: generated UUID) - Unique identifier for the chat session.
+  - `collectionId`: String (default: null) - ID of the collection.
+  - `videoId`: String (default: null) - ID of the video.
+  - `debug`: Boolean (default: false) - Enables debug mode.
 
 - `chatInputPlaceholder`: String (default: "Ask a question")
 Customizes the placeholder text for the chat input field.
@@ -130,47 +142,55 @@ Customizes the placeholder text for the chat input field.
 - `shareUrl`: String (default: "")
   Specifies the URL for sharing the chat.
 
-- `customChatHook`: Function (default: videoDBChatHook)
-  Allows for a custom hook to handle chat functionality.
-
-- `chatHookConfig`: Object
-Configures the chat hook. For the default videoDBChatHook, it includes:
-
-  - `url`: String (default: `http://127.0.0.1:5000/chat`) - URL for the chat backend socket.
-  - `sessionId`: String (default: generated UUID) - Unique identifier for the chat session.
-  - `collectionId`: String (default: null) - ID of the collection.
-  - `videoId`: String (default: null) - ID of the video.
-  - `debug`: Boolean (default: false) - Enables debug mode.
-
 - `size`: String (default: `full`)
   Determines the size of the chat interface. Options are `full` or `embedded`.
   Full takes up the entire width of the screen.
   Embedded takes up space of the parent container.
 
+- `userImage`: String(url or path) or Component (default: Placeholder User Icon)
+  Specifies the image or component to represent user messages in the chat.
+
+- `assistantImage`: String or Component (default: Placeholder Assistant Icon)
+  Defines the image or component for assistant messages.
+
+- `emptyContainerLogo`: String or Component (default: Placeholder Logo)
+  Sets the logo displayed when the chat is empty.
+
 ### Exposed Variables
 
-- `conversations`: Object
-  Contains the conversation data.
 
-- `addMessage`: Function
-  Adds a message to the conversation.
+#### State Variables
+- `conversations`: Object   
+  Checkout [conversations](#conversations) section for more details.
+
+#### Methods
+- `addMessage(message)`: Function
+  Adds a message to the conversation. 
+
+  **Arguments:**
+  - `message`: Object
+    - `content`: String - Text content of the message. (required)
 
 
-### Conversation
+## Conversations
 
-Conversation is a collection of messages between user and agent of a session. Each conversation contains a list of messages objects 
+Collection of conversations. Each conversation is stored as a key-value pair, where:
+  - The key represents the sessionId, which is the unique identifier for the conversation.
+  - The value is the [conversation object](#conversation)
 
-- `conversationId` : ID of the conversation.
-  - `msgId` : ID of the message.
-    - `agent_type` : Type of the agent that generated the message.
-    - `content` : Text content of the message. (input/output)
-    - `conv_id` : ID of the collection.
-    - `data` : JSON data associated with the agent message.
-    - `msg_id` : ID of the message.
-    - `msg_type` : Type of the message. (input/output)
-    - `session_id` : Unique identifier for the chat session.
-    - `sender` : Sender of the message. (assistant/user)
-    - `status` : Status of the message. (progress/success/error)
+## Conversation
+
+Conversation is a collection of messages exchanged between a user and an agent within a session. Each message is stored as a key-value pair, where:
+- The key represents the msgId, which is the unique identifier for the message.
+- The value is the message object, which contains the following fields:
+
+**Message Object Fields**:
+- `agent_type`: The type of agent that generated the message (e.g., bot, human, system).
+- `content`: The text content of the message, which can be either input (from the user) or output (from the agent).
+- `data`: Any JSON data associated with the message, containing additional context or metadata related to the agent's response.
+- `sender`: Specifies the sender of the message, which could be either the assistant or the user.
+- `status`: The status of the message, indicating its current state (e.g., progress, success, error).
+
 
 [npm-shield]: https://img.shields.io/npm/v/@videodb/chat-vue?style=for-the-badge
 [npm-url]: https://www.npmjs.com/package/@videodb/chat-vue

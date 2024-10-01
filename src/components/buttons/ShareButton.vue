@@ -12,8 +12,8 @@
     <div
       class="vdb-c-absolute vdb-c--bottom-full vdb-c-left-1/2 vdb-c-transform vdb-c-translate-y-6 vdb-c-rounded-8 vdb-c-text-white vdb-c-px-10 vdb-c-py-8 vdb-c-whitespace-nowrap"
       :class="{
-        'vdb-c-bg-kilvish-800 vdb-c-hidden group-hover:vdb-c-block --translate-x-1/2': !isCopied,
-        'vdb-c-bg-green --translate-x-2/3': isCopied,
+        'vdb-c-bg-kilvish-800 vdb-c-hidden group-hover:vdb-c-block vdb-c--translate-x-1/2': !isCopied,
+        'vdb-c-bg-green vdb-c--translate-x-2/3': isCopied,
       }"
     >
       {{ isCopied ? 'Link Copied' : 'Share' }}

@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
   <div
-    class="vdb-c-relative vdb-c-w-full vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-12 md:vdb-c-p-24"
+    class="vdb-c-text-left vdb-c-relative vdb-c-w-full vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-12 md:vdb-c-p-24"
     :class="{
       'vdb-c-border vdb-c-border-primary': isErrored,
       'vdb-c-py-16': !isUser,
