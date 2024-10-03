@@ -29,7 +29,7 @@
               <template v-if="Object.keys(conversations).length === 0">
                 <onboarding-screen
                   v-if="currentCollectionId && !currentVideoId"
-                  user-name="Aaditay"
+                  user-name="Sam"
                   @query-card-click="handleQueryCardClick"
                   @agent-card-click="handleAgentCardClick"
                 />
