@@ -3,115 +3,67 @@
     :class="{
       'vdb-c-fixed': size === 'full',
     }"
-    class="vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64 vdb-c-text-textdark md:vdb-c-p-20 md:vdb-c-pl-40"
+    class="vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64"
   >
-    <div
-      class="vdb-c-z-10 vdb-c-flex vdb-c-h-auto vdb-c-w-full vdb-c-justify-between vdb-c-bg-kilvish-300 vdb-c-px-10 vdb-c-py-6 md:vdb-c-hidden md:vdb-c-bg-transparent md:vdb-c-px-0 md:vdb-c-py-0"
-    >
-      <button
-        class="vdb-c-flex vdb-c-items-center vdb-c-rounded-24 vdb-c-bg-white vdb-c-p-8 vdb-c-pr-12 focus:vdb-c-bg-kilvish-100 md:vdb-c-hidden"
-        @click="$emit('backBtnClick')"
-      >
-        <chat-chevron-left class-name="vdb-c-w-16 vdb-c-h-16 vdb-c-mr-8" />
-        <span class="vdb-c-text-xs vdb-c-font-medium">Back</span>
-      </button>
-      <red-share-button
-        v-show="showShareButton"
-        base-class="md:vdb-c-hidden vdb-c-rounded-24 vdb-c-rsb"
-        :text-to-copy="shareUrl"
-        success-message="Copied Link"
-        initial-message="Share Chat"
+    <div class="vdb-c-flex vdb-c-h-full vdb-c-w-full">
+      <!-- Collapsible Sidebar -->
+      <sidebar
+        class="vdb-c-w-1/5"
+        :all-sessions="allSessions"
+        :is-sidebar-open="isSidebarOpen"
+        @toggle="toggleSidebar"
+        @create-new-session="handleCreateNewSession"
       />
-    </div>
-    <div
-      class="vdb-c-relative vdb-c-h-full vdb-c-w-full vdb-c-bg-white vdb-c-p-10 vdb-c-shadow-2 md:vdb-c-w-11/12 md:vdb-c-rounded-20"
-    >
-      <div
-        class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden vdb-c-rounded-t-20 vdb-c-bg-superman-200"
-      >
-        <section
-          ref="chatWindow"
-          class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
+
+      <!-- Main Content -->
+      <div class="vdb-c-flex vdb-c-flex-1 vdb-c-flex-col">
+        <div
+          class="vdb-c-relative vdb-c-flex-1 vdb-c-bg-white vdb-c-p-10 vdb-c-shadow-2 md:vdb-c-w-full"
         >
-          <!-- Empty Container -->
-          <template v-if="Object.keys(conversations).length === 0">
-            <collection-view
-              v-if="currentCollectionId && !currentVideoId"
-              :collection-id="currentCollectionId"
-              @video-click="handleVideoClick"
-            />
-            <video-view
-              v-else-if="currentCollectionId && currentVideoId"
-              :collection-id="currentCollectionId"
-              :video-id="currentVideoId"
-            />
-            <div
-              v-else
-              class="vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-transform vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-transition-all vdb-c-duration-500"
+          <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
+            <section
+              ref="chatWindow"
+              class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-overflow-x-auto vdb-c-overflow-y-auto vdb-c-items-center"
             >
-              <div
-                class="vdb-c-mb-30 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-20"
-              >
-                <component
-                  :is="emptyContainerLogo"
-                  v-if="typeof emptyContainerLogo === 'object'"
+              <!-- Empty Container -->
+              <template v-if="Object.keys(conversations).length === 0">
+                <onboarding-screen
+                  v-if="currentCollectionId && !currentVideoId"
+                  user-name="Aaditay"
+                  @query-card-click="handleQueryCardClick"
+                  @agent-card-click="handleAgentCardClick"
                 />
-                <img
-                  :src="emptyContainerLogo"
-                  v-else-if="typeof emptyContainerLogo === 'string'"
-                  alt="Logo"
+                <video-view
+                  v-else-if="currentCollectionId && currentVideoId"
+                  :collection-id="currentCollectionId"
+                  :video-id="currentVideoId"
                 />
-              </div>
-              <div
-                v-if="searchSuggestions.length > 0"
-                class="vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0"
-              >
-                <follow-up-container
-                  :follow-up-prompts="searchSuggestions"
-                  :is-empty="true"
-                  @followUpClicked="handleFollowUp"
-                />
-              </div>
-            </div>
-          </template>
+              </template>
 
-          <!-- Message Container -->
-          <chat-message-container
-            v-else
-            v-for="(key, i) in Object.keys(conversations)"
-            :key="key"
-            :conversation="conversations[key]"
-            :user-image="userImage"
-            :assistant-image="assistantImage"
-            :search-term="chatInput"
-            :is-static-page="isStaticPage"
-            :is-last-conv="i === Object.keys(conversations).length - 1"
-          />
-        </section>
-      </div>
+              <!-- Message Container -->
+              <chat-message-container
+                v-else
+                v-for="(key, i) in Object.keys(conversations)"
+                :key="key"
+                :conversation="conversations[key]"
+                :user-image="userImage"
+                :assistant-image="assistantImage"
+                :search-term="chatInput"
+                :is-static-page="isStaticPage"
+                :is-last-conv="i === Object.keys(conversations).length - 1"
+              />
+            </section>
+          </div>
 
-      <!-- chat input -->
-      <div
-        class="vdb-c-chat-input-container vdb-c-relative vdb-c-rounded-b-20 vdb-c-border vdb-c-border-kilvish-300 vdb-c-bg-white vdb-c-shadow-minimal-up"
-      >
-        <chat-input
-          :input-disabled="chatLoading"
-          :placeholder="chatInputPlaceholder"
-          @onSubmit="handleAddMessage"
-        />
-      </div>
-
-      <!-- Share & Back buttons -->
-      <div
-        class="vdb-c-absolute vdb-c--right-46 vdb-c-top-20 vdb-c-hidden vdb-c-w-56 vdb-c-flex-col vdb-c-gap-18 vdb-c-rounded-r-16 vdb-c-bg-white vdb-c-px-8 vdb-c-py-20 md:vdb-c-flex"
-      >
-        <button
-          class="vdb-c-flex vdb-c-h-40 vdb-c-w-40 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-white hover:vdb-c-bg-kilvish-400"
-          @click="emit('backBtnClick')"
-        >
-          <chat-chevron-left class-name="vdb-c-w-28 vdb-c-h-28" />
-        </button>
-        <share-button v-show="showShareButton" :value="shareUrl" />
+          <!-- chat input -->
+          <div class="vdb-c-chat-input-container vdb-c-relative">
+            <chat-input
+              :input-disabled="chatLoading"
+              :placeholder="chatInputPlaceholder"
+              @onSubmit="handleAddMessage"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -126,12 +78,11 @@ import { useChatInterface } from "../hooks/useChatInterface";
 
 import ChatInput from "./ChatInput.vue";
 import ChatMessageContainer from "./ChatMessageContainer.vue";
+import Sidebar from "./elements/Sidebar.vue";
+import OnboardingScreen from "./elements/OnboardingScreen.vue";
 import FollowUpContainer from "./elements/FollowUpContainer.vue";
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
-import RedShareButton from "../buttons/RedShareButton.vue";
-import ShareButton from "../buttons/ShareButton.vue";
-import ChatChevronLeft from "../icons/ChatChevronLeft.vue";
 import ChatUser from "../icons/ChatUser.vue";
 import AssistantIcon from "../icons/AssistantIcon.vue";
 import SpextLogoBlue from "../icons/SpextLogoBlue.vue";
@@ -197,6 +148,8 @@ const props = defineProps({
 const currentCollectionId = ref(props.collectionId);
 const currentVideoId = ref(props.videoId);
 const currentSessionId = ref(props.sessionId);
+const isSidebarOpen = ref(false);
+const allSessions = ref([]);
 
 const useChatHook = props.customChatHook || useVideoDBAgent;
 const {
@@ -208,6 +161,7 @@ const {
   setCollectionId,
   setVideoId,
   fetchCollection,
+  fetchAllSessions,
   fetchCollectionVideo,
   fetchCollectionVideos,
 } = useChatHook(props.chatHookConfig);
@@ -244,13 +198,19 @@ watch(chatLoading, (val) => {
   }
 });
 
-watch(() => props.collectionId, (newVal) => {
-  currentCollectionId.value = newVal;
-});
+watch(
+  () => props.collectionId,
+  (newVal) => {
+    currentCollectionId.value = newVal;
+  },
+);
 
-watch(() => props.videoId, (newVal) => {
-  currentVideoId.value = newVal;
-});
+watch(
+  () => props.videoId,
+  (newVal) => {
+    currentVideoId.value = newVal;
+  },
+);
 
 watch(currentCollectionId, (newVal) => {
   setCollectionId(newVal);
@@ -276,6 +236,20 @@ const handleVideoClick = (data) => {
   currentVideoId.value = data.id;
 };
 
+const handleAgentCardClick = (agent) => {
+  console.log(agent);
+};
+
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+const viewMyCollection = () => {
+  const newSessionId = uuidv4();
+  loadSession(newSessionId);
+  currentVideoId.value = null;
+};
+
 // #TODO: accept whole object
 const handleAddMessage = (content) => {
   if (!sessionLoaded.value && Object.keys(conversations).length === 0) {
@@ -283,6 +257,17 @@ const handleAddMessage = (content) => {
     sessionLoaded.value = true;
   }
   addMessage({ content });
+};
+
+const handleQueryCardClick = (query) => {
+  setChatInput(query.text);
+};
+
+const handleCreateNewSession = () => {
+  const newSessionId = uuidv4();
+  loadSession(newSessionId);
+  currentSessionId.value = newSessionId;
+  sessionLoaded.value = true;
 };
 
 // #TODO: figure out how can loadSession work in both cases, when just sessionId is provided, and when collectionId and videoId are also provided
@@ -297,6 +282,11 @@ onMounted(() => {
   if (props.videoId) {
     setVideoId(props.videoId);
   }
+  fetchAllSessions().then((response) => {
+    if (response.status === "success") {
+      allSessions.value = response.data;
+    }
+  });
 });
 
 defineExpose({
@@ -308,6 +298,7 @@ defineExpose({
   addMessage: handleAddMessage,
   loadSession,
   setChatInput,
+  fetchAllSessions,
   fetchCollection,
   fetchCollectionVideo,
   fetchCollectionVideos,
@@ -323,6 +314,7 @@ provide("videodb-chat", {
   addMessage: handleAddMessage,
   loadSession,
   setChatInput,
+  fetchAllSessions,
   fetchCollection,
   fetchCollectionVideo,
   fetchCollectionVideos,

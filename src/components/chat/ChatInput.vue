@@ -37,7 +37,7 @@
           />
         </div>
         <input
-          class="vdb-c-chat-input vdb-c-h-full vdb-c-bg-white vdb-c-pl-18 vdb-c-pr-8 vdb-c-font-medium vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
+          class="vdb-c-chat-input vdb-c-h-full vdb-c-bg-white vdb-c-pl-18 vdb-c-pr-8 vdb-c-font-medium vdb-c-text-[#1D2736] vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
           name="prompt"
           :placeholder="placeholder"
           autocomplete="off"
@@ -142,7 +142,7 @@ const handleSubmit = (e) => {
   e.preventDefault();
   emit("onSubmit", chatInput.value);
   e.target.reset();
-  chatInput.value = ""
+  chatInput.value = "";
   charCount.value = 0;
 };
 </script>

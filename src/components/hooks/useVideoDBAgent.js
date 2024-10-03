@@ -44,13 +44,32 @@ export function useVideoDBAgent(config) {
     { deep: true },
   );
 
+  const fetchAllSessions = async () => {
+    const res = {};
+    try {
+      const response = await fetch(`${httpUrl}/session`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      res.status = "success";
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
   // #TODO: figure out how to give user full control over endpoint configuration
   const fetchCollection = async (collectionId) => {
     const res = {};
     try {
-      const response = await fetch(`${httpUrl}/videodb/collection/${collectionId}`);
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}`,
+      );
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const data = await response.json();
       res.status = "success";
@@ -65,9 +84,11 @@ export function useVideoDBAgent(config) {
   const fetchCollectionVideos = async (collectionId) => {
     const res = {};
     try {
-      const response = await fetch(`${httpUrl}/videodb/collection/${collectionId}/video`);
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}/video`,
+      );
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const data = await response.json();
       res.status = "success";
@@ -82,9 +103,11 @@ export function useVideoDBAgent(config) {
   const fetchCollectionVideo = async (collectionId, videoId) => {
     const res = {};
     try {
-      const response = await fetch(`${httpUrl}/videodb/collection/${collectionId}/video/${videoId}`);
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}/video/${videoId}`,
+      );
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const data = await response.json();
       res.status = "success";
@@ -95,7 +118,6 @@ export function useVideoDBAgent(config) {
     }
     return res;
   };
-
 
   const addClientLoadingMessage = (convId) => {
     const messages = Object.values(conversations[convId]);
@@ -155,6 +177,8 @@ export function useVideoDBAgent(config) {
 
   socket.on("chat", (event) => {
     if (debug) console.log("debug :videodb-chat socket emmited chat", event);
+    // #TODO: this is a backend bug, session_id is received as null
+    // if (session.sessionId !== event.session_id) return;
     if (session.isConnected) {
       const { conv_id: convId, msg_id: msgId } = event;
       if (!conversations[convId]) {
@@ -185,15 +209,16 @@ export function useVideoDBAgent(config) {
 
   return {
     session,
-    conversations,
     chatLoading,
+    conversations,
+    setVideoId,
     addMessage,
     bindEvents,
     loadSession,
+    setCollectionId,
     fetchCollection,
+    fetchAllSessions,
     fetchCollectionVideos,
     fetchCollectionVideo,
-    setCollectionId,
-    setVideoId,
   };
 }
