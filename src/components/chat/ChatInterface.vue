@@ -23,7 +23,7 @@
           <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
             <section
               ref="chatWindow"
-              class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-overflow-x-auto vdb-c-overflow-y-auto vdb-c-items-center"
+              class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
             >
               <!-- Empty Container -->
               <template v-if="Object.keys(conversations).length === 0">
@@ -253,8 +253,11 @@ const viewMyCollection = () => {
 // #TODO: accept whole object
 const handleAddMessage = (content) => {
   if (!sessionLoaded.value && Object.keys(conversations).length === 0) {
-    loadSession(currentSessionId.value);
+    const _sessionId = currentSessionId.value || uuidv4();
+    loadSession(_sessionId);
+    currentCollectionId.value = _sessionId;
     sessionLoaded.value = true;
+
   }
   addMessage({ content });
 };
