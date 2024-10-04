@@ -10,6 +10,7 @@
       <sidebar
         class="vdb-c-w-1/5"
         :all-sessions="allSessions"
+        :all-collections="allCollections"
         :is-sidebar-open="isSidebarOpen"
         @toggle="toggleSidebar"
         @create-new-session="handleCreateNewSession"
@@ -150,6 +151,7 @@ const currentVideoId = ref(props.videoId);
 const currentSessionId = ref(props.sessionId);
 const isSidebarOpen = ref(false);
 const allSessions = ref([]);
+const allCollections = ref([]);
 
 const useChatHook = props.customChatHook || useVideoDBAgent;
 const {
@@ -161,6 +163,7 @@ const {
   setCollectionId,
   setVideoId,
   fetchCollection,
+  fetchCollections,
   fetchAllSessions,
   fetchCollectionVideo,
   fetchCollectionVideos,
@@ -290,6 +293,11 @@ onMounted(() => {
       allSessions.value = response.data;
     }
   });
+  fetchCollections().then((response) => {
+    if (response.status === "success") {
+      allCollections.value = response.data;
+    }
+  });
 });
 
 defineExpose({
@@ -303,6 +311,7 @@ defineExpose({
   setChatInput,
   fetchAllSessions,
   fetchCollection,
+  fetchCollections,
   fetchCollectionVideo,
   fetchCollectionVideos,
   registerMessageHandler,
@@ -319,6 +328,7 @@ provide("videodb-chat", {
   setChatInput,
   fetchAllSessions,
   fetchCollection,
+  fetchCollections,
   fetchCollectionVideo,
   fetchCollectionVideos,
   registerMessageHandler,

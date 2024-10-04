@@ -70,18 +70,20 @@
             </div>
             <span>Create custom agents</span>
           </button>
-          <button
-            class="vdb-c-rounded-lg vdb-c-border vdb-c-border-[#D9D9D9] vdb-c-px-16 vdb-c-py-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#000000]"
-          >
-            Explore agents
-          </button>
+
+          <Button variant="secondary" @click="$emit('create-new-session')">
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-normal">
+              <span> Explore agents </span>
+              <MenuIcon />
+            </div>
+          </Button>
         </div>
       </div>
       <div
         class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-content-start vdb-c-gap-16 vdb-c-overflow-y-auto lg:vdb-c-grid-cols-2"
       >
         <ButtonCard
-          v-for="(agent, index) in agents"
+          v-for="(agent, index) in agents.slice(0, 2)"
           :key="index"
           class="vdb-c-max-h-[85px] vdb-c-cursor-pointer hover:vdb-c-bg-[#FAFAFA]"
           @click="$emit('agent-card-click', agent)"
@@ -118,6 +120,9 @@ import QuestionMark from "../../icons/QuestionMark.vue";
 import InfoIcon from "../../icons/InfoIcon.vue";
 import ButtonCard from "../../atoms/ButtonCard.vue";
 import AtIcon from "../../icons/AtIcon.vue";
+import MenuIcon from "../../icons/MenuIcon.vue";
+import Button from "../../buttons/Button.vue";
+
 defineProps({
   userName: {
     type: String,
@@ -142,6 +147,11 @@ defineProps({
       {
         name: "thumbnail-agent",
         description: "Extract & create styled thumbnails based on your prompt",
+      },
+      {
+        name: "captions-agent",
+        description:
+          "Generate custom captions with translation and font styling options",
       },
       {
         name: "captions-agent",

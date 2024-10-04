@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <svg
@@ -14,7 +13,7 @@
           id="Icon"
           d="M12.6668 6L8.00016 10.6667L3.3335 6"
           stroke="#20557D"
-          stroke-width="1.5"
+          :stroke-width="strokeWidth"
           stroke-linecap="round"
           stroke-linejoin="round"
         />
@@ -27,10 +26,14 @@ export default {
   props: {
     className: {
       type: String,
-      default: '',
+      default: "",
+    },
+    strokeWidth: {
+      type: Number,
+      default: 1.5,
     },
   },
-}
+};
 </script>
 
 <style scoped>

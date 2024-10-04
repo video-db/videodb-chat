@@ -47,11 +47,63 @@ export function useVideoDBAgent(config) {
   const fetchAllSessions = async () => {
     const res = {};
     try {
-      const response = await fetch(`${httpUrl}/session`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
+      // const response = await fetch(`${httpUrl}/session`);
+      // if (!response.ok) {
+      //   throw new Error("Network response was not ok");
+      // }
+      // const data = await response.json();
+
+      const data = [
+        { id: 1, name: "Session 1" },
+        { id: 2, name: "Session 2" },
+        { id: 3, name: "Session 3" },
+        { id: 4, name: "Session 4" },
+        { id: 5, name: "Session 5" },
+        { id: 6, name: "Session 6" },
+        { id: 7, name: "Session 7" },
+        { id: 8, name: "Session 8" },
+        { id: 9, name: "Session 9" },
+        { id: 10, name: "Session 10" },
+        { id: 11, name: "Session 11" },
+        { id: 12, name: "Session 12" },
+        { id: 13, name: "Session 13" },
+        { id: 14, name: "Session 14" },
+        { id: 15, name: "Session 15" },
+      ];
+      res.status = "success";
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
+  const fetchCollections = async () => {
+    const res = {};
+    try {
+      // const response = await fetch(`${httpUrl}/collection`);
+      // if (!response.ok) {
+      //   throw new Error("Network response was not ok");
+      // }
+      // const data = await response.json();
+      const data = [
+        { id: 1, name: "Collection 1" },
+        { id: 2, name: "Collection 2" },
+        { id: 3, name: "Collection 3" },
+        { id: 4, name: "Collection 4" },
+        { id: 5, name: "Collection 5" },
+        { id: 6, name: "Collection 6" },
+        { id: 7, name: "Collection 7" },
+        { id: 8, name: "Collection 8" },
+        { id: 9, name: "Collection 9" },
+        { id: 10, name: "Collection 10" },
+        { id: 11, name: "Collection 11" },
+        { id: 12, name: "Collection 12" },
+        { id: 13, name: "Collection 13" },
+        { id: 14, name: "Collection 14" },
+        { id: 15, name: "Collection 15" },
+      ];
       res.status = "success";
       res.data = data;
     } catch (error) {
@@ -217,6 +269,7 @@ export function useVideoDBAgent(config) {
     loadSession,
     setCollectionId,
     fetchCollection,
+    fetchCollections,
     fetchAllSessions,
     fetchCollectionVideos,
     fetchCollectionVideo,
