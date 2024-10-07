@@ -43,8 +43,12 @@ const props = defineProps({
 });
 
 const markdownContainer = ref(null);
-const showMarkdown = computed(() => props.message.data.content);
-const text = computed(() => props.message.data.content);
+const showMarkdown = computed(
+  () => props.message.content || props.message.data.content,
+);
+const text = computed(
+  () => props.message.content || props.message.data.content,
+);
 
 const getMarkedMsg = (msg) => {
   return parse(msg);
