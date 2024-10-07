@@ -72,7 +72,9 @@
           </button>
 
           <Button variant="secondary" @click="$emit('create-new-session')">
-            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-normal">
+            <div
+              class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-normal"
+            >
               <span> Explore agents </span>
               <MenuIcon />
             </div>
@@ -132,12 +134,25 @@ defineProps({
   actionCardQueries: {
     type: Array,
     default: () => [
-      { text: "Show me all the videos in my collection", muted: false },
-      { text: "Upload a video to my default collection", muted: false },
-      { text: "Categorise the videos in my collection by size", muted: false },
+      {
+        text: "Show me all the videos in my collection",
+        muted: false,
+        action: "show-collection",
+      },
+      {
+        text: "Upload a video to my default collection",
+        muted: false,
+        action: "chat",
+      },
+      {
+        text: "Categorise the videos in my collection by size",
+        muted: false,
+        action: "chat",
+      },
       {
         text: "I'm not sure. Help me figure out what you can do.",
         muted: true,
+        action: "chat",
       },
     ],
   },

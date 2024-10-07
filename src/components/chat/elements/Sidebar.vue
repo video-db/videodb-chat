@@ -27,7 +27,7 @@
           @click="toggleExploreAgents"
           :class="[
             'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-10 vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#1E1E1E]',
-            { 'vdb-c-bg-[#EFEFEF]': showExploreAgents },
+            { 'vdb-c-bg-blue-100': showExploreAgents },
           ]"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
@@ -39,7 +39,7 @@
               'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
               { 'vdb-c-rotate-180': showExploreAgents },
             ]"
-            stroke-width="1.2"
+            :stroke-width="1.2"
           />
         </button>
         <div
@@ -66,17 +66,23 @@
                 'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
                 { 'vdb-c-rotate-180': showSessions },
               ]"
-              stroke-width="1.5"
+              :stroke-width="1.5"
             />
           </div>
         </button>
         <div v-if="showSessions" class="vdb-c-mt-4 vdb-c-overflow-y-auto">
-          <template v-for="session in allSessions" :key="session.id">
+          <template v-for="session in allSessions" :key="session.session_id">
             <div
-              @click="$emit('session-click', session.id)"
-              class="vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-text-[#1E1E1E] hover:vdb-c-bg-[#EFEFEF]"
+              @click="$emit('session-click', session.session_id)"
+              :class="[
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-text-[#1E1E1E]',
+                {
+                  'vdb-c-bg-blue-100': session.session_id === selectedSession,
+                  'hover:vdb-c-bg-gray-100': session.session_id !== selectedSession
+                }
+              ]"
             >
-              {{ session.id }}
+              {{ session.session_id }}
             </div>
           </template>
         </div>
@@ -100,7 +106,7 @@
                 'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
                 { 'vdb-c-rotate-180': showCollections },
               ]"
-              stroke-width="1.5"
+              :stroke-width="1.5"
             />
           </div>
         </button>
@@ -108,7 +114,13 @@
           <template v-for="collection in allCollections" :key="collection.id">
             <div
               @click="$emit('collection-click', collection.id)"
-              class="vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-text-[#1E1E1E] hover:vdb-c-bg-[#EFEFEF]"
+              :class="[
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-text-[#1E1E1E]',
+                {
+                  'vdb-c-bg-blue-100': collection.id === selectedCollection,
+                  'hover:vdb-c-bg-gray-100': collection.id !== selectedCollection
+                }
+              ]"
             >
               {{ collection.name }}
             </div>
@@ -119,16 +131,26 @@
 
     <div class="vdb-c-mt-auto">
       <a
-        v-for="link in links"
-        :key="link.id"
-        class="vdb-c-mx-8 vdb-c-my-12 vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#1E1E1E]"
+        v-for="(link, index) in links"
+        :key="index"
+        class="vdb-c-mx-8 vdb-c-my-12 vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#1E1E1E] hover:vdb-c-text-[#1E1E1E] hover:vdb-c-no-underline"
+        :href="link.href"
+        :target="link.target || '_blank'"
+        rel="noopener noreferrer"
       >
         {{ link.text }}
-    </a>
+      </a>
       <button
         class="vdb-c-mt-16 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-rounded vdb-c-bg-orange-500 vdb-c-px-16 vdb-c-py-8 vdb-c-text-white"
       >
-        VideoDB Console
+        <a
+          :href="primaryLink.href"
+          :target="primaryLink.target || '_blank'"
+          rel="noopener noreferrer"
+          class="vdb-c-text-white hover:vdb-c-text-white hover:vdb-c-no-underline"
+        >
+          {{ primaryLink.text }}
+        </a>
       </button>
     </div>
   </div>
@@ -171,6 +193,19 @@ defineProps({
     type: Array,
     required: true,
     default: () => [],
+  },
+  primaryLink: {
+    type: Object,
+    required: true,
+    default: () => ({}),
+  },
+  selectedCollection: {
+    type: String,
+    default: '',
+  },
+  selectedSession: {
+    type: String,
+    default: '',
   },
 });
 

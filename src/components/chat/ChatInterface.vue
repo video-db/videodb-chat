@@ -9,35 +9,46 @@
       <!-- Collapsible Sidebar -->
       <sidebar
         class="vdb-c-w-1/5"
+        :selected-session="currentSessionId"
+        :selected-collection="currentCollectionId"
         :all-sessions="allSessions"
         :all-collections="allCollections"
-        :is-sidebar-open="isSidebarOpen"
-        @toggle="toggleSidebar"
-        @create-new-session="handleCreateNewSession"
+        :links="links"
+        :primary-link="primaryLink"
+        @create-new-session="handleNewSessionClick"
+        @session-click="handleSessionClick"
+        @collection-click="handleCollectionClick"
       />
 
       <!-- Main Content -->
       <div class="vdb-c-flex vdb-c-flex-1 vdb-c-flex-col">
         <div
-          class="vdb-c-relative vdb-c-flex-1 vdb-c-bg-white vdb-c-p-10 vdb-c-shadow-2 md:vdb-c-w-full"
+          class="vdb-c-relative vdb-c-flex-1 vdb-c-bg-white vdb-c-shadow-2 md:vdb-c-w-full"
         >
           <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
             <section
               ref="chatWindow"
-              class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
+              class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto vdb-c-px-30 vdb-c-py-10"
             >
-              <!-- Empty Container -->
               <template v-if="Object.keys(conversations).length === 0">
+                <!-- Empty Container -->
+                <video-view
+                  v-if="showVideoView"
+                  :collection-id="currentCollectionId"
+                  :video-id="currentVideoId"
+                />
+
+                <collection-view
+                  v-else-if="showCollectionView"
+                  :collection-id="currentCollectionId"
+                  @video-click="handleVideoClick"
+                />
+
                 <onboarding-screen
-                  v-if="currentCollectionId && !currentVideoId"
+                  v-else
                   user-name="Sam"
                   @query-card-click="handleQueryCardClick"
                   @agent-card-click="handleAgentCardClick"
-                />
-                <video-view
-                  v-else-if="currentCollectionId && currentVideoId"
-                  :collection-id="currentCollectionId"
-                  :video-id="currentVideoId"
                 />
               </template>
 
@@ -47,8 +58,6 @@
                 v-for="(key, i) in Object.keys(conversations)"
                 :key="key"
                 :conversation="conversations[key]"
-                :user-image="userImage"
-                :assistant-image="assistantImage"
                 :search-term="chatInput"
                 :is-static-page="isStaticPage"
                 :is-last-conv="i === Object.keys(conversations).length - 1"
@@ -71,7 +80,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, provide, nextTick, onMounted } from "vue";
+import { ref, reactive, watch, provide, nextTick, onMounted } from "vue";
 import { v4 as uuidv4 } from "uuid";
 
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -81,28 +90,11 @@ import ChatInput from "./ChatInput.vue";
 import ChatMessageContainer from "./ChatMessageContainer.vue";
 import Sidebar from "./elements/Sidebar.vue";
 import OnboardingScreen from "./elements/OnboardingScreen.vue";
-import FollowUpContainer from "./elements/FollowUpContainer.vue";
-import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
-import ChatUser from "../icons/ChatUser.vue";
-import AssistantIcon from "../icons/AssistantIcon.vue";
-import SpextLogoBlue from "../icons/SpextLogoBlue.vue";
 import CollectionView from "./CollectionView.vue";
 import VideoView from "./VideoView.vue";
 
 const props = defineProps({
-  userImage: {
-    type: [String, Object],
-    default: ChatUser,
-  },
-  assistantImage: {
-    type: [String, Object],
-    default: AssistantIcon,
-  },
-  emptyContainerLogo: {
-    type: [String, Object],
-    default: SpextLogoBlue,
-  },
   chatInputPlaceholder: {
     type: String,
     default: "Ask a question",
@@ -110,10 +102,6 @@ const props = defineProps({
   searchSuggestions: {
     type: Array,
     default: () => [],
-  },
-  shareUrl: {
-    type: String,
-    default: "",
   },
   customChatHook: {
     type: Function,
@@ -132,30 +120,35 @@ const props = defineProps({
     default: "full",
     validator: (value) => ["full", "embedded"].includes(value),
   },
-  collectionId: {
-    type: String,
-    default: null,
+  links: {
+    type: Array,
+    default: () => [
+      {
+        href: "https://docs.videodb.io",
+        text: "Documentation",
+      },
+    ],
   },
-  videoId: {
-    type: String,
-    default: null,
-  },
-  sessionId: {
-    type: String,
-    default: null,
+  primaryLink: {
+    type: Object,
+    default: () => ({
+      href: "https://console.videodb.io",
+      text: "VideoDB Console",
+    }),
   },
 });
+const emit = defineEmits(["backBtnClick", "updateConversations"]);
 
-const currentCollectionId = ref(props.collectionId);
-const currentVideoId = ref(props.videoId);
-const currentSessionId = ref(props.sessionId);
-const isSidebarOpen = ref(false);
-const allSessions = ref([]);
-const allCollections = ref([]);
+const allSessions = reactive([]);
+const allCollections = reactive([]);
+const showCollectionView = ref(false);
+const showVideoView = ref(false);
 
 const useChatHook = props.customChatHook || useVideoDBAgent;
 const {
-  session,
+  sessionId: currentSessionId,
+  collectionId: currentCollectionId,
+  videoId: currentVideoId,
   addMessage,
   conversations,
   chatLoading,
@@ -164,7 +157,8 @@ const {
   setVideoId,
   fetchCollection,
   fetchCollections,
-  fetchAllSessions,
+  fetchSession,
+  fetchSessions,
   fetchCollectionVideo,
   fetchCollectionVideos,
 } = useChatHook(props.chatHookConfig);
@@ -173,15 +167,11 @@ const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
   useChatInterface();
 
 if (!props.customChatHook) {
-  registerMessageHandler("search", ChatSearchResults);
-  registerMessageHandler("search", ChatVideo);
-  registerMessageHandler("subtitle", ChatVideo);
-  registerMessageHandler("editing", ChatVideo);
+  registerMessageHandler("video", ChatVideo);
 }
 
 const isStaticPage = ref(false);
 const chatWindow = ref(null);
-const sessionLoaded = ref(false);
 
 const scrollToBottom = () => {
   const element = chatWindow.value;
@@ -191,117 +181,86 @@ const scrollToBottom = () => {
   });
 };
 
-watch(conversations, (val) => {
-  emit("updateConversations", val);
-});
-
 watch(chatLoading, (val) => {
   if (val) {
     scrollToBottom();
   }
 });
 
-watch(
-  () => props.collectionId,
-  (newVal) => {
-    currentCollectionId.value = newVal;
-  },
-);
+// --- Sidebar Click Handlers ---
+const handleNewSessionClick = () => {
+  showCollectionView.value = false;
+  showVideoView.value = false;
+  // #TODO: Add a new entry in allSessionObject
+  handleLoadSession();
+};
 
-watch(
-  () => props.videoId,
-  (newVal) => {
-    currentVideoId.value = newVal;
-  },
-);
+const handleSessionClick = (sessionId) => {
+  showCollectionView.value = false;
+  showVideoView.value = false;
+  handleLoadSession(sessionId);
+};
 
-watch(currentCollectionId, (newVal) => {
-  setCollectionId(newVal);
-});
+const handleCollectionClick = (collectionId) => {
+  setCollectionId(collectionId);
+  showCollectionView.value = false;
+  showVideoView.value = false;
+  // #TODO: Add a new entry in allSessionObject
+  handleLoadSession();
+};
 
-watch(currentVideoId, (newVal) => {
-  setVideoId(newVal);
-});
-
-const showShareButton = computed(
-  () => Object.keys(conversations).length && props.shareUrl,
-);
-
-const emit = defineEmits(["backBtnClick", "updateConversations"]);
-
-const handleFollowUp = (val) => {
-  if (val.text) {
-    handleAddMessage(val.text);
+// --- Onboarding Screen Click Handlers ---
+const handleQueryCardClick = (query) => {
+  if (query.action === "show-collection") {
+    showCollectionView.value = true;
+  } else if (query.action === "chat") {
+    setChatInput(query.text);
   }
 };
 
-const handleVideoClick = (data) => {
-  currentVideoId.value = data.id;
-};
-
 const handleAgentCardClick = (agent) => {
-  console.log(agent);
+  // setChatInput(agent.text);
 };
 
-const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value;
+// --- CollectionView/VideoView Click Handlers ---
+const handleVideoClick = (video) => {
+  setVideoId(video.id);
+  showVideoView.value = true;
 };
 
-const viewMyCollection = () => {
-  const newSessionId = uuidv4();
-  loadSession(newSessionId);
-  currentVideoId.value = null;
+const handleLoadSession = (sessionId) => {
+  let fetchPastMessages = true;
+  if (!sessionId) {
+    sessionId = uuidv4();
+    fetchPastMessages = false;
+  }
+  loadSession(sessionId, fetchPastMessages);
+  return sessionId;
 };
 
-// #TODO: accept whole object
 const handleAddMessage = (content) => {
-  if (!sessionLoaded.value && Object.keys(conversations).length === 0) {
-    const _sessionId = currentSessionId.value || uuidv4();
-    loadSession(_sessionId);
-    currentCollectionId.value = _sessionId;
-    sessionLoaded.value = true;
-
+  if (!currentSessionId.value) {
+    loadSession(uuidv4());
   }
   addMessage({ content });
 };
 
-const handleQueryCardClick = (query) => {
-  setChatInput(query.text);
-};
-
-const handleCreateNewSession = () => {
-  const newSessionId = uuidv4();
-  loadSession(newSessionId);
-  currentSessionId.value = newSessionId;
-  sessionLoaded.value = true;
-};
-
-// #TODO: figure out how can loadSession work in both cases, when just sessionId is provided, and when collectionId and videoId are also provided
+// --- Mounted Hook ---
 onMounted(() => {
-  if (props.sessionId) {
-    loadSession(props.sessionId);
-    sessionLoaded.value = true;
-  }
-  if (props.collectionId) {
-    setCollectionId(props.collectionId);
-  }
-  if (props.videoId) {
-    setVideoId(props.videoId);
-  }
-  fetchAllSessions().then((response) => {
+  setCollectionId("default");
+  fetchSessions().then((response) => {
     if (response.status === "success") {
-      allSessions.value = response.data;
+      allSessions.push(...response.data);
     }
   });
   fetchCollections().then((response) => {
     if (response.status === "success") {
-      allCollections.value = response.data;
+      allCollections.push(...response.data);
     }
   });
 });
 
 defineExpose({
-  session,
   chatInput,
   chatLoading,
   conversations,
@@ -309,7 +268,8 @@ defineExpose({
   addMessage: handleAddMessage,
   loadSession,
   setChatInput,
-  fetchAllSessions,
+  fetchSession,
+  fetchSessions,
   fetchCollection,
   fetchCollections,
   fetchCollectionVideo,
@@ -318,7 +278,6 @@ defineExpose({
 });
 
 provide("videodb-chat", {
-  session,
   chatInput,
   chatLoading,
   conversations,
@@ -326,7 +285,8 @@ provide("videodb-chat", {
   addMessage: handleAddMessage,
   loadSession,
   setChatInput,
-  fetchAllSessions,
+  fetchSession,
+  fetchSessions,
   fetchCollection,
   fetchCollections,
   fetchCollectionVideo,

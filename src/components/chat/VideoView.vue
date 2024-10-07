@@ -1,5 +1,5 @@
 <template>
-  <div class="vdb-c-relative">
+  <div class="vdb-c-relative vdb-c-w-full">
     <div
       class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-black"
       v-if="videoData"
