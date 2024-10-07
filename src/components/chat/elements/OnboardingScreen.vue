@@ -11,7 +11,7 @@
           -webkit-text-fill-color: transparent;
         "
       >
-        Hi {{ userName }}
+        Hello{{ userName }}
       </h1>
       <h2 class="vdb-c-text-4xl vdb-c-font-semibold vdb-c-text-[#1E1E1E]">
         How can Spielberg help you today?

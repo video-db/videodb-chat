@@ -1,8 +1,6 @@
 <template>
   <div class="vdb-c-relative vdb-c-rounded-20 vdb-c-bg-white">
-    <div
-      class="vdb-c-flex vdb-c-items-center vdb-c-gap-8"
-    >
+    <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
       <!-- <LoadingMessage status= message="Creating a highlight reel" /> -->
     </div>
     <div
@@ -46,6 +44,7 @@
         </VideoDBPlayer>
       </div>
     </div>
+    <div v-else-if="message.status === 'progress'"></div>
     <div
       v-else-if="message.status === 'not_generated'"
       class="vdb-c-flex vdb-c-flex-col"
