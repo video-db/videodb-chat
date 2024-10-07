@@ -14,25 +14,20 @@
         <init-loading />
       </div>
 
-      <!-- <template v-if="hasMessageHandler">
-        <div
-          class="vdb-c-pb-10 md:vdb-c-p-10"
-          v-for="(handler, index) in messageHandlers[message.agent_name]"
-          :key="index"
-        >
-          <component
-            :is="handler"
-            :message="message"
-            :search-term="searchTerm"
-          />
-        </div>
-      </template> -->
-
       <div
-        v-if="showText"
+        v-if="isUser"
         class="vdb-c-w-full vdb-c-transform vdb-c-transition-all"
       >
-        <text-response :message="message" :is-user="isUser" />
+        <text-response :message="message" :is-user="true" />
+      </div>
+
+      <div v-else-if="hasMessageHandler">
+        <component
+          :is="messageHandlers[message.content_type]"
+          :message="message"
+          :is-user="isUser"
+          :search-term="searchTerm"
+        />
       </div>
     </div>
   </div>
@@ -42,6 +37,7 @@
 import { ref, computed, watch } from "vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 import InitLoading from "../message-handlers/InitLoading.vue";
+
 
 import { useVideoDBChat } from "../../context.js";
 
@@ -76,7 +72,7 @@ const props = defineProps({
   },
 });
 
-// const { messageHandlers, searchTerm } = useVideoDBChat();
+const { messageHandlers } = useVideoDBChat();
 
 const textBool = ref(false);
 
@@ -104,9 +100,9 @@ const showText = computed(() =>
 // const hasRelMoments = computed(() =>
 //   props.messageList.some((val) => !!val.search_result),
 // );
-// const hasMessageHandler = computed(() =>
-//   Object.keys(messageHandlers).includes(props.message.agent_name),
-// );
+const hasMessageHandler = computed(() =>
+  Object.keys(messageHandlers).includes(props.message.content_type),
+);
 
 // const getImageComponent = computed(() =>
 //   typeof (isUser.value ? props.userImage : props.assistantImage) === "object"
@@ -149,8 +145,8 @@ const showText = computed(() =>
 
 @media (min-width: 768px) {
   .message-width {
-    width: calc(100% - 96px);
-    max-width: calc(100% - 96px);
+    width: 98%;
+    max-width: 98%;
   }
 }
 </style>

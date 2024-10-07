@@ -1,16 +1,12 @@
 <template>
-  <div
-    class="vdb-c-relative vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-12 vdb-c-py-16 md:vdb-c-p-24"
-  >
+  <div class="vdb-c-relative vdb-c-rounded-20 vdb-c-bg-white">
     <div
-      v-if="message.status === 'progress'"
       class="vdb-c-flex vdb-c-items-center vdb-c-gap-8"
     >
-      <chat-loader class-name="vdb-c-rotating" />
-      <ellipses-loading>Creating a highlight reel</ellipses-loading>
+      <!-- <LoadingMessage status= message="Creating a highlight reel" /> -->
     </div>
     <div
-      v-else-if="message.status === 'success' && message.data.stream_url"
+      v-if="message.status === 'success' && message.data.stream_url"
       class="vdb-c-w-full"
     >
       <div
@@ -20,14 +16,32 @@
         <span>{{ headingText }}</span>
       </div>
       <div
-        class="vdb-c-w-full vdb-c-max-w-512 vdb-c-overflow-hidden vdb-c-rounded-20"
+        class="vdb-c-full xl:vdb-c-1/2 vdb-c-overflow-hidden vdb-c-rounded-20 sm:vdb-c-w-3/4 lg:vdb-c-w-3/5 xl:vdb-c-w-1/2 2xl:vdb-c-w-1/3"
       >
         <VideoDBPlayer
           :stream-url="message.data.stream_url"
           :default-controls="false"
         >
           <template #controls>
-            <TimeCode />
+            <div class="vdb-p-pt-0 vdb-c-p-20">
+              <div class="sm:vdb-p-mx-8 vdb-c-mb-12">
+                <ProgressBar :stream-url="streamUrl" />
+              </div>
+              <div class="vdb-c-flex vdb-c-w-full vdb-c-justify-between">
+                <div
+                  class="vdb-c-z-10 vdb-c-ml-0 vdb-c-flex vdb-c-items-center"
+                >
+                  <PlayPauseButton />
+                  <TimeCode />
+                </div>
+
+                <div
+                  class="vdb-c-flex vdb-c-w-auto vdb-c-flex-row vdb-c-items-center"
+                >
+                  <FullScreenButton />
+                </div>
+              </div>
+            </div>
           </template>
         </VideoDBPlayer>
       </div>
@@ -61,11 +75,21 @@
 
 <script setup>
 import { computed } from "vue";
-import { VideoDBPlayer, TimeCode } from "@videodb/player-vue";
+import {
+  VideoDBPlayer,
+  TimeCode,
+  PlayPauseButton,
+  VolumeControlButton,
+  CaptionButton,
+  SpeedControlButton,
+  FullScreenButton,
+  ProgressBar,
+} from "@videodb/player-vue";
 import EllipsesLoading from "../atoms/EllipsesLoading.vue";
 import ChatLoader from "../icons/ChatLoader.vue";
 import RedExclamation from "../icons/RedExclamation.vue";
 import BlueCheck from "../icons/BlueCheck.vue";
+// import LoadingMessage from "../message-handlers/elements/LoadingMessage.vue";
 
 const props = defineProps({
   message: {

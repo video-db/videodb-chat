@@ -1,14 +1,18 @@
 <template>
   <div class="collection-view">
-    <AllVideos v-if="collectionVideos !== null" :video-results="videos" @video-click="handleVideoClick" />
-    <AllVideosLoader v-else />
+    <VideoList
+      v-if="collectionVideos !== null"
+      :video-results="videos"
+      @video-click="handleVideoClick"
+    />
+    <VideoListLoader v-else />
   </div>
 </template>
 
 <script setup>
 import { useVideoDBChat } from "../../context";
-import AllVideos from "../collection/AllVideos.vue";
-import AllVideosLoader from "../collection/AllVideosLoader.vue";
+import VideoList from "../collection/VideoList.vue";
+import VideoListLoader from "../collection/VideoListLoader.vue";
 import { ref, watch, computed } from "vue";
 
 const { fetchCollection, fetchCollectionVideos } = useVideoDBChat();
@@ -20,7 +24,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['video-click']);
+const emit = defineEmits(["video-click"]);
 
 const collectionData = ref(null);
 const collectionVideos = ref(null);
@@ -33,7 +37,7 @@ const videos = computed(() => {
 });
 
 const handleVideoClick = (video) => {
-  emit('video-click', video);
+  emit("video-click", video);
 };
 
 watch(

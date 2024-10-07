@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="vdb-c-relative vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-12 md:vdb-c-p-24"
-  >
+  <div class="vdb-c-relative vdb-c-rounded-20 vdb-c-bg-white">
     <div v-if="message.status === 'progress'" class="vdb-c-py-10">
       <bouncing-ellipses />
     </div>

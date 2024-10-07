@@ -8,7 +8,7 @@
     <div class="vdb-c-flex vdb-c-h-full vdb-c-w-full">
       <!-- Collapsible Sidebar -->
       <sidebar
-        class="vdb-c-w-1/5"
+        class="vdb-c-w-1/5 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
         :selected-session="currentSessionId"
         :selected-collection="currentCollectionId"
         :all-sessions="allSessions"
@@ -23,12 +23,12 @@
       <!-- Main Content -->
       <div class="vdb-c-flex vdb-c-flex-1 vdb-c-flex-col">
         <div
-          class="vdb-c-relative vdb-c-flex-1 vdb-c-bg-white vdb-c-shadow-2 md:vdb-c-w-full"
+          class="vdb-c-relative vdb-c-flex-1 vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
         >
           <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
             <section
               ref="chatWindow"
-              class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto vdb-c-px-30 vdb-c-py-10"
+              class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
             >
               <template v-if="Object.keys(conversations).length === 0">
                 <!-- Empty Container -->
@@ -36,19 +36,22 @@
                   v-if="showVideoView"
                   :collection-id="currentCollectionId"
                   :video-id="currentVideoId"
+                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                 />
 
                 <collection-view
                   v-else-if="showCollectionView"
                   :collection-id="currentCollectionId"
                   @video-click="handleVideoClick"
+                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                 />
 
                 <onboarding-screen
                   v-else
-                  user-name="Sam"
+                  :user-name="userName"
                   @query-card-click="handleQueryCardClick"
                   @agent-card-click="handleAgentCardClick"
+                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                 />
               </template>
 
@@ -61,12 +64,15 @@
                 :search-term="chatInput"
                 :is-static-page="isStaticPage"
                 :is-last-conv="i === Object.keys(conversations).length - 1"
+                class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
               />
             </section>
           </div>
 
           <!-- chat input -->
-          <div class="vdb-c-chat-input-container vdb-c-relative">
+          <div
+            class="vdb-c-chat-input-container vdb-c-relative vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+          >
             <chat-input
               :input-disabled="chatLoading"
               :placeholder="chatInputPlaceholder"
@@ -86,18 +92,21 @@ import { v4 as uuidv4 } from "uuid";
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
 import { useChatInterface } from "../hooks/useChatInterface";
 
-import ChatInput from "./ChatInput.vue";
-import ChatMessageContainer from "./ChatMessageContainer.vue";
-import Sidebar from "./elements/Sidebar.vue";
-import OnboardingScreen from "./elements/OnboardingScreen.vue";
-import ChatVideo from "../message-handlers/ChatVideo.vue";
 import CollectionView from "./CollectionView.vue";
 import VideoView from "./VideoView.vue";
+import Sidebar from "./elements/Sidebar.vue";
+import OnboardingScreen from "./elements/OnboardingScreen.vue";
+import ChatMessageContainer from "./ChatMessageContainer.vue";
+import ChatInput from "./ChatInput.vue";
+
+import ChatVideo from "../message-handlers/ChatVideo.vue";
+import TextResponse from "../message-handlers/TextResponse.vue";
+import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
     type: String,
-    default: "Ask a question",
+    default: "Ask Spielberg",
   },
   searchSuggestions: {
     type: Array,
@@ -136,6 +145,10 @@ const props = defineProps({
       text: "VideoDB Console",
     }),
   },
+  userName: {
+    type: String,
+    default: "",
+  },
 });
 const emit = defineEmits(["backBtnClick", "updateConversations"]);
 
@@ -166,9 +179,9 @@ const {
 const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
   useChatInterface();
 
-if (!props.customChatHook) {
-  registerMessageHandler("video", ChatVideo);
-}
+registerMessageHandler("video", ChatVideo);
+registerMessageHandler("text", TextResponse);
+registerMessageHandler("search_results", ChatSearchResults);
 
 const isStaticPage = ref(false);
 const chatWindow = ref(null);

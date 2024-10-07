@@ -19,31 +19,33 @@
     </div>
 
     <!-- Action Cards -->
-    <div class="vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center">
+    <div
+      class="vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
+    >
       <div
-        class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-16 sm:vdb-c-grid-cols-4 2xl:vdb-c-grid-cols-5"
+        class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-16 md:vdb-c-grid-cols-4 2xl:vdb-c-grid-cols-5"
       >
         <div
           v-for="(query, index) in actionCardQueries"
           :key="index"
           :class="[
-            'vdb-c-w-160 vdb-c-flex vdb-c-h-240 vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-px-16 vdb-c-py-20',
+            'vdb-c-w-160 vdb-c-flex vdb-c-h-120 md:vdb-c-h-240 vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out',
             query.muted
-              ? 'vdb-c-border vdb-c-border-[#EFEFEF] vdb-c-bg-[#F7F7F7]'
-              : 'vdb-c-bg-[#FFF5EC]',
+              ? 'hover:vdb-c-shadow-md vdb-c-border vdb-c-border-[#EFEFEF] vdb-c-bg-[#F7F7F7] hover:vdb-c-bg-[#E5E5E5]'
+              : 'hover:vdb-c-shadow-md vdb-c-bg-[#FFF5EC] hover:vdb-c-bg-[#FFE9D3]',
           ]"
           @click="$emit('query-card-click', query)"
         >
           <div
             :class="[
-              'vdb-c-flex vdb-c-h-48 vdb-c-w-48 vdb-c-items-center vdb-c-justify-center vdb-c-self-start vdb-c-rounded-full',
+              'vdb-c-hidden md:vdb-c-flex vdb-c-h-48 vdb-c-w-48 vdb-c-items-center vdb-c-justify-center vdb-c-self-start vdb-c-rounded-full vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out',
               query.muted ? 'vdb-c-bg-[#EFEFEF]' : 'vdb-c-bg-[#FFE9D3]',
             ]"
           >
             <QuestionMark :fill="query.muted ? '#2D2D2D' : '#C14103'" />
           </div>
           <p
-            class="vdb-c-flex-grow vdb-c-text-left vdb-c-font-semibold vdb-c-text-[#1D2736]"
+            class="vdb-c-flex-grow vdb-c-text-left vdb-c-font-semibold vdb-c-text-[#1D2736] lg:vdb-c-text-base vdb-c-text-sm"
           >
             {{ query.text }}
           </p>
@@ -53,13 +55,13 @@
 
     <!-- Try asking an agent -->
     <div
-      class="vdb-c-mt-14 vdb-c-flex vdb-c-min-h-0 vdb-c-flex-grow vdb-c-flex-col vdb-c-gap-16"
+      class="vdb-c-flex vdb-c-min-h-0 vdb-c-flex-grow vdb-c-flex-col vdb-c-gap-16"
     >
       <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
         <h3 class="vdb-c-text-2xl vdb-c-font-semibold vdb-c-text-[#1E1E1E]">
           Try asking an agent
         </h3>
-        <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
+        <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
           <button
             class="vdb-c-flex vdb-c-flex-row vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#464646]"
           >
@@ -73,7 +75,7 @@
 
           <Button variant="secondary" @click="$emit('create-new-session')">
             <div
-              class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-normal"
+              class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-font-normal"
             >
               <span> Explore agents </span>
               <MenuIcon />
@@ -84,34 +86,38 @@
       <div
         class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-content-start vdb-c-gap-16 vdb-c-overflow-y-auto lg:vdb-c-grid-cols-2"
       >
-        <ButtonCard
+        <div
           v-for="(agent, index) in agents.slice(0, 2)"
           :key="index"
-          class="vdb-c-max-h-[85px] vdb-c-cursor-pointer hover:vdb-c-bg-[#FAFAFA]"
+          class="vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-[#EFEFEF] hover:vdb-c-bg-[#FAFAFA]"
           @click="$emit('agent-card-click', agent)"
         >
-          <template #icon>
-            <slot name="icon">
-              <div
-                class="vdb-c-flex vdb-c-h-34 vdb-c-w-34 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-[#FFE9D3]"
-              >
-                <AtIcon />
-              </div>
-            </slot>
-          </template>
-          <template #name
-            ><span
-              class="vdb-c-text-base vdb-c-font-bold vdb-c-text-[#1D2736] sm:vdb-c-text-lg"
-              >{{ agent.name }}</span
-            ></template
+          <div
+            class="flex items-center justify-center vdb-c-rounded-full vdb-c-px-20 vdb-c-py-24"
           >
-          <template #description>
-            <span
-              class="vdb-c-text-xs vdb-c-font-normal vdb-c-text-[#1E1E1E] sm:vdb-c-text-sm"
-              >{{ agent.description }}</span
+            <div
+              class="vdb-c-flex vdb-c-h-34 vdb-c-w-34 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-[#FFE9D3]"
             >
-          </template>
-        </ButtonCard>
+              <AtIcon />
+            </div>
+          </div>
+          <div
+            class="vdb-c-flex vdb-c-flex-col vdb-c-gap-4 vdb-c-border-l vdb-c-border-[#EFEFEF] vdb-c-px-16 vdb-c-py-10"
+          >
+            <h4 class="vdb-c-font-semibold vdb-c-text-[#1D2736]">
+              <span
+                class="vdb-c-text-base vdb-c-font-bold vdb-c-text-[#1D2736] sm:vdb-c-text-lg"
+                >{{ agent.name }}</span
+              >
+            </h4>
+            <p class="vdb-c-text-sm vdb-c-text-[#1E1E1E]">
+              <span
+                class="vdb-c-text-xs vdb-c-font-normal vdb-c-text-[#1E1E1E] sm:vdb-c-text-sm"
+                >{{ agent.description }}</span
+              >
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -120,7 +126,6 @@
 <script setup>
 import QuestionMark from "../../icons/QuestionMark.vue";
 import InfoIcon from "../../icons/InfoIcon.vue";
-import ButtonCard from "../../atoms/ButtonCard.vue";
 import AtIcon from "../../icons/AtIcon.vue";
 import MenuIcon from "../../icons/MenuIcon.vue";
 import Button from "../../buttons/Button.vue";

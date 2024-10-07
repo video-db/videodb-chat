@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed } from "vue";
 import { parse } from "marked";
 
 const props = defineProps({
@@ -43,20 +43,10 @@ const props = defineProps({
 });
 
 const markdownContainer = ref(null);
-const showMarkdown = computed(() => props.message.content);
-const text = computed(() => props.message.content);
+const showMarkdown = computed(() => props.message.data.content);
+const text = computed(() => props.message.data.content);
 
 const getMarkedMsg = (msg) => {
-  if (props.mediaTypesObject) {
-    let unionMediaTypes = {};
-    Object.values(props.mediaTypesObject).forEach((callType) => {
-      unionMediaTypes = { ...unionMediaTypes, ...callType.default };
-    });
-    if (unionMediaTypes[msg]) {
-      return parse(unionMediaTypes[msg].name);
-    } else return parse(msg);
-  }
-
   return parse(msg);
 };
 </script>

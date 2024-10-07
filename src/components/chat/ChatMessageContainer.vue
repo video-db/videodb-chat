@@ -1,6 +1,6 @@
 <template>
   <div
-    class="vdb-c-relative vdb-c-h-auto vdb-c-w-full"
+    class="vdb-c-relative vdb-c-h-auto vdb-c-w-full vdb-c-px-30"
     :class="{ 'vdb-c-pt-16 vdb-c-min-h-full': isLastConv }"
   >
     <div
