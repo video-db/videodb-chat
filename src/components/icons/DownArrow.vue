@@ -12,7 +12,7 @@
         <path
           id="Icon"
           d="M12.6668 6L8.00016 10.6667L3.3335 6"
-          stroke="#20557D"
+          :stroke="strokeColor"
           :stroke-width="strokeWidth"
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -31,6 +31,10 @@ export default {
     strokeWidth: {
       type: Number,
       default: 1.5,
+    },
+    strokeColor: {
+      type: String,
+      default: "#20557D",
     },
   },
 };

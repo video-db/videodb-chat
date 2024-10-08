@@ -1,19 +1,13 @@
 <template>
   <div>
-    <div
-      class="vdb-c-font-sans vdb-c-flex vdb-c-items-center vdb-c-text-subheader vdb-c-text-steelblue-600"
-    >
-      <blue-check class-name="vdb-c-mr-8" />
-      <span>Here are some relevant moments </span>
-    </div>
     <div class="vdb-c-mt-8">
       <div
-        v-for="(videoData, index) of searchResults.data.results"
+        v-for="(videoData, index) of searchResults"
         v-show="isExpanded ? true : index === 0"
         :key="`search-results-${index}`"
         class="vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-18 vdb-c-rounded-20 vdb-c-bg-kilvish-200 vdb-c-p-8 sm:vdb-c-gap-20 sm:vdb-c-p-20"
         :class="`${
-          searchResults.data.results.length === index + 1 || !isExpanded
+          searchResults.length === index + 1 || !isExpanded
             ? 'vdb-c-mb-0'
             : 'vdb-c-mb-20 vdb-c-border-b vdb-c-border-outline-xlight'
         }`"
@@ -82,8 +76,7 @@
 
 <script setup>
 import { ref } from "vue";
-import DownArrow from "../icons/DownArrow.vue";
-import BlueCheck from "../icons/BlueCheck.vue";
+import DownArrow from "../../icons/DownArrow.vue";
 import {
   SearchResults,
   VideoDBPlayer,

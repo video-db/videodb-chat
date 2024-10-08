@@ -32,27 +32,29 @@
             >
               <template v-if="Object.keys(conversations).length === 0">
                 <!-- Empty Container -->
-                <video-view
-                  v-if="showVideoView"
-                  :collection-id="currentCollectionId"
-                  :video-id="currentVideoId"
-                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
-                />
+                <transition>
+                  <video-view
+                    v-if="showVideoView"
+                    :collection-id="currentCollectionId"
+                    :video-id="currentVideoId"
+                    class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                  />
 
-                <collection-view
-                  v-else-if="showCollectionView"
-                  :collection-id="currentCollectionId"
-                  @video-click="handleVideoClick"
-                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
-                />
+                  <collection-view
+                    v-else-if="showCollectionView"
+                    :collection-id="currentCollectionId"
+                    @video-click="handleVideoClick"
+                    class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                  />
 
-                <onboarding-screen
-                  v-else
-                  :user-name="userName"
-                  @query-card-click="handleQueryCardClick"
-                  @agent-card-click="handleAgentCardClick"
-                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
-                />
+                  <onboarding-screen
+                    v-else
+                    :user-name="userName"
+                    @query-card-click="handleQueryCardClick"
+                    @agent-card-click="handleAgentCardClick"
+                    class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                  />
+                </transition>
               </template>
 
               <!-- Message Container -->

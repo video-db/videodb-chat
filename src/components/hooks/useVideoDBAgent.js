@@ -80,7 +80,7 @@ export function useVideoDBAgent(config) {
         conv_id: String(convId),
         msg_id: String(loadingMsgId),
         session_id: String(session.sessionId),
-        type: "output",
+        msg_type: "output",
         sender: "assistant",
         clientLoading: true,
       };

@@ -9,25 +9,33 @@
     ]"
   >
     <div class="message-width">
-      <!-- #TODO Handle progress, success, error states here-->
-      <div v-if="isLoading" class="vdb-c-pb-10 md:vdb-c-p-10">
-        <init-loading />
-      </div>
-
       <div
         v-if="isUser"
         class="vdb-c-w-full vdb-c-transform vdb-c-transition-all"
       >
-        <text-response :message="message" :is-user="true" />
+        <!--TODO: don't hardcode to first element-->
+        <text-response :message="message.content[0]" :is-user="true" />
       </div>
 
-      <div v-else-if="hasMessageHandler">
-        <component
-          :is="messageHandlers[message.content_type]"
-          :message="message"
-          :is-user="isUser"
-          :search-term="searchTerm"
-        />
+      <div v-else-if="isAssistant">
+        <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
+          <div class="vdb-c-py-14">
+            <ChatMessageSteps
+              :steps="message.thinking"
+              :status="message.status"
+            />
+          </div>
+
+          <div v-for="content in message.content">
+            <component
+              v-if="Object.keys(messageHandlers).includes(content.type)"
+              :is="messageHandlers[content.type]"
+              :message="content"
+              :is-user="isUser"
+              :search-term="searchTerm"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -36,8 +44,7 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
-import InitLoading from "../message-handlers/InitLoading.vue";
-
+import ChatMessageSteps from "./elements/ChatMessageSteps.vue";
 
 import { useVideoDBChat } from "../../context.js";
 
@@ -73,11 +80,13 @@ const props = defineProps({
 });
 
 const { messageHandlers } = useVideoDBChat();
+console.log(Object.keys(messageHandlers));
 
 const textBool = ref(false);
 
 const isUser = computed(() => props.message.msg_type === "input");
 const isAssistant = computed(() => props.message.msg_type === "output");
+
 const isSystem = computed(() => props.message.msg_type === "system");
 const isLoading = computed(
   () =>
