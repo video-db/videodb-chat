@@ -96,13 +96,13 @@ export function useVideoDBAgent(config) {
     }
   };
 
-  const addMessage = (message) => {
-    console.log("debug :videodb-chat addMessage", message);
+  const addMessage = (content) => {
+    console.log("debug :videodb-chat addMessage", content);
     if (session.isConnected) {
       const convId = Date.now();
       const msgId = convId + 1;
       const _message = {
-        agent_name: null,
+        agents_name: [],
         msg_type: "input",
         sender: "user",
         conv_id: String(convId),
@@ -112,14 +112,14 @@ export function useVideoDBAgent(config) {
           ? String(session.collectionId)
           : null,
         video_id: session.videoId ? String(session.videoId) : null,
-        ...message,
+        content: content,
       };
 
       conversations[convId] = { [msgId]: _message };
       socket.emit("chat", _message);
       addClientLoadingMessage(convId);
     } else {
-      bufferMessages.push(message);
+      bufferMessages.push(content);
     }
   };
 
@@ -150,8 +150,6 @@ export function useVideoDBAgent(config) {
       ),
     ),
   );
-
-
 
   const fetchSession = async (sessionId) => {
     const res = {};

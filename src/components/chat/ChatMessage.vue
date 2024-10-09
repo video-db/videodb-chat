@@ -21,7 +21,7 @@
         <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
           <div class="vdb-c-py-14">
             <ChatMessageSteps
-              :steps="message.thinking"
+              :steps="message.actions"
               :status="message.status"
             />
           </div>

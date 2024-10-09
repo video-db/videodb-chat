@@ -257,7 +257,7 @@ const handleAddMessage = (content) => {
   if (!currentSessionId.value) {
     loadSession(uuidv4());
   }
-  addMessage({ content });
+  addMessage([{ type: "text", text: content }]);
 };
 
 // --- Mounted Hook ---
