@@ -104,6 +104,7 @@ import ChatInput from "./ChatInput.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
+import ImageHandler from "../message-handlers/ImageHandler.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -184,6 +185,7 @@ const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
 registerMessageHandler("video", ChatVideo);
 registerMessageHandler("text", TextResponse);
 registerMessageHandler("search_results", ChatSearchResults);
+registerMessageHandler("images", ImageHandler);
 
 const isStaticPage = ref(false);
 const chatWindow = ref(null);
