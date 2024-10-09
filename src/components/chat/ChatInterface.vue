@@ -185,7 +185,7 @@ const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
 registerMessageHandler("video", ChatVideo);
 registerMessageHandler("text", TextResponse);
 registerMessageHandler("search_results", ChatSearchResults);
-registerMessageHandler("images", ImageHandler);
+registerMessageHandler("image", ImageHandler);
 
 const isStaticPage = ref(false);
 const chatWindow = ref(null);
