@@ -59,15 +59,6 @@
         v-else-if="message.status === 'not_generated'"
         class="vdb-c-flex vdb-c-flex-col"
       ></div>
-      <p
-        v-else-if="message.status === 'error'"
-        class="vdb-c-flex vdb-c-text-primary"
-      >
-        <red-exclamation />
-        <span class="vdb-c-ml-8 vdb-c-inline-block"
-          >There was an error in generating this response.
-        </span>
-      </p>
     </transition>
   </div>
 </template>

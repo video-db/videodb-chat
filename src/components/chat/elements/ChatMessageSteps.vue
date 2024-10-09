@@ -7,7 +7,7 @@
       <DownArrowIcon
         :class="{ 'vdb-c-rotate-180 vdb-c-transform': isExpanded }"
         :stroke-width="2"
-        stroke-color="#343E4F"
+        :stroke-color="'#343E4F'"
       />
       <span class="vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#343E4F]"
         >Director's Log</span
@@ -22,7 +22,7 @@
       leave-to-class="vdb-c-transform vdb-c-scale-95 vdb-c-opacity-0"
     >
       <div
-        v-if="isExpanded && steps.length"
+        v-if="isExpanded"
         class="vdb-c-shadow-sm vdb-c-overflow-hidden vdb-c-rounded-md vdb-c-bg-white"
       >
         <div
@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import DownArrowIcon from "../../icons/DownArrow.vue";
 
 const props = defineProps({
@@ -79,16 +79,30 @@ const props = defineProps({
     default: "progress",
     validator: (value) => ["progress", "success"].includes(value),
   },
+  isLastConv: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const isExpanded = ref(false);
+const isExpanded = ref(props.isLastConv);
+
+watch(() => props.isLastConv, (newValue) => {
+  if (!newValue) {
+    isExpanded.value = false;
+  }
+});
+
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value;
 };
 
 const displaySteps = computed(() => {
+  if (props.steps.length === 0) {
+    return ["Thinking"];
+  }
   if (props.status === "success") {
-    return [...props.steps, "Final Cut Approved by Sphielberg"];
+    return [...props.steps, "Final Cut Approved by Spielberg"];
   }
   return props.steps;
 });

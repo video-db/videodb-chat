@@ -40,8 +40,3 @@ export default {
 };
 </script>
 
-<style scoped>
-svg path {
-  stroke: currentColor;
-}
-</style>

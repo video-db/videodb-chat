@@ -23,6 +23,7 @@
             <ChatMessageSteps
               :steps="message.actions"
               :status="message.status"
+              :is-last-conv="isLastConv"
             />
           </div>
 
@@ -76,6 +77,10 @@ const props = defineProps({
   searchTerm: {
     type: String,
     default: "",
+  },
+  isLastConv: {
+    type: Boolean,
+    default: false,
   },
 });
 

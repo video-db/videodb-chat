@@ -7,7 +7,7 @@
         key="progress"
       >
         <transition name="fade" mode="out-in">
-          <span :key="message">{{ message }}</span>
+          <span :key="message">{{ message || "Thinking..." }}</span>
         </transition>
       </span>
       <span
@@ -16,7 +16,15 @@
         key="success"
       >
         <CheckIcon class="bounce" />
-        {{ message }}
+        <span> {{ message || "Here is your response" }} </span>
+      </span>
+      <span
+        v-else-if="status === 'error'"
+        class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-bold vdb-c-text-red-500"
+        key="error"
+      >
+        <RedExclamation class="shake" />
+        <span> {{ message || "An error occurred" }} </span>
       </span>
     </transition>
   </div>
@@ -25,12 +33,13 @@
 <script setup>
 import { ref, defineProps, onMounted, watch } from "vue";
 import CheckIcon from "../../icons/Check.vue";
+import RedExclamation from "../../icons/RedExclamation.vue";
 
 const props = defineProps({
   status: {
     type: String,
     required: true,
-    validator: (value) => ["progress", "success"].includes(value),
+    validator: (value) => ["progress", "success", "error"].includes(value),
   },
   message: {
     type: String,
@@ -40,11 +49,14 @@ const props = defineProps({
 
 const messageKey = ref(0);
 
-watch(() => props.message, () => {
-  if (props.status === 'progress') {
-    messageKey.value++;
-  }
-});
+watch(
+  () => props.message,
+  () => {
+    if (props.status === "progress") {
+      messageKey.value++;
+    }
+  },
+);
 </script>
 
 <style scoped>
@@ -72,6 +84,34 @@ watch(() => props.message, () => {
   }
   100% {
     transform: scale(1);
+  }
+}
+
+.shake {
+  display: inline-block;
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
   }
 }
 </style>

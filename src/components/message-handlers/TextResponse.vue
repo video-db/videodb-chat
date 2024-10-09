@@ -11,7 +11,7 @@
 
     <transition name="fade" mode="out-in">
       <div
-        v-if="message.status === 'success'"
+        v-if="message.status === 'success' || isUser"
         class="vdb-c-flex vdb-c-flex-col"
       >
         <p
@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { parse } from "marked";
 import LoadingMessage from "./elements/LoadingMessage.vue";
 

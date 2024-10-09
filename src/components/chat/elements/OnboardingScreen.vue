@@ -20,7 +20,7 @@
 
     <!-- Action Cards -->
     <div
-      class="vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
+      class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
     >
       <div
         class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-16 md:vdb-c-grid-cols-4 2xl:vdb-c-grid-cols-5"
@@ -184,3 +184,18 @@ defineProps({
 
 defineEmits(["query-card-click", "agent-card-click"]);
 </script>
+
+<style scoped>
+.fade-in-anim {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+</style>
