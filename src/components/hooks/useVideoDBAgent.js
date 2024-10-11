@@ -14,7 +14,7 @@ export function useVideoDBAgent(config) {
     collectionId: null,
   });
   const conversations = reactive({});
-  const bufferMessages = reactive([]);
+  // const bufferMessages = reactive([]);
 
   const setCollectionId = (collectionId) => {
     session.collectionId = collectionId;
@@ -44,7 +44,7 @@ export function useVideoDBAgent(config) {
     if (!fetchPastMessages) {
       Object.keys(conversations).forEach((key) => delete conversations[key]);
     } else {
-      fetchSession(sessionId).then((res) => {
+      fetchData(`/session/${sessionId}`).then((res) => {
         if (debug) console.log("debug :videodb-chat session loaded", res);
         if (res.status === "success") {
           session.videoId = res.data.video_id || null;
@@ -96,8 +96,8 @@ export function useVideoDBAgent(config) {
     }
   };
 
-  const addMessage = (content) => {
-    console.log("debug :videodb-chat addMessage", content);
+  const addMessage = (message) => {
+    console.log("debug :videodb-chat addMessage", message);
     if (session.isConnected) {
       const convId = Date.now();
       const msgId = convId + 1;
@@ -112,21 +112,21 @@ export function useVideoDBAgent(config) {
           ? String(session.collectionId)
           : null,
         video_id: session.videoId ? String(session.videoId) : null,
-        content: content,
+        ...message,
       };
 
       conversations[convId] = { [msgId]: _message };
       socket.emit("chat", _message);
       addClientLoadingMessage(convId);
     } else {
-      bufferMessages.push(content);
+      // bufferMessages.push(_message);
     }
   };
 
   socket.on("connect", () => {
     if (debug) console.log("debug :videodb-chat socket emmited connect");
     session.isConnected = true;
-    bufferMessages.forEach(addMessage);
+    // bufferMessages.forEach(addMessage);
   });
 
   socket.on("chat", (event) => {
@@ -151,10 +151,10 @@ export function useVideoDBAgent(config) {
     ),
   );
 
-  const fetchSession = async (sessionId) => {
+  const fetchData = async (endpoint) => {
     const res = {};
     try {
-      const response = await fetch(`${httpUrl}/session/${sessionId}`);
+      const response = await fetch(`${httpUrl}${endpoint}`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -168,98 +168,16 @@ export function useVideoDBAgent(config) {
     return res;
   };
 
-  const fetchSessions = async () => {
-    const res = {};
-    try {
-      const response = await fetch(`${httpUrl}/session`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-
-      res.status = "success";
-      res.data = data;
-    } catch (error) {
-      res.status = "error";
-      res.error = error;
-    }
-    return res;
-  };
-
-  const fetchCollections = async () => {
-    const res = {};
-    try {
-      const response = await fetch(`${httpUrl}/videodb/collection`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      res.status = "success";
-      res.data = data;
-    } catch (error) {
-      res.status = "error";
-      res.error = error;
-    }
-    return res;
-  };
-
-  // #TODO: figure out how to give user full control over endpoint configuration
-  const fetchCollection = async (collectionId) => {
-    const res = {};
-    try {
-      const response = await fetch(
-        `${httpUrl}/videodb/collection/${collectionId}`,
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      res.status = "success";
-      res.data = data;
-    } catch (error) {
-      res.status = "error";
-      res.error = error;
-    }
-    return res;
-  };
-
-  const fetchCollectionVideo = async (collectionId, videoId) => {
-    const res = {};
-    try {
-      const response = await fetch(
-        `${httpUrl}/videodb/collection/${collectionId}/video/${videoId}`,
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      res.status = "success";
-      res.data = data;
-    } catch (error) {
-      res.status = "error";
-      res.error = error;
-    }
-    return res;
-  };
-
-  const fetchCollectionVideos = async (collectionId) => {
-    const res = {};
-    try {
-      const response = await fetch(
-        `${httpUrl}/videodb/collection/${collectionId}/video`,
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      res.status = "success";
-      res.data = data;
-    } catch (error) {
-      res.status = "error";
-      res.error = error;
-    }
-    return res;
-  };
+  const fetchSession = async (sessionId) => fetchData(`/session/${sessionId}`);
+  const fetchSessions = async () => fetchData("/session");
+  const fetchCollections = async () => fetchData("/videodb/collection");
+  const fetchCollection = async (collectionId) =>
+    fetchData(`/videodb/collection/${collectionId}`);
+  const fetchCollectionVideo = async (collectionId, videoId) =>
+    fetchData(`/videodb/collection/${collectionId}/video/${videoId}`);
+  const fetchCollectionVideos = async (collectionId) =>
+    fetchData(`/videodb/collection/${collectionId}/video`);
+  const fetchAllAgents = async () => fetchData("/agent");
 
   const bindEvents = (events, emit) => {
     events.forEach((customEvent) => {
@@ -282,6 +200,7 @@ export function useVideoDBAgent(config) {
     setCollectionId,
     fetchSession,
     fetchSessions,
+    fetchAllAgents,
     fetchCollection,
     fetchCollections,
     fetchCollectionVideo,

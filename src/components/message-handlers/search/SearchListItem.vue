@@ -12,28 +12,30 @@
             : 'vdb-c-mb-20 vdb-c-border-b vdb-c-border-outline-xlight'
         }`"
       >
-        <div class="vdb-c-col-span-12 md:vdb-c-col-span-3 vdb-c-flex vdb-c-justify-center vdb-c-h-4/6">
-            <VideoDBPlayer
-              :ref="
-                (el) => {
-                  if (el) videoPlayerRefs[index] = el;
-                }
-              "
-              :stream-url="videoData.stream_url"
-              :default-controls="false"
-              :default-overlay="false"
-              class="vdb-c-overflow-hidden vdb-c-rounded-12"
-              @play="onPlayPause(index)"
-              @pause="onPlayPause(index)"
-              @loadeddata="onVideoLoaded(index)"
-            >
-              <template #overlay>
-                <BigCenterButton
-                  class="vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2"
-                  :style="{ height: '48px', width: '48px' }"
-                />
-              </template>
-            </VideoDBPlayer>
+        <div
+          class="vdb-c-col-span-12 vdb-c-flex vdb-c-h-4/6 vdb-c-justify-center md:vdb-c-col-span-3"
+        >
+          <VideoDBPlayer
+            :ref="
+              (el) => {
+                if (el) videoPlayerRefs[index] = el;
+              }
+            "
+            :stream-url="videoData.stream_url"
+            :default-controls="false"
+            :default-overlay="false"
+            class="vdb-c-overflow-hidden vdb-c-rounded-12"
+            @play="onPlayPause(index)"
+            @pause="onPlayPause(index)"
+            @loadeddata="onVideoLoaded(index)"
+          >
+            <template #overlay>
+              <BigCenterButton
+                class="vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2"
+                :style="{ height: '48px', width: '48px' }"
+              />
+            </template>
+          </VideoDBPlayer>
         </div>
         <div
           class="vdb-c-col-span-12 vdb-c--mt-20 md:vdb-c-col-span-9 md:vdb-c-mt-0 md:vdb-c-pl-16"
@@ -116,7 +118,6 @@ const getFormattedSearchResult = (videoData) => {
 };
 
 const onSlideClick = (index, duration) => {
-  console.log("onSlideClick Called", index, duration);
   const player = videoPlayerRefs.value[index];
   if (player) {
     player.seekTo(duration);

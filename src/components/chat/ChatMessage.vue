@@ -31,6 +31,7 @@
             <component
               v-if="Object.keys(messageHandlers).includes(content.type)"
               :is="messageHandlers[content.type]"
+              :is-last-conv="isLastConv"
               :message="content"
               :is-user="isUser"
               :search-term="searchTerm"
@@ -85,7 +86,6 @@ const props = defineProps({
 });
 
 const { messageHandlers } = useVideoDBChat();
-console.log(Object.keys(messageHandlers));
 
 const textBool = ref(false);
 

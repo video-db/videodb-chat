@@ -3,6 +3,7 @@
     <LoadingMessage
       :status="message.status"
       :message="message.status_message"
+      :is-last-conv="isLastConv"
     />
     <div v-if="message.status === 'success'">
       <search-list-item
@@ -30,6 +31,10 @@ const props = defineProps({
   searchTerm: {
     type: String,
     default: "",
+  },
+  isLastConv: {
+    type: Boolean,
+    default: false,
   },
 });
 const getArr = () => {

@@ -5,23 +5,24 @@
     <LoadingMessage
       :status="message.status"
       :message="message.status_message"
+      :is-last-conv="isLastConv"
     />
     <transition name="fade" mode="out-in">
       <div
-        v-if="message.status === 'success' && message.stream_url"
+        v-if="message.status === 'success' && message.video.stream_url"
         class="vdb-c-w-full vdb-c-py-6"
       >
         <div
           class="vdb-c-full xl:vdb-c-1/2 vdb-c-overflow-hidden vdb-c-rounded-20 sm:vdb-c-w-3/4 lg:vdb-c-w-3/5 xl:vdb-c-w-1/2"
         >
           <VideoDBPlayer
-            :stream-url="message.stream_url"
+            :stream-url="message.video.stream_url"
             :default-controls="false"
           >
             <template #controls>
               <div class="vdb-p-pt-0 vdb-c-p-20">
                 <div class="sm:vdb-p-mx-8 vdb-c-mb-12">
-                  <ProgressBar :stream-url="streamUrl" />
+                  <ProgressBar :stream-url="message.video.stream_url" />
                 </div>
                 <div class="vdb-c-flex vdb-c-w-full vdb-c-justify-between">
                   <div
@@ -49,9 +50,7 @@
           <div class="vdb-c-relative vdb-c-w-full" style="padding-top: 56.25%">
             <div
               class="vdb-c-absolute vdb-c-inset-0 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-gray-200"
-            >
-              <div class="vdb-c-text-gray-600">Processing Video...</div>
-            </div>
+            ></div>
           </div>
         </div>
       </div>
@@ -78,6 +77,10 @@ const props = defineProps({
   message: {
     type: Object,
     required: true,
+  },
+  isLastConv: {
+    type: Boolean,
+    default: false,
   },
 });
 </script>

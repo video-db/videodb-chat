@@ -7,14 +7,19 @@
       v-if="!isUser"
       :status="message.status"
       :message="message.status_message"
+      :isLastConv="isLastConv"
     />
 
     <transition name="fade" mode="out-in">
       <div
         v-if="message.status === 'success'"
-        class="vdb-c-shadow-md vdb-c-overflow-hidden vdb-c-rounded-lg"
+        class="vdb-c-shadow-md vdb-c-overflow-hidden"
       >
-        <img :src="image.url" :alt="'Generated image'" class="vdb-c-w-1/2 vdb-c-h-auto" />
+        <img
+          :src="image.url"
+          :alt="'Generated image'"
+          class="vdb-c-h-auto vdb-c-w-1/2 vdb-c-rounded-lg"
+        />
       </div>
       <div
         v-else-if="message.status === 'progress'"
@@ -42,6 +47,10 @@ const props = defineProps({
   isUser: {
     type: Boolean,
     default: false,
+  },
+  isLastConv: {
+    type: Boolean,
+    required: true,
   },
 });
 

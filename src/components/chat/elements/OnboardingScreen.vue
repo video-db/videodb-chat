@@ -29,7 +29,7 @@
           v-for="(query, index) in actionCardQueries"
           :key="index"
           :class="[
-            'vdb-c-w-160 vdb-c-flex vdb-c-h-120 md:vdb-c-h-240 vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out',
+            'vdb-c-w-160 vdb-c-h-120 vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
             query.muted
               ? 'hover:vdb-c-shadow-md vdb-c-border vdb-c-border-[#EFEFEF] vdb-c-bg-[#F7F7F7] hover:vdb-c-bg-[#E5E5E5]'
               : 'hover:vdb-c-shadow-md vdb-c-bg-[#FFF5EC] hover:vdb-c-bg-[#FFE9D3]',
@@ -38,14 +38,14 @@
         >
           <div
             :class="[
-              'vdb-c-hidden md:vdb-c-flex vdb-c-h-48 vdb-c-w-48 vdb-c-items-center vdb-c-justify-center vdb-c-self-start vdb-c-rounded-full vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out',
+              'vdb-c-hidden vdb-c-h-48 vdb-c-w-48 vdb-c-items-center vdb-c-justify-center vdb-c-self-start vdb-c-rounded-full vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-flex',
               query.muted ? 'vdb-c-bg-[#EFEFEF]' : 'vdb-c-bg-[#FFE9D3]',
             ]"
           >
             <QuestionMark :fill="query.muted ? '#2D2D2D' : '#C14103'" />
           </div>
           <p
-            class="vdb-c-flex-grow vdb-c-text-left vdb-c-font-semibold vdb-c-text-[#1D2736] lg:vdb-c-text-base vdb-c-text-sm"
+            class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-sm vdb-c-font-semibold vdb-c-text-[#1D2736] lg:vdb-c-text-base"
           >
             {{ query.text }}
           </p>
@@ -73,7 +73,7 @@
             <span>Create custom agents</span>
           </button>
 
-          <Button variant="secondary" @click="$emit('create-new-session')">
+          <Button variant="secondary" @click="$emit('explore-agents-click')">
             <div
               class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-font-normal"
             >
@@ -87,10 +87,10 @@
         class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-content-start vdb-c-gap-16 vdb-c-overflow-y-auto lg:vdb-c-grid-cols-2"
       >
         <div
-          v-for="(agent, index) in agents.slice(0, 2)"
+          v-for="(agent, index) in allAgents.slice(0, 2)"
           :key="index"
           class="vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-[#EFEFEF] hover:vdb-c-bg-[#FAFAFA]"
-          @click="$emit('agent-card-click', agent)"
+          @click="$emit('agent-click', agent)"
         >
           <div
             class="flex items-center justify-center vdb-c-rounded-full vdb-c-px-20 vdb-c-py-24"
@@ -112,7 +112,7 @@
             </h4>
             <p class="vdb-c-text-sm vdb-c-text-[#1E1E1E]">
               <span
-                class="vdb-c-text-xs vdb-c-font-normal vdb-c-text-[#1E1E1E] sm:vdb-c-text-sm"
+                class="vdb-c-text-xs vdb-c-font-normal vdb-c-text-[#1E1E1E] sm:vdb-c-text-sm vdb-c-line-clamp-2"
                 >{{ agent.description }}</span
               >
             </p>
@@ -135,6 +135,10 @@ defineProps({
     type: String,
     required: true,
     default: "",
+  },
+  allAgents: {
+    type: Array,
+    default: () => [],
   },
   actionCardQueries: {
     type: Array,
@@ -161,28 +165,9 @@ defineProps({
       },
     ],
   },
-  agents: {
-    type: Array,
-    default: () => [
-      {
-        name: "thumbnail-agent",
-        description: "Extract & create styled thumbnails based on your prompt",
-      },
-      {
-        name: "captions-agent",
-        description:
-          "Generate custom captions with translation and font styling options",
-      },
-      {
-        name: "captions-agent",
-        description:
-          "Generate custom captions with translation and font styling options",
-      },
-    ],
-  },
 });
 
-defineEmits(["query-card-click", "agent-card-click"]);
+defineEmits(["query-card-click", "agent-click", "explore-agents-click"]);
 </script>
 
 <style scoped>

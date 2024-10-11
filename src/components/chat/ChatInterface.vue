@@ -8,14 +8,17 @@
     <div class="vdb-c-flex vdb-c-h-full vdb-c-w-full">
       <!-- Collapsible Sidebar -->
       <sidebar
+        ref="sidebarRef"
         class="vdb-c-w-1/5 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
         :selected-session="currentSessionId"
         :selected-collection="currentCollectionId"
+        :all-agents="allAgents"
         :all-sessions="allSessions"
         :all-collections="allCollections"
         :links="links"
         :primary-link="primaryLink"
         @create-new-session="handleNewSessionClick"
+        @agent-click="handleTagAgent"
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
       />
@@ -49,8 +52,10 @@
                 <onboarding-screen
                   v-else
                   :user-name="userName"
+                  :all-agents="allAgents.slice(0, 2)"
                   @query-card-click="handleQueryCardClick"
-                  @agent-card-click="handleAgentCardClick"
+                  @agent-click="handleTagAgent"
+                  @explore-agents-click="handleExploreAgentsClick"
                   class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                 />
               </template>
@@ -74,9 +79,12 @@
             class="vdb-c-chat-input-container vdb-c-relative vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
           >
             <chat-input
+              ref="chatInputRef"
+              :agents="allAgents"
               :input-disabled="chatLoading"
               :placeholder="chatInputPlaceholder"
-              @onSubmit="handleAddMessage"
+              @on-submit="handleAddMessage"
+              @tag-agent="handleTagAgent($event, false)"
             />
           </div>
         </div>
@@ -153,10 +161,16 @@ const props = defineProps({
 });
 const emit = defineEmits(["backBtnClick", "updateConversations"]);
 
+const sidebarRef = ref(null);
+const chatInputRef = ref(null);
+
 const allSessions = reactive([]);
 const allCollections = reactive([]);
+const allAgents = reactive([]);
+
 const showCollectionView = ref(false);
 const showVideoView = ref(false);
+const taggedAgent = ref([]);
 
 const useChatHook = props.customChatHook || useVideoDBAgent;
 const {
@@ -173,6 +187,7 @@ const {
   fetchCollections,
   fetchSession,
   fetchSessions,
+  fetchAllAgents,
   fetchCollectionVideo,
   fetchCollectionVideos,
 } = useChatHook(props.chatHookConfig);
@@ -207,6 +222,7 @@ const handleNewSessionClick = () => {
   showCollectionView.value = false;
   showVideoView.value = false;
   // #TODO: Add a new entry in allSessionObject
+  taggedAgent.value = [];
   handleLoadSession();
 };
 
@@ -233,8 +249,22 @@ const handleQueryCardClick = (query) => {
   }
 };
 
-const handleAgentCardClick = (agent) => {
-  // setChatInput(agent.text);
+const handleExploreAgentsClick = () => {
+  sidebarRef.value.toggleExploreAgents(true);
+};
+
+const handleTagAgent = (agent, addToInput = true) => {
+  const agentName = agent.name || agent;
+  if (agentName) {
+    taggedAgent.value.push(agentName);
+    if (addToInput) {
+      chatInput.value =
+        chatInput.value.trim() === ""
+          ? `@${agentName}`
+          : `${chatInput.value} @${agentName}`;
+      chatInputRef.value.focus();
+    }
+  }
 };
 
 // --- CollectionView/VideoView Click Handlers ---
@@ -257,7 +287,11 @@ const handleAddMessage = (content) => {
   if (!currentSessionId.value) {
     loadSession(uuidv4());
   }
-  addMessage([{ type: "text", text: content }]);
+  addMessage({
+    content: [{ type: "text", text: content }],
+    agents_name: taggedAgent.value,
+  });
+  taggedAgent.value = [];
 };
 
 // --- Mounted Hook ---
@@ -271,6 +305,11 @@ onMounted(() => {
   fetchCollections().then((response) => {
     if (response.status === "success") {
       allCollections.push(...response.data);
+    }
+  });
+  fetchAllAgents().then((response) => {
+    if (response.status === "success") {
+      allAgents.push(...response.data);
     }
   });
 });

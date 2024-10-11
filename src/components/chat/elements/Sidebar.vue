@@ -22,12 +22,12 @@
       class="vdb-c-flex vdb-c-flex-grow vdb-c-flex-col vdb-c-gap-16 vdb-c-overflow-hidden"
     >
       <!-- Explore Agents -->
-      <div class="vdb-c-flex vdb-c-flex-col">
+      <div class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-gap-4">
         <button
-          @click="toggleExploreAgents"
+          @click="toggleExploreAgents()"
           :class="[
-            'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-10 vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#1E1E1E]',
-            { 'vdb-c-bg-blue-100': showExploreAgents },
+            'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-10 vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#1E1E1E] vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-[#EFEFEF]',
+            { 'vdb-c-bg-[#EEEEEE]': showExploreAgents },
           ]"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
@@ -36,7 +36,7 @@
           </div>
           <DownArrowIcon
             :class="[
-              'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
+              'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform vdb-c-duration-300',
               { 'vdb-c-rotate-180': showExploreAgents },
             ]"
             :stroke-width="1.2"
@@ -44,8 +44,20 @@
         </button>
         <div
           v-if="showExploreAgents"
-          class="vdb-c-mt-8 vdb-c-max-h-48 vdb-c-overflow-y-auto"
-        ></div>
+          class="vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border vdb-c-border-[#EFEFEF] vdb-c-px-8 vdb-c-py-4"
+        >
+          <template v-for="(agent, index) in allAgents" :key="index">
+            <div
+              @click="$emit('agent-click', agent)"
+              :class="[
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-[#EFEFEF]',
+              ]"
+            >
+              <span class="vdb-c-text-[#EC5B16]"> @ </span>
+              <span> {{ agent.name }} </span>
+            </div>
+          </template>
+        </div>
       </div>
 
       <!-- Sessions -->
@@ -53,7 +65,7 @@
         class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-overflow-hidden"
       >
         <button
-          @click="toggleSessions"
+          @click="toggleSessions()"
           class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4 vdb-c-text-[#464646]"
         >
           <span
@@ -78,8 +90,9 @@
                 'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-text-[#1E1E1E]',
                 {
                   'vdb-c-bg-blue-100': session.session_id === selectedSession,
-                  'hover:vdb-c-bg-gray-100': session.session_id !== selectedSession
-                }
+                  'hover:vdb-c-bg-gray-100':
+                    session.session_id !== selectedSession,
+                },
               ]"
             >
               {{ session.session_id }}
@@ -93,7 +106,7 @@
         class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-overflow-hidden"
       >
         <button
-          @click="toggleCollections"
+          @click="toggleCollections()"
           class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4 vdb-c-text-[#464646]"
         >
           <span
@@ -118,8 +131,9 @@
                 'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-text-[#1E1E1E]',
                 {
                   'vdb-c-bg-blue-100': collection.id === selectedCollection,
-                  'hover:vdb-c-bg-gray-100': collection.id !== selectedCollection
-                }
+                  'hover:vdb-c-bg-gray-100':
+                    collection.id !== selectedCollection,
+                },
               ]"
             >
               {{ collection.name }}
@@ -168,16 +182,19 @@ const showExploreAgents = ref(false);
 const showSessions = ref(true);
 const showCollections = ref(false);
 
-const toggleExploreAgents = () => {
-  showExploreAgents.value = !showExploreAgents.value;
+const toggleExploreAgents = (value) => {
+  showExploreAgents.value =
+    value !== undefined ? value : !showExploreAgents.value;
 };
 
-const toggleSessions = () => {
-  showSessions.value = !showSessions.value;
+const toggleSessions = (value) => {
+  console.log("this is value", value);
+  showSessions.value = value !== undefined ? value : !showSessions.value;
 };
 
-const toggleCollections = () => {
-  showCollections.value = !showCollections.value;
+const toggleCollections = (value) => {
+  console.log("this is value", value);
+  showCollections.value = value !== undefined ? value : !showCollections.value;
 };
 
 defineProps({
@@ -186,6 +203,10 @@ defineProps({
     required: true,
   },
   allCollections: {
+    type: Array,
+    required: true,
+  },
+  allAgents: {
     type: Array,
     required: true,
   },
@@ -201,13 +222,24 @@ defineProps({
   },
   selectedCollection: {
     type: String,
-    default: '',
+    default: "",
   },
   selectedSession: {
     type: String,
-    default: '',
+    default: "",
   },
 });
 
-defineEmits(["create-new-session", "session-click", "collection-click"]);
+defineEmits([
+  "create-new-session",
+  "session-click",
+  "collection-click",
+  "agent-click",
+]);
+
+defineExpose({
+  toggleExploreAgents,
+  toggleSessions,
+  toggleCollections,
+});
 </script>

@@ -15,7 +15,7 @@
         class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-bold vdb-c-text-[#C14103]"
         key="success"
       >
-        <CheckIcon class="bounce" />
+        <CheckIcon :class="{ bounce: isLastConv }" />
         <span> {{ message || "Here is your response" }} </span>
       </span>
       <span
@@ -43,7 +43,10 @@ const props = defineProps({
   },
   message: {
     type: String,
-    required: true,
+  },
+  isLastConv: {
+    type: Boolean,
+    default: false,
   },
 });
 

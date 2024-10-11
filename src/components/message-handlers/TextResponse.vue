@@ -6,7 +6,8 @@
     <LoadingMessage
       v-if="!isUser"
       :status="message.status"
-      :message="message.status_message"
+      :message="message?.status_message"
+      :is-last-conv="isLastConv"
     />
 
     <transition name="fade" mode="out-in">
@@ -61,6 +62,10 @@ const props = defineProps({
   mediaTypesObject: {
     type: Object,
     default: () => ({}),
+  },
+  isLastConv: {
+    type: Boolean,
+    default: false,
   },
 });
 
