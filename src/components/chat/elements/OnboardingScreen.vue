@@ -4,18 +4,22 @@
   >
     <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
       <h1
-        class="vdb-c-text-5xl vdb-c-font-extrabold vdb-c-leading-tight"
-        style="
-          background-image: radial-gradient(circle, #ff7e32, #ff5b0a);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        "
+        class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-5xl vdb-c-leading-tight"
       >
-        Hello{{ userName }}
+        <span class="vdb-c-text-black">Collection</span>
+        <span class="vdb-c-text-black"> : </span>
+        <span
+          class="vdb-c-inline-block vdb-c-max-w-[60%] vdb-c-truncate vdb-c-font-extrabold"
+          style="
+            background-image: radial-gradient(circle, #ff7e32, #ff5b0a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+          "
+          :title="collectionName"
+        >
+          {{ collectionName }}
+        </span>
       </h1>
-      <h2 class="vdb-c-text-4xl vdb-c-font-semibold vdb-c-text-[#1E1E1E]">
-        How can Spielberg help you today?
-      </h2>
     </div>
 
     <!-- Action Cards -->
@@ -112,7 +116,7 @@
             </h4>
             <p class="vdb-c-text-sm vdb-c-text-[#1E1E1E]">
               <span
-                class="vdb-c-text-xs vdb-c-font-normal vdb-c-text-[#1E1E1E] sm:vdb-c-text-sm vdb-c-line-clamp-2"
+                class="vdb-c-line-clamp-2 vdb-c-text-xs vdb-c-font-normal vdb-c-text-[#1E1E1E] sm:vdb-c-text-sm"
                 >{{ agent.description }}</span
               >
             </p>
@@ -124,13 +128,15 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
+
 import QuestionMark from "../../icons/QuestionMark.vue";
 import InfoIcon from "../../icons/InfoIcon.vue";
 import AtIcon from "../../icons/AtIcon.vue";
 import MenuIcon from "../../icons/MenuIcon.vue";
 import Button from "../../buttons/Button.vue";
 
-defineProps({
+const props = defineProps({
   userName: {
     type: String,
     required: true,
@@ -139,6 +145,10 @@ defineProps({
   allAgents: {
     type: Array,
     default: () => [],
+  },
+  activeCollectionData: {
+    type: Object,
+    default: () => null,
   },
   actionCardQueries: {
     type: Array,
@@ -166,6 +176,8 @@ defineProps({
     ],
   },
 });
+
+const collectionName = computed(() => props.activeCollectionData?.name);
 
 defineEmits(["query-card-click", "agent-click", "explore-agents-click"]);
 </script>

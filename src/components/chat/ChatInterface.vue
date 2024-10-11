@@ -10,6 +10,11 @@
       <sidebar
         ref="sidebarRef"
         class="vdb-c-w-1/5 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+        :show-selected-collection="
+          Object.keys(conversations).length === 0 &&
+          !showVideoView &&
+          !showCollectionView
+        "
         :selected-session="currentSessionId"
         :selected-collection="currentCollectionId"
         :all-agents="allAgents"
@@ -35,24 +40,64 @@
             >
               <template v-if="Object.keys(conversations).length === 0">
                 <!-- Empty Container -->
-                <video-view
-                  v-if="showVideoView"
-                  :collection-id="currentCollectionId"
-                  :video-id="currentVideoId"
-                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
-                />
+                <div
+                  v-if="showVideoView || showCollectionView"
+                  class="vdb-c-w-full vdb-c-p-16 vdb-c-px-30"
+                >
+                  <div
+                    class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-border-b vdb-c-border-[#EFEFEF] vdb-c-py-12 vdb-c-text-lg vdb-c-text-black"
+                  >
+                    <span class="vdb-c-flex vdb-c-font-bold">
+                      <span
+                        v-if="collectionName"
+                        class="vdb-c-cursor-pointer"
+                        @click="
+                          setVideoId(null);
+                          showVideoView = false;
+                        "
+                      >
+                        {{ collectionName }}
+                      </span>
+                      <span
+                        v-else
+                        class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-[#EEEFF2]"
+                      ></span>
+                    </span>
+                    <span v-if="showVideoView"> > </span>
+                    <span
+                      v-if="showVideoView"
+                      class="vdb-c-flex vdb-c-max-w-[300px] vdb-c-truncate"
+                    >
+                      <span v-if="videoName"> {{ videoName }} </span>
+                      <span
+                        v-else
+                        class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-[#EEEFF2]"
+                      ></span>
+                    </span>
+                  </div>
+                  <video-view
+                    v-if="showVideoView"
+                    :collection-id="currentCollectionId"
+                    :video-id="currentVideoId"
+                    :collection-data="activeCollectionData"
+                    :video-data="activeVideoData"
+                    class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                  />
 
-                <collection-view
-                  v-else-if="showCollectionView"
-                  :collection-id="currentCollectionId"
-                  @video-click="handleVideoClick"
-                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
-                />
+                  <collection-view
+                    v-else-if="showCollectionView"
+                    :collection-id="currentCollectionId"
+                    :collection-data="activeCollectionData"
+                    @video-click="handleVideoClick"
+                    class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                  />
+                </div>
 
                 <onboarding-screen
                   v-else
                   :user-name="userName"
                   :all-agents="allAgents.slice(0, 2)"
+                  :active-collection-data="activeCollectionData"
                   @query-card-click="handleQueryCardClick"
                   @agent-click="handleTagAgent"
                   @explore-agents-click="handleExploreAgentsClick"
@@ -83,6 +128,7 @@
               :agents="allAgents"
               :input-disabled="chatLoading"
               :placeholder="chatInputPlaceholder"
+              :context-data="activeVideoData || activeCollectionData"
               @on-submit="handleAddMessage"
               @tag-agent="handleTagAgent($event, false)"
             />
@@ -94,7 +140,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, provide, nextTick, onMounted } from "vue";
+import {
+  ref,
+  reactive,
+  watch,
+  provide,
+  nextTick,
+  onMounted,
+  onBeforeMount,
+  computed,
+} from "vue";
 import { v4 as uuidv4 } from "uuid";
 
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -164,8 +219,6 @@ const emit = defineEmits(["backBtnClick", "updateConversations"]);
 const sidebarRef = ref(null);
 const chatInputRef = ref(null);
 
-const allSessions = reactive([]);
-const allCollections = reactive([]);
 const allAgents = reactive([]);
 
 const showCollectionView = ref(false);
@@ -177,6 +230,10 @@ const {
   sessionId: currentSessionId,
   collectionId: currentCollectionId,
   videoId: currentVideoId,
+  allCollections,
+  allSessions,
+  activeCollectionData,
+  activeVideoData,
   addMessage,
   conversations,
   chatLoading,
@@ -217,9 +274,13 @@ watch(chatLoading, (val) => {
   }
 });
 
+const collectionName = computed(() => activeCollectionData.value?.name);
+const videoName = computed(() => activeVideoData.value?.name);
+
 // --- Sidebar Click Handlers ---
 const handleNewSessionClick = () => {
   showCollectionView.value = false;
+  setVideoId(null);
   showVideoView.value = false;
   // #TODO: Add a new entry in allSessionObject
   taggedAgent.value = [];
@@ -234,6 +295,7 @@ const handleSessionClick = (sessionId) => {
 
 const handleCollectionClick = (collectionId) => {
   setCollectionId(collectionId);
+  setVideoId(null);
   showCollectionView.value = false;
   showVideoView.value = false;
   // #TODO: Add a new entry in allSessionObject
@@ -295,18 +357,8 @@ const handleAddMessage = (content) => {
 };
 
 // --- Mounted Hook ---
-onMounted(() => {
+onBeforeMount(() => {
   setCollectionId("default");
-  fetchSessions().then((response) => {
-    if (response.status === "success") {
-      allSessions.push(...response.data);
-    }
-  });
-  fetchCollections().then((response) => {
-    if (response.status === "success") {
-      allCollections.push(...response.data);
-    }
-  });
   fetchAllAgents().then((response) => {
     if (response.status === "success") {
       allAgents.push(...response.data);

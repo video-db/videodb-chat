@@ -26,18 +26,36 @@
     >
       <div class="vdb-c-br-50 vdb-c-relative vdb-c-h-full vdb-c-w-full">
         <form
-          class="vdb-c-br-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-justify-between vdb-c-overflow-hidden vdb-c-border vdb-c-border-solid vdb-c-bg-white"
+          class="vdb-c-br-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-overflow-hidden vdb-c-border vdb-c-border-solid vdb-c-bg-white"
           :class="{
-            'vdb-c-border-kilvish-500': inputFocused && charCount !== 0,
-            'vdb-c-border-kilvish-400': !inputFocused && charCount === 0,
+            'vdb-c-border-kilvish-500': inputFocused,
+            'vdb-c-border-kilvish-400': !inputFocused,
           }"
           autocomplete="off"
           @submit="handleSubmit"
         >
+          <div>
+            <div
+              :class="[
+                'vdb-c-ml-6 vdb-c-flex vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-[#FFCFA5] vdb-c-bg-[#FFF5EC] vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black',
+                { 'vdb-c-animate-pulse': !contextData?.name },
+              ]"
+            >
+              <span
+                class="context-icon vdb-c-ml-12 vdb-c-h-8 vdb-c-w-8 vdb-c-rounded-full vdb-c-border vdb-c-border-white"
+              >
+              </span>
+              <span
+                class="vdb-c-max-w-[160px] vdb-c-truncate vdb-c-text-sm vdb-c-font-bold"
+              >
+                {{ contextData?.name || "Loading..." }}
+              </span>
+            </div>
+          </div>
           <div class="vdb-c-relative vdb-c-flex-grow">
             <input
               ref="inputRef"
-              class="vdb-c-chat-input vdb-c-h-full vdb-c-w-full vdb-c-bg-white vdb-c-pl-24 vdb-c-pr-8 vdb-c-font-medium vdb-c-text-[#1D2736] vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
+              class="vdb-c-chat-input vdb-c-h-full vdb-c-w-full vdb-c-bg-white vdb-c-pl-16 vdb-c-pr-8 vdb-c-font-medium vdb-c-text-[#1D2736] vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
               name="prompt"
               :placeholder="placeholder"
               autocomplete="off"
@@ -110,6 +128,10 @@ const props = defineProps({
   agents: {
     type: Array,
     default: [],
+  },
+  contextData: {
+    type: Object,
+    default: null,
   },
 });
 
@@ -250,5 +272,10 @@ defineExpose({
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 2fr 3fr;
+}
+
+.context-icon {
+  background: radial-gradient(circle, #ff7f40 0%, #f55100 100%);
+  box-shadow: 0 0 6px 4px rgba(255, 90, 10, 0.6);
 }
 </style>

@@ -87,15 +87,28 @@
             <div
               @click="$emit('session-click', session.session_id)"
               :class="[
-                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-text-[#1E1E1E]',
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#1E1E1E]',
                 {
-                  'vdb-c-bg-blue-100': session.session_id === selectedSession,
+                  'vdb-c-bg-[#EFEFEF]': session.session_id === selectedSession,
                   'hover:vdb-c-bg-gray-100':
                     session.session_id !== selectedSession,
                 },
               ]"
             >
-              {{ session.session_id }}
+              {{
+                new Date(session.created_at * 1000)
+                  .toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false,
+                  })
+                  .replace(/\//g, ".")
+                  .replace(",", " -")
+              }}
             </div>
           </template>
         </div>
@@ -128,9 +141,11 @@
             <div
               @click="$emit('collection-click', collection.id)"
               :class="[
-                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-text-[#1E1E1E]',
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#1E1E1E]',
                 {
-                  'vdb-c-bg-blue-100': collection.id === selectedCollection,
+                  'vdb-c-bg-[#EFEFEF]':
+                    showSelectedCollection &&
+                    collection.id === selectedCollection,
                   'hover:vdb-c-bg-gray-100':
                     collection.id !== selectedCollection,
                 },
@@ -171,7 +186,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import Button from "../../buttons/Button.vue";
 import VideoDBIcon from "../../icons/VideoDBIcon.vue";
 import ComposeIcon from "../../icons/Compose.vue";
@@ -197,7 +212,7 @@ const toggleCollections = (value) => {
   showCollections.value = value !== undefined ? value : !showCollections.value;
 };
 
-defineProps({
+const props = defineProps({
   allSessions: {
     type: Array,
     required: true,
@@ -228,7 +243,19 @@ defineProps({
     type: String,
     default: "",
   },
+  showSelectedCollection: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+watch(
+  () => props.showSelectedCollection,
+  (val) => {
+    console.log("showSelectedCollection", val);
+  },
+  { immediate: true },
+);
 
 defineEmits([
   "create-new-session",

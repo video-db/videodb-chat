@@ -1,15 +1,13 @@
 <template>
-  <div class="vdb-c-relative vdb-c-w-full">
+  <div
+    class="vdb-c-relative vdb-c-w-full vdb-c-py-28 md:vdb-c-w-5/6 lg:vdb-c-w-4/5 xl:vdb-c-w-3/4"
+  >
     <div
-      class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-black"
+      class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden vdb-c-rounded-xl vdb-c-bg-black"
       v-if="videoData"
     >
       <div
-        :class="
-          isFullScreen
-            ? 'vdb-c-h-screen vdb-c-w-screen'
-            : 'videoPlayerContainer'
-        "
+        :class="isFullScreen ? 'vdb-c-h-screen vdb-c-w-screen' : 'vdb-c-w-full'"
       >
         <VideoDBPlayer
           ref="videoPlayer"
@@ -22,16 +20,6 @@
             <BigCenterButton
               class="vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2"
             />
-            <!-- <SearchInsideMedia
-              :search-content="searchContent"
-              :search-suggestions="searchSuggestions"
-              :search-results="searchResults"
-              :search-results-loading="searchResultsLoading"
-              :show-search-results="showSearchResults"
-              @toggle-results="showSearchResults = $event"
-              @search-change="handleSearchChange"
-              @search-submit="handleSearchSubmit"
-            /> -->
           </template>
         </VideoDBPlayer>
       </div>
@@ -40,9 +28,9 @@
     <!-- Video Player Loading -->
     <div
       v-else
-      class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-[#EEEFF2]"
+      class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-rounded-xl vdb-c-bg-[#EEEFF2] vdb-c-py-28 md:vdb-c-w-5/6 lg:vdb-c-w-4/5 xl:vdb-c-w-3/4"
     >
-      <div class="-videoPlayerContainer">
+      <div class="videoPlayerContainer">
         <div
           class="vdb-c-aspect-video vdb-c-h-full vdb-c-w-full vdb-c-animate-pulse"
         ></div>
@@ -52,16 +40,9 @@
 </template>
 
 <script setup>
-import { watch, ref } from "vue";
-import {
-  VideoDBPlayer,
-  BigCenterButton,
-  SearchInsideMedia,
-} from "@videodb/player-vue";
+import { ref, computed } from "vue";
+import { VideoDBPlayer, BigCenterButton } from "@videodb/player-vue";
 import "@videodb/player-vue/dist/style.css";
-import { useVideoDBChat } from "../../context";
-
-const { fetchCollectionVideo } = useVideoDBChat();
 
 const props = defineProps({
   collectionId: {
@@ -72,59 +53,24 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  collectionData: {
+    type: Object,
+    default: null,
+  },
+  videoData: {
+    type: Object,
+    default: null,
+  },
 });
 
+const collectionName = computed(() => props.collectionData?.name);
+const videoTitle = computed(() => props.videoData?.name);
+
 const isFullScreen = ref(false);
-const videoData = ref(null);
 
-const handleFullScreenChange = (isFullScreen) => {
-  isFullScreen.value = isFullScreen;
+const handleFullScreenChange = () => {
+  // isFullScreen.value = !isFullScreen.value;
 };
-
-watch(
-  () => props.videoId,
-  async () => {
-    const videoResult = await fetchCollectionVideo(
-      props.collectionId,
-      props.videoId,
-    );
-    console.log("Video result:", videoResult);
-    videoData.value = videoResult.data;
-    console.log("Video data:", videoData.value);
-  },
-  { immediate: true },
-);
 </script>
 
-<style scoped>
-.videoPlayerContainer {
-  width: 100%;
-  height: 55vh;
-  position: relative;
-  display: flex;
-  justify-content: center;
-}
-
-@media (min-width: 640px) {
-  .videoPlayerContainer {
-    width: 90%;
-    height: auto;
-    margin: auto;
-    position: relative;
-  }
-}
-
-@media (min-width: 1024px) {
-  .videoPlayerContainer {
-    width: 80%;
-    height: auto;
-  }
-}
-
-@media (min-width: 1280px) {
-  .videoPlayerContainer {
-    width: 70%;
-    height: auto;
-  }
-}
-</style>
+<style scoped></style>

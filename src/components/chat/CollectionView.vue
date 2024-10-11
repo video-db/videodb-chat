@@ -1,5 +1,5 @@
 <template>
-  <div class="collection-view">
+  <div class="vdb-c-w-4/5 vdb-c-py-28">
     <VideoList
       v-if="collectionVideos !== null"
       :video-results="videos"
@@ -15,18 +15,24 @@ import VideoList from "../collection/VideoList.vue";
 import VideoListLoader from "../collection/VideoListLoader.vue";
 import { ref, watch, computed } from "vue";
 
-const { fetchCollection, fetchCollectionVideos } = useVideoDBChat();
+const { fetchCollectionVideos } = useVideoDBChat();
 
 const props = defineProps({
   collectionId: {
     type: String,
     required: true,
   },
+  collectionData: {
+    type: Object,
+    default: null,
+  },
 });
 
+const collectionName = computed(
+  () => props.collectionData?.name || "Collection",
+);
 const emit = defineEmits(["video-click"]);
 
-const collectionData = ref(null);
 const collectionVideos = ref(null);
 
 const videos = computed(() => {
@@ -43,18 +49,12 @@ const handleVideoClick = (video) => {
 watch(
   () => props.collectionId,
   async (newCollectionId) => {
-    console.log("Fetching collection data for ID:", newCollectionId);
-    const collectionResult = await fetchCollection(newCollectionId);
-    console.log("Collection data result:", collectionResult);
-
     console.log("Fetching collection videos for ID:", newCollectionId);
     const videosResult = await fetchCollectionVideos(newCollectionId);
     console.log("Collection videos result:", videosResult);
 
-    collectionData.value = collectionResult.data;
     collectionVideos.value = videosResult.data;
 
-    console.log("Updated collectionData:", collectionData.value);
     console.log("Updated collectionVideos:", collectionVideos.value);
   },
   { immediate: true },

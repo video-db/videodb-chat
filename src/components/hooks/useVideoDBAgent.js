@@ -1,4 +1,4 @@
-import { reactive, toRefs, watch, computed } from "vue";
+import { onBeforeMount, ref, reactive, toRefs, watch, computed } from "vue";
 import io from "socket.io-client";
 
 // #TODO: add config for custom route for fetching sessions and collections
@@ -13,7 +13,14 @@ export function useVideoDBAgent(config) {
     videoId: null,
     collectionId: null,
   });
+
+  const allCollections = reactive([]);
+  const allSessions = reactive([]);
+
   const conversations = reactive({});
+  const activeCollectionData = ref(null);
+  const activeVideoData = ref(null);
+
   // const bufferMessages = reactive([]);
 
   const setCollectionId = (collectionId) => {
@@ -37,6 +44,47 @@ export function useVideoDBAgent(config) {
       if (debug) console.log("debug :videodb-chat conversations updated:", val);
     },
     { deep: true },
+  );
+
+  onBeforeMount(() => {
+    fetchCollections().then((res) => {
+      allCollections.push(...res.data);
+    });
+    fetchSessions().then((res) => {
+      allSessions.push(...res.data);
+    });
+  });
+
+  watch(
+    () => session.collectionId,
+    (val) => {
+      activeCollectionData.value = null;
+      if (val) {
+        const collection = allCollections.find((c) => c.id === val);
+        if (collection) {
+          activeCollectionData.value = collection;
+        } else {
+          fetchCollection(val).then((res) => {
+            activeCollectionData.value = res.data;
+          });
+        }
+      }
+    },
+    { immediate: true },
+  );
+
+  watch(
+    () => session.videoId,
+    (val) => {
+      activeVideoData.value = null;
+      if (val) {
+        fetchCollectionVideo(session.collectionId, val).then((res) => {
+          console.log("debug :videodb-chat activeVideoData", res.data);
+          activeVideoData.value = res.data;
+        });
+      }
+    },
+    { immediate: true },
   );
 
   const loadSession = (sessionId, fetchPastMessages = false) => {
@@ -191,6 +239,10 @@ export function useVideoDBAgent(config) {
 
   return {
     ...toRefs(session),
+    allCollections,
+    allSessions,
+    activeCollectionData,
+    activeVideoData,
     chatLoading,
     conversations,
     setVideoId,
