@@ -50,7 +50,7 @@
             <div
               @click="$emit('agent-click', agent)"
               :class="[
-                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-[#EFEFEF]',
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-border-[#FFAD6D] hover:vdb-c-bg-[#FFF5EC]',
               ]"
             >
               <span class="vdb-c-text-[#EC5B16]"> @ </span>
