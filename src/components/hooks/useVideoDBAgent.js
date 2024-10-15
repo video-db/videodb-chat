@@ -15,7 +15,10 @@ export function useVideoDBAgent(config) {
   });
 
   const allCollections = reactive([]);
-  const allSessions = reactive([]);
+  const allSessionsRaw = reactive([]);
+  const allSessions = computed(() => {
+    return [...allSessionsRaw].sort((a, b) => b.created_at - a.created_at);
+  });
 
   const conversations = reactive({});
   const activeCollectionData = ref(null);
@@ -51,7 +54,7 @@ export function useVideoDBAgent(config) {
       allCollections.push(...res.data);
     });
     fetchSessions().then((res) => {
-      allSessions.push(...res.data);
+      allSessionsRaw.push(...res.data);
     });
   });
 
@@ -147,6 +150,12 @@ export function useVideoDBAgent(config) {
   const addMessage = (message) => {
     console.log("debug :videodb-chat addMessage", message);
     if (session.isConnected) {
+      if (!allSessionsRaw.some(s => s.session_id === session.sessionId)) {
+        allSessionsRaw.push({
+          session_id: session.sessionId,
+          created_at: Date.now() / 1000,
+        });
+      }
       const convId = Date.now();
       const msgId = convId + 1;
       const _message = {

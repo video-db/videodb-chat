@@ -1,6 +1,6 @@
 <template>
   <div
-    class="vdb-c-relative vdb-c-w-full vdb-c-py-28 md:vdb-c-w-5/6 lg:vdb-c-w-4/5 xl:vdb-c-w-3/4"
+    class="vdb-c-relative vdb-c-w-full vdb-c-py-28 md:vdb-c-w-5/6 lg:vdb-c-w-4/5 xl:vdb-c-w-3/4 vdb-c-mx-auto"
   >
     <div
       class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden vdb-c-rounded-xl vdb-c-bg-black"

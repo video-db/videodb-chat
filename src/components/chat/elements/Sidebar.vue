@@ -22,12 +22,14 @@
       class="vdb-c-flex vdb-c-flex-grow vdb-c-flex-col vdb-c-gap-16 vdb-c-overflow-hidden"
     >
       <!-- Explore Agents -->
-      <div class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-gap-4">
+      <div
+        class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
+        :class="{ 'vdb-c-explore-agents-animation': isExploreAgentsFocused }"
+      >
         <button
           @click="toggleExploreAgents()"
           :class="[
             'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-10 vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#1E1E1E] vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-[#EFEFEF]',
-            { 'vdb-c-bg-[#EEEEEE]': showExploreAgents },
           ]"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
@@ -44,13 +46,13 @@
         </button>
         <div
           v-if="showExploreAgents"
-          class="vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border vdb-c-border-[#EFEFEF] vdb-c-px-8 vdb-c-py-4"
+          class="vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-px-8 vdb-c-py-4"
         >
           <template v-for="(agent, index) in allAgents" :key="index">
             <div
               @click="$emit('agent-click', agent)"
               :class="[
-                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-border-[#FFAD6D] hover:vdb-c-bg-[#FFF5EC]',
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-75 hover:vdb-c-border-[#FFAD6D] hover:vdb-c-bg-[#FFF5EC]',
               ]"
             >
               <span class="vdb-c-text-[#EC5B16]"> @ </span>
@@ -83,6 +85,13 @@
           </div>
         </button>
         <div v-if="showSessions" class="vdb-c-mt-4 vdb-c-overflow-y-auto">
+          <div v-if="addDummySession">
+            <div
+              class="vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#1E1E1E]"
+            >
+              (new session)
+            </div>
+          </div>
           <template v-for="session in allSessions" :key="session.session_id">
             <div
               @click="$emit('session-click', session.session_id)"
@@ -145,9 +154,9 @@
                 {
                   'vdb-c-bg-[#EFEFEF]':
                     showSelectedCollection &&
-                    collection.id === selectedCollection,
+                    collection.id === computedSelectedCollection,
                   'hover:vdb-c-bg-gray-100':
-                    collection.id !== selectedCollection,
+                    collection.id !== computedSelectedCollection,
                 },
               ]"
             >
@@ -186,7 +195,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { nextTick, ref, watch, computed } from "vue";
 import Button from "../../buttons/Button.vue";
 import VideoDBIcon from "../../icons/VideoDBIcon.vue";
 import ComposeIcon from "../../icons/Compose.vue";
@@ -196,6 +205,8 @@ import MenuIcon from "../../icons/MenuIcon.vue";
 const showExploreAgents = ref(false);
 const showSessions = ref(true);
 const showCollections = ref(false);
+const isExploreAgentsFocused = ref(false);
+const exploreAgentsTimeout = ref(null);
 
 const toggleExploreAgents = (value) => {
   showExploreAgents.value =
@@ -203,13 +214,24 @@ const toggleExploreAgents = (value) => {
 };
 
 const toggleSessions = (value) => {
-  console.log("this is value", value);
   showSessions.value = value !== undefined ? value : !showSessions.value;
 };
 
 const toggleCollections = (value) => {
-  console.log("this is value", value);
   showCollections.value = value !== undefined ? value : !showCollections.value;
+};
+
+const triggerExploreAgentsFocusAnimation = () => {
+  if (exploreAgentsTimeout.value) {
+    clearTimeout(exploreAgentsTimeout.value);
+  }
+  isExploreAgentsFocused.value = false;
+  nextTick(() => {
+    isExploreAgentsFocused.value = true;
+    exploreAgentsTimeout.value = setTimeout(() => {
+      isExploreAgentsFocused.value = false;
+    }, 1000);
+  });
 };
 
 const props = defineProps({
@@ -237,11 +259,15 @@ const props = defineProps({
   },
   selectedCollection: {
     type: String,
-    default: "",
+    default: "default",
   },
   selectedSession: {
     type: String,
     default: "",
+  },
+  addDummySession: {
+    type: Boolean,
+    default: false,
   },
   showSelectedCollection: {
     type: Boolean,
@@ -249,13 +275,18 @@ const props = defineProps({
   },
 });
 
-watch(
-  () => props.showSelectedCollection,
-  (val) => {
-    console.log("showSelectedCollection", val);
-  },
-  { immediate: true },
-);
+const computedSelectedCollection = computed(() => {
+  if (props.selectedCollection !== "default") {
+    return props.selectedCollection;
+  }
+  return props.allCollections.length > 0 ? props.allCollections[0].id : null;
+});
+
+watch(showExploreAgents, (newValue) => {
+  if (newValue) {
+    triggerExploreAgentsFocusAnimation();
+  }
+});
 
 defineEmits([
   "create-new-session",
@@ -268,5 +299,36 @@ defineExpose({
   toggleExploreAgents,
   toggleSessions,
   toggleCollections,
+  triggerExploreAgentsFocusAnimation,
 });
 </script>
+
+<style>
+.vdb-c-explore-agents-animation {
+  animation: exploreAgentsFade 1s ease-out;
+}
+
+.vdb-c-explore-agents-animation button {
+  animation: exploreAgentButtonFade 1s ease-out;
+}
+
+@keyframes exploreAgentsFade {
+  0% {
+    border-color: #ff7e32;
+    background-color: #fff5ec;
+  }
+  100% {
+    border-color: transparent;
+    background-color: transparent;
+  }
+}
+
+@keyframes exploreAgentButtonFade {
+  0% {
+    background-color: #ffe9d3;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+</style>

@@ -6,20 +6,23 @@
       class="vdb-c-mb-14 vdb-c-flex vdb-c-flex-col sm:vdb-c-block sm:vdb-c-flex-row"
     >
       <div
-        class="sm:vdb-c-min-w-auto sm:vdb-c-min-w-0 vdb-c-w-auto vdb-c-min-w-96 vdb-c-mb-8 sm:vdb-c-mb-16 sm:vdb-c-mr-24 sm:vdb-c-w-full"
+        class="sm:vdb-c-min-w-auto sm:vdb-c-min-w-0 vdb-c-mb-8 vdb-c-w-auto vdb-c-min-w-96 sm:vdb-c-mb-16 sm:vdb-c-mr-24 sm:vdb-c-w-full"
       >
         <div
-          class="vid-pb vdb-c-relative vdb-c-overflow-hidden vdb-c-rounded-[7px] vdb-c-bg-white"
+          class="vid-pb vdb-c-relative vdb-c-overflow-hidden vdb-c-rounded-[7px]"
         >
           <div
+            v-if="item.thumbnail_url"
             class="thumbnail vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0 vdb-c-top-0 vdb-c-h-106 vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1"
             :style="{
-              backgroundImage: item.thumbnail_url
-                ? `url('${item.thumbnail_url}')`
-                : 'none',
-              backgroundColor: item.thumbnail_url ? 'transparent' : 'black',
+              backgroundImage: `url('${item.thumbnail_url}')`,
+              backgroundColor: 'transparent',
             }"
           ></div>
+          <default-thumbnail
+            v-else
+            class="thumbnail vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0 vdb-c-top-0 vdb-c-h-106 vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1"
+          />
           <div
             class="center-button transparent-button vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2 vdb-c-flex vdb-c-h-48 vdb-c-w-48 -vdb-c-translate-x-1/2 -vdb-c-translate-y-1/2 vdb-c-transform vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full lg:vdb-c-h-56 lg:vdb-c-w-56"
           >
@@ -31,7 +34,7 @@
         class="fade-on-hover vdb-c-flex vdb-c-flex-col vdb-c-justify-center vdb-c-text-black"
       >
         <p
-          class="text-elip vdb-c-mb-8 vdb-c-line-clamp-3 vdb-c-whitespace-normal vdb-c-text-xs vdb-c-font-medium"
+          class="text-elip vdb-c-mb-8 vdb-c-line-clamp-2 vdb-c-whitespace-normal vdb-c-text-xs vdb-c-font-medium vdb-c-h-[2.5em]"
         >
           {{ item.name }}
         </p>
@@ -44,6 +47,7 @@
 import CommentLine from "../icons/CommentLine.vue";
 import PlayIcon from "../icons/play.vue";
 import TimeIcon from "../icons/time.vue";
+import DefaultThumbnail from "../assets/DefaultThumbnail.vue";
 
 export default {
   name: "VideoCard",
@@ -51,6 +55,7 @@ export default {
     CommentLine,
     PlayIcon,
     TimeIcon,
+    DefaultThumbnail,
   },
   props: {
     item: {
@@ -93,7 +98,7 @@ export default {
 
 .text-elip {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

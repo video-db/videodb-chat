@@ -16,6 +16,7 @@
           !showCollectionView
         "
         :selected-session="currentSessionId"
+        :add-dummy-session="Object.keys(conversations).length === 0"
         :selected-collection="currentCollectionId"
         :all-agents="allAgents"
         :all-sessions="allSessions"
@@ -312,6 +313,7 @@ const handleQueryCardClick = (query) => {
 };
 
 const handleExploreAgentsClick = () => {
+  sidebarRef.value.triggerExploreAgentsFocusAnimation();
   sidebarRef.value.toggleExploreAgents(true);
 };
 

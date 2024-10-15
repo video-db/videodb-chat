@@ -20,8 +20,51 @@
           {{ collectionName }}
         </span>
       </h1>
+      <div
+        v-if="isOnboardingMessageVisible"
+        class="fade-in-anim vdb-c-relative vdb-c-rounded-lg vdb-c-bg-[#F7F7F7] vdb-c-p-20"
+      >
+        <div
+          class="vdb-c-absolute vdb-c-right-8 vdb-c-top-10 vdb-c-cursor-pointer vdb-c-p-10 hover:vdb-c-bg-[#EFEFEF]"
+          @click="hideOnboardingMessage"
+        >
+          <CrossIcon />
+        </div>
+        <div
+          class="vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6 vdb-c-text-[#464646]"
+        >
+          <div class="vdb-c-font-semibold">
+            Welcome to Spielberg: a video-first AI agent framework powered by
+            <a
+              href="https://www.videodb.io"
+              target="_blank"
+              class="vdb-c-font-semibold vdb-c-text-[#464646] vdb-c-underline hover:vdb-c-text-[#333333]"
+            >
+              VideoDB </a
+            >.
+          </div>
+          <div>
+            Feel free to explore our agents, or
+            <a
+              href="https://www.videodb.io"
+              target="_blank"
+              class="vdb-c-font-semibold vdb-c-text-[#464646] vdb-c-underline hover:vdb-c-text-[#333333]"
+            >
+              create a custom agent
+            </a>
+            that suits your workflows. From upload to publish - Spielberg can
+            get it all done right here! Let us know how you like it on our
+            <a
+              href="https://discord.com/invite/py9P639jGz"
+              target="_blank"
+              class="vdb-c-font-semibold vdb-c-text-[#464646] vdb-c-underline hover:vdb-c-text-[#333333]"
+            >
+              Discord.
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-
     <!-- Action Cards -->
     <div
       class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
@@ -33,23 +76,42 @@
           v-for="(query, index) in actionCardQueries"
           :key="index"
           :class="[
-            'vdb-c-w-160 vdb-c-h-120 vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
-            query.muted
-              ? 'hover:vdb-c-shadow-md vdb-c-border vdb-c-border-[#EFEFEF] vdb-c-bg-[#F7F7F7] hover:vdb-c-bg-[#E5E5E5]'
-              : 'hover:vdb-c-shadow-md vdb-c-bg-[#FFF5EC] hover:vdb-c-bg-[#FFE9D3]',
+            'vdb-c-w-160 vdb-c-h-120 hover:vdb-c-shadow-md vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
+            {
+              'vdb-c-bg-[#FFF5EC] hover:vdb-c-bg-[#FFE9D3]':
+                query.type === 'primary',
+              'vdb-c-border-[#EFEFEF] vdb-c-bg-[#F7F7F7] hover:vdb-c-bg-[#E5E5E5]':
+                query.type === 'muted',
+              'vdb-c-bg-[#CC2B02] hover:vdb-c-bg-[#CC2B02]':
+                query.type === 'cta',
+            },
           ]"
           @click="$emit('query-card-click', query)"
         >
           <div
             :class="[
               'vdb-c-hidden vdb-c-h-48 vdb-c-w-48 vdb-c-items-center vdb-c-justify-center vdb-c-self-start vdb-c-rounded-full vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-flex',
-              query.muted ? 'vdb-c-bg-[#EFEFEF]' : 'vdb-c-bg-[#FFE9D3]',
+              {
+                'vdb-c-bg-[#460C0459]': query.type === 'cta',
+                'vdb-c-bg-[#EFEFEF]': query.type === 'muted',
+                'vdb-c-bg-[#FFE9D3]': query.type === 'primary',
+              },
             ]"
           >
-            <QuestionMark :fill="query.muted ? '#2D2D2D' : '#C14103'" />
+            <QuestionMark
+              v-if="query.type === 'muted' || query.type === 'primary'"
+              :fill="query.type === 'muted' ? '#2D2D2D' : '#C14103'"
+            />
+            <FileUploadIcon v-else-if="query.type === 'cta'" />
           </div>
           <p
-            class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-sm vdb-c-font-semibold vdb-c-text-[#1D2736] lg:vdb-c-text-base"
+            class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-sm vdb-c-font-semibold lg:vdb-c-text-base"
+            :class="[
+              {
+                'vdb-c-text-[#1D2736]': query.type === 'muted' || 'primary',
+                'vdb-c-text-[#FFF5EC]': query.type === 'cta',
+              },
+            ]"
           >
             {{ query.text }}
           </p>
@@ -116,7 +178,7 @@
             </h4>
             <p class="vdb-c-text-sm vdb-c-text-[#1E1E1E]">
               <span
-                class="vdb-c-line-clamp-2 vdb-c-text-xs vdb-c-font-normal vdb-c-text-[#1E1E1E] sm:vdb-c-text-sm"
+                class="vdb-c-line-clamp-2 vdb-c-h-[2.5em] vdb-c-text-xs vdb-c-font-normal vdb-c-text-[#1E1E1E] sm:vdb-c-text-sm"
                 >{{ agent.description }}</span
               >
             </p>
@@ -128,10 +190,12 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 import QuestionMark from "../../icons/QuestionMark.vue";
+import FileUploadIcon from "../../icons/FileUpload.vue";
 import InfoIcon from "../../icons/InfoIcon.vue";
+import CrossIcon from "../../icons/Cross.vue";
 import AtIcon from "../../icons/AtIcon.vue";
 import MenuIcon from "../../icons/MenuIcon.vue";
 import Button from "../../buttons/Button.vue";
@@ -155,29 +219,38 @@ const props = defineProps({
     default: () => [
       {
         text: "Show me all the videos in my collection",
-        muted: false,
+        type: "cta",
         action: "show-collection",
       },
       {
         text: "Upload a video to my default collection",
-        muted: false,
+        type: "primary",
         action: "chat",
       },
       {
         text: "Categorise the videos in my collection by size",
-        muted: false,
+        type: "primary",
         action: "chat",
       },
       {
         text: "I'm not sure. Help me figure out what you can do.",
-        muted: true,
+        type: "muted",
         action: "chat",
       },
     ],
   },
+  showOnboardingMessage: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const collectionName = computed(() => props.activeCollectionData?.name);
+const isOnboardingMessageVisible = ref(props.showOnboardingMessage);
+
+const hideOnboardingMessage = () => {
+  isOnboardingMessageVisible.value = false;
+};
 
 defineEmits(["query-card-click", "agent-click", "explore-agents-click"]);
 </script>

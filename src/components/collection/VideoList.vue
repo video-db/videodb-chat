@@ -75,31 +75,23 @@ const paginatedVideos = computed(() => {
 });
 
 const displayedPageNumbers = computed(() => {
-  const range = 1;
-  let start = Math.max(1, currentPage.value - range);
-  let end = Math.min(totalPages.value, currentPage.value + range);
+  const maxDisplayed = 5;
+  const halfDisplay = Math.floor(maxDisplayed / 2);
 
-  if (end - start < range * 2) {
-    if (start === 1) {
-      end = Math.min(start + range * 2, totalPages.value);
-    } else {
-      start = Math.max(end - range * 2, 1);
-    }
+  let start = Math.max(1, currentPage.value - halfDisplay);
+  let end = Math.min(totalPages.value, start + maxDisplayed - 1);
+
+  // Adjust start if end is at its maximum
+  if (end === totalPages.value) {
+    start = Math.max(1, end - maxDisplayed + 1);
   }
 
-  let numbers = Array.from({ length: end - start + 1 }, (_, i) => start + i);
-
-  // Add first page button if not already included
-  if (numbers[0] !== 1) {
-    numbers.unshift(1);
+  // Adjust end if start is at its minimum
+  if (start === 1) {
+    end = Math.min(totalPages.value, maxDisplayed);
   }
 
-  // Add last page button if not already included
-  if (numbers[numbers.length - 1] !== totalPages.value) {
-    numbers.push(totalPages.value);
-  }
-
-  return numbers;
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
 
 const goToPage = (page) => {

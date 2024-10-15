@@ -1,5 +1,5 @@
 <template>
-  <div class="vdb-c-w-4/5 vdb-c-py-28">
+  <div class="vdb-c-mx-auto vdb-c-w-11/12 vdb-c-py-28">
     <VideoList
       v-if="collectionVideos !== null"
       :video-results="videos"
@@ -28,9 +28,6 @@ const props = defineProps({
   },
 });
 
-const collectionName = computed(
-  () => props.collectionData?.name || "Collection",
-);
 const emit = defineEmits(["video-click"]);
 
 const collectionVideos = ref(null);
