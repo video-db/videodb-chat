@@ -34,13 +34,15 @@ export function useVideoDBAgent(config) {
   const allCollections = ref([]);
   const allSessionsRaw = ref([]);
   const allSessions = computed(() => {
-    return [...allSessionsRaw.value].sort((a, b) => b.created_at - a.created_at);
+    return [...allSessionsRaw.value].sort(
+      (a, b) => b.created_at - a.created_at,
+    );
   });
   const allAgents = ref([]);
 
   const conversations = reactive({});
   const activeCollectionData = ref(null);
-  const activeCollectionVideos = ref([]);
+  const activeCollectionVideos = ref(null);
   const activeVideoData = ref(null);
 
   const setCollectionId = (collectionId) => {
@@ -93,7 +95,7 @@ export function useVideoDBAgent(config) {
     () => session.collectionId,
     (val) => {
       activeCollectionData.value = null;
-      activeCollectionVideos.value = [];
+      activeCollectionVideos.value = null;
       if (val) {
         const collection = allCollections.value.find((c) => c.id === val);
         if (collection) {
@@ -184,7 +186,9 @@ export function useVideoDBAgent(config) {
   const addMessage = (message) => {
     console.log("debug :videodb-chat addMessage", message);
     if (session.isConnected) {
-      if (!allSessionsRaw.value.some((s) => s.session_id === session.sessionId)) {
+      if (
+        !allSessionsRaw.value.some((s) => s.session_id === session.sessionId)
+      ) {
         allSessionsRaw.value.push({
           session_id: session.sessionId,
           created_at: Date.now() / 1000,
@@ -233,7 +237,9 @@ export function useVideoDBAgent(config) {
 
   const chatLoading = computed(() =>
     Object.values(conversations).some((conv) =>
-      Object.values(conv).some((content) => content.status === "progress"),
+      Object.values(conv).some(
+        (content) => content.status === "progress" || content.clientLoading,
+      ),
     ),
   );
 

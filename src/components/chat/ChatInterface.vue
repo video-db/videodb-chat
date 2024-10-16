@@ -144,15 +144,7 @@
 
 <script setup>
 import { v4 as uuidv4 } from "uuid";
-import {
-  computed,
-  nextTick,
-  onBeforeMount,
-  provide,
-  reactive,
-  ref,
-  watch,
-} from "vue";
+import { computed, nextTick, provide, ref, watch } from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -275,9 +267,12 @@ watch(chatLoading, (val) => {
 const collectionName = computed(() => activeCollectionData.value?.name);
 const videoName = computed(() => activeVideoData.value?.name);
 const isFreshUser = computed(() => {
-  return (
-    allCollections.value.length < 2 && activeCollectionVideos.value.length < 1
-  );
+  if (allCollections.value && activeCollectionVideos.value) {
+    return (
+      allCollections.value.length < 2 && activeCollectionVideos.value.length < 1
+    );
+  }
+  return false;
 });
 
 watch(
@@ -389,7 +384,7 @@ defineExpose({
   chatLoading,
   conversations,
   messageHandlers,
-  addMessage: handleAddMessage,
+  addMessage,
   loadSession,
   setChatInput,
   registerMessageHandler,
@@ -400,7 +395,7 @@ provide("videodb-chat", {
   chatLoading,
   conversations,
   messageHandlers,
-  addMessage: handleAddMessage,
+  addMessage,
   loadSession,
   setChatInput,
   registerMessageHandler,
