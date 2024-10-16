@@ -184,8 +184,8 @@ export function useVideoDBAgent(config) {
   const addMessage = (message) => {
     console.log("debug :videodb-chat addMessage", message);
     if (session.isConnected) {
-      if (!allSessionsRaw.some((s) => s.session_id === session.sessionId)) {
-        allSessionsRaw.push({
+      if (!allSessionsRaw.value.some((s) => s.session_id === session.sessionId)) {
+        allSessionsRaw.value.push({
           session_id: session.sessionId,
           created_at: Date.now() / 1000,
         });
