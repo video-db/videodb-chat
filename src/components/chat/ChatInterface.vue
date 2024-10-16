@@ -15,6 +15,8 @@
           !showVideoView &&
           !showCollectionView
         "
+        :initial-sessions-open="!isFreshUser"
+        :initial-collections-open="isFreshUser"
         :selected-session="currentSessionId"
         :add-dummy-session="Object.keys(conversations).length === 0"
         :selected-collection="currentCollectionId"
@@ -46,7 +48,7 @@
                   class="vdb-c-w-full vdb-c-p-16 vdb-c-px-30"
                 >
                   <div
-                    class="vdb-c-border-roy vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-border-b vdb-c-py-12 vdb-c-text-lg vdb-c-text-black"
+                    class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-border-b vdb-c-border-roy vdb-c-py-12 vdb-c-text-lg vdb-c-text-black"
                   >
                     <span class="vdb-c-flex vdb-c-font-bold">
                       <span
@@ -61,7 +63,7 @@
                       </span>
                       <span
                         v-else
-                        class="vdb-c-bg-roy vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded"
+                        class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
                       ></span>
                     </span>
                     <span v-if="showVideoView"> > </span>
@@ -101,6 +103,7 @@
                   :all-agents="allAgents.slice(0, 2)"
                   :active-collection-data="activeCollectionData"
                   :show-onboarding-message="isFreshUser"
+                  :action-card-queries="actionCardQueries"
                   @query-card-click="handleQueryCardClick"
                   @agent-click="handleTagAgent"
                   @explore-agents-click="handleExploreAgentsClick"
@@ -155,6 +158,7 @@ import CollectionView from "./CollectionView.vue";
 import VideoView from "./VideoView.vue";
 import DefaultScreen from "./elements/DefaultScreen.vue";
 import Sidebar from "./elements/Sidebar.vue";
+import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
@@ -162,6 +166,8 @@ import ImageHandler from "../message-handlers/ImageHandler.vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 
 import VideoDBLogo from "../icons/VideoDBLogo.vue";
+import FileUploadIcon from "../icons/FileUpload.vue";
+import EyeIcon from "../icons/Eye.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -209,6 +215,10 @@ const props = defineProps({
   userName: {
     type: String,
     default: "",
+  },
+  actionCardQueries: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(["backBtnClick", "updateConversations"]);
@@ -274,30 +284,58 @@ const isFreshUser = computed(() => {
   }
   return false;
 });
-
-watch(
-  isFreshUser,
-  (val) => {
-    console.log("isFreshUser", val);
-  },
-  { immediate: true },
-);
-
-watch(
-  () => allCollections.value,
-  (val) => {
-    console.log("allCollections", val);
-  },
-  { immediate: true },
-);
-
-watch(
-  () => activeCollectionVideos.value,
-  (val) => {
-    console.log("activeCollectionVideos", val);
-  },
-  { immediate: true },
-);
+const actionCardQueries = computed(() => {
+  return isFreshUser.value
+    ? [
+        {
+          component: UploadVideoQueryCard,
+          content: "Upload a video to this collection",
+          type: "cta",
+          action: "chat",
+          icon: FileUploadIcon,
+        },
+        {
+          content: "What are agents and How do they work ?",
+          type: "primary",
+          action: "chat",
+        },
+        {
+          content:
+            "How will I be charged for using VideoDB’s integration on Spielberg?",
+          type: "primary",
+          action: "chat",
+        },
+        {
+          content:
+            "I’m not sure what Spielberg is about.Help me figure out what you can do.",
+          type: "muted",
+          action: "chat",
+        },
+      ]
+    : [
+        {
+          content: "View all videos in this collection",
+          type: "cta",
+          action: "show-collection",
+          icon: EyeIcon,
+        },
+        {
+          content: "Upload a video to this collection",
+          type: "primary",
+          action: "chat",
+        },
+        {
+          content: "Categorise the videos in my collection",
+          type: "primary",
+          action: "chat",
+        },
+        {
+          content: "I'm not sure. Help me figure out what you can do",
+          type: "muted",
+          action: "chat",
+        },
+      ];
+});
 
 // --- Sidebar Click Handlers ---
 const handleNewSessionClick = () => {
@@ -328,8 +366,9 @@ const handleCollectionClick = (collectionId) => {
 const handleQueryCardClick = (query) => {
   if (query.action === "show-collection") {
     showCollectionView.value = true;
+    chatInput.value = "";
   } else if (query.action === "chat") {
-    setChatInput(query.text);
+    chatInput.value = query.content;
   }
 };
 

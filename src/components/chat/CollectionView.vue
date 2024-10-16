@@ -21,6 +21,7 @@
                 { type: 'text', text: 'Upload a video to this collection' },
               ],
             });
+            chatInput = '';
           "
           variant="tertiary"
           class="vdb-c-mt-12"
@@ -47,7 +48,7 @@ import UploadIcon from "../icons/FileUpload.vue";
 
 import { useVideoDBChat } from "../../context";
 
-const { loadSession, addMessage } = useVideoDBChat();
+const { chatInput, loadSession, addMessage } = useVideoDBChat();
 
 const props = defineProps({
   collectionId: {

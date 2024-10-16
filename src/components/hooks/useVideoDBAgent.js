@@ -197,7 +197,7 @@ export function useVideoDBAgent(config) {
       const convId = Date.now();
       const msgId = convId + 1;
       const _message = {
-        agents_name: [],
+        agents: [],
         msg_type: "input",
         sender: "user",
         conv_id: String(convId),
@@ -223,8 +223,7 @@ export function useVideoDBAgent(config) {
 
   socket.on("chat", (event) => {
     if (debug) console.log("debug :videodb-chat socket emmited chat", event);
-    // #TODO: this is a backend bug, session_id is received as null
-    // if (session.sessionId !== event.session_id) return;
+    if (session.sessionId !== event.session_id) return;
     if (session.isConnected) {
       const { conv_id: convId, msg_id: msgId } = event;
       if (!conversations[convId]) {

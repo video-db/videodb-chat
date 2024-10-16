@@ -71,7 +71,7 @@
           @click="isExpanded = !isExpanded"
         >
           {{ isExpanded ? "See less" : "See more results" }}
-          <down-arrow
+          <ChevronDown
             :class-name="`vdb-c-ml-8 ${isExpanded ? 'vdb-c-transform vdb-c-rotate-180' : ''}`"
           />
         </button>
@@ -82,7 +82,7 @@
 
 <script setup>
 import { ref } from "vue";
-import DownArrow from "../../icons/DownArrow.vue";
+import ChevronDown from "../../icons/ChevronDown.vue";
 import {
   SearchResults,
   VideoDBPlayer,

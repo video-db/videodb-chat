@@ -28,13 +28,11 @@
     <!-- Video Player Loading -->
     <div
       v-else
-      class="vdb-c-bg-roy vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-rounded-xl vdb-c-py-28 md:vdb-c-w-5/6 lg:vdb-c-w-4/5 xl:vdb-c-w-3/4"
+      class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-rounded-xl vdb-c-bg-roy"
     >
-      <div class="videoPlayerContainer">
-        <div
-          class="vdb-c-aspect-video vdb-c-h-full vdb-c-w-full vdb-c-animate-pulse"
-        ></div>
-      </div>
+      <div
+        class="vdb-c-aspect-video vdb-c-h-full vdb-c-w-full vdb-c-animate-pulse"
+      ></div>
     </div>
   </div>
 </template>

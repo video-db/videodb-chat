@@ -36,7 +36,7 @@
             <MenuIcon class="vdb-c-mr-8" />
             <span>Explore Agents</span>
           </div>
-          <DownArrowIcon
+          <ChevronDown
             :class="[
               'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform vdb-c-duration-300',
               { 'vdb-c-rotate-180': showExploreAgents },
@@ -75,7 +75,7 @@
             >Sessions</span
           >
           <div class="vdb-c-p-4">
-            <DownArrowIcon
+            <ChevronDown
               :class="[
                 'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
                 { 'vdb-c-rotate-180': showSessions },
@@ -136,7 +136,7 @@
             >Collections</span
           >
           <div class="vdb-c-p-4">
-            <DownArrowIcon
+            <ChevronDown
               :class="[
                 'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
                 { 'vdb-c-rotate-180': showCollections },
@@ -214,7 +214,7 @@ import Button from "../../buttons/Button.vue";
 
 import SpielbergIcon from "../../icons/Spielberg2.vue";
 import ComposeIcon from "../../icons/Compose.vue";
-import DownArrowIcon from "../../icons/DownArrow.vue";
+import ChevronDown from "../../icons/ChevronDown.vue";
 import MenuIcon from "../../icons/Menu.vue";
 
 const showExploreAgents = ref(false);
@@ -222,6 +222,8 @@ const showSessions = ref(true);
 const showCollections = ref(false);
 const isExploreAgentsFocused = ref(false);
 const exploreAgentsTimeout = ref(null);
+const userClickedSessions = ref(false);
+const userClickedCollections = ref(false);
 
 const toggleExploreAgents = (value) => {
   showExploreAgents.value =
@@ -229,10 +231,12 @@ const toggleExploreAgents = (value) => {
 };
 
 const toggleSessions = (value) => {
+  userClickedSessions.value = true;
   showSessions.value = value !== undefined ? value : !showSessions.value;
 };
 
 const toggleCollections = (value) => {
+  userClickedCollections.value = true;
   showCollections.value = value !== undefined ? value : !showCollections.value;
 };
 
@@ -288,6 +292,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  initialSessionsOpen: {
+    type: Boolean,
+    default: true,
+  },
+  initialCollectionsOpen: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const computedSelectedCollection = computed(() => {
@@ -296,6 +308,18 @@ const computedSelectedCollection = computed(() => {
   }
   return props.allCollections.length > 0 ? props.allCollections[0].id : null;
 });
+
+watch(() => props.initialSessionsOpen, (newValue) => {
+  if (!userClickedSessions.value) {
+    showSessions.value = newValue;
+  }
+}, { immediate: true });
+
+watch(() => props.initialCollectionsOpen, (newValue) => {
+  if (!userClickedCollections.value) {
+    showCollections.value = newValue;
+  }
+}, { immediate: true });
 
 watch(showExploreAgents, (newValue) => {
   if (newValue) {

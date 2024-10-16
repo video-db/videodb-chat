@@ -4,7 +4,7 @@
       @click="toggleExpand"
       class="vdb-c-focus:outline-none vdb-c-flex vdb-c-items-center vdb-c-gap-8"
     >
-      <DownArrowIcon
+      <ChevronDown
         :class="{ 'vdb-c-rotate-180 vdb-c-transform': isExpanded }"
         :stroke-width="2"
         :stroke-color="'#343E4F'"
@@ -67,7 +67,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
-import DownArrowIcon from "../../icons/DownArrow.vue";
+import ChevronDown from "../../icons/ChevronDown.vue";
 
 const props = defineProps({
   steps: {

@@ -2,16 +2,16 @@
   <div>
     <div
       v-if="showAgentList"
-      class="vdb-c-shadow-md vdb-c-absolute vdb-c-ml-32 vdb-c--translate-y-full vdb-c-transform vdb-c-rounded-md vdb-c-bg-white"
+      class="vdb-c-absolute vdb-c-z-50 vdb-c-w-full vdb-c--translate-y-full vdb-c-transform vdb-c-px-18"
     >
       <div
-        class="vdb-c-border-roy vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border vdb-c-px-8 vdb-c-py-4"
+        class="vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-roy vdb-c-bg-white vdb-c-px-8 vdb-c-py-4 vdb-c-shadow-lg"
       >
         <div
           v-for="(agent, index) in filteredAgents"
           :key="index"
           :class="[
-            'hover:vdb-c-bg-roy vdb-c-my-2 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-pr-32 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-300',
+            'vdb-c-my-2 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-pr-32 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-roy',
             { 'vdb-c-bg-roy': index === selectedAgentIndex },
           ]"
           @click="selectAgent(agent)"
@@ -60,7 +60,6 @@
               name="prompt"
               :placeholder="placeholder"
               autocomplete="off"
-              :disabled="inputDisabled"
               :value="chatInput"
               @input="handleInput"
               @focus="inputFocused = true"
@@ -71,17 +70,18 @@
           <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-end">
             <button
               :disabled="isInputDisabled"
-              class="vdb-c-font-sans vdb-c-mx-8 vdb-c-hidden vdb-c-h-40 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-p-12 vdb-c-text-sm vdb-c-font-bold vdb-c-uppercase vdb-c-text-white vdb-c-transition md:vdb-c-flex"
+              class="vdb-c-font-sans vdb-c-mx-8 vdb-c-flex vdb-c-h-40 vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-primary vdb-c-p-12 vdb-c-text-sm vdb-c-font-bold vdb-c-uppercase vdb-c-text-white vdb-c-transition hover:vdb-c-bg-primary-800"
               :class="{
-                'vdb-c-cursor-not-allowed vdb-c-bg-kilvish-400':
-                  isInputDisabled,
-                'vdb-c-cursor-pointer vdb-c-bg-primary hover:vdb-c-bg-primary-800':
-                  !isInputDisabled,
+                'vdb-c-cursor-not-allowed vdb-c-bg-kilvish-400 hover:vdb-c-bg-kilvish-400':
+                  charCount.value < 1,
               }"
               type="submit"
             >
-              <span class="vdb-c-inline">Send</span>
-              <chat-enter-icon class-name="vdb-c-ml-4" />
+              <EllipsesLoading v-if="chatLoading" />
+              <div v-else class="md:vdb-c-flex">
+                <span class="vdb-c-inline">Send</span>
+                <chat-enter-icon class-name="vdb-c-ml-4" />
+              </div>
             </button>
             <button
               class="vdb-c-mobile-send vdb-c-flex vdb-c-border-none vdb-c-bg-transparent vdb-c-p-8 vdb-c-pr-12 md:vdb-c-hidden"
@@ -108,12 +108,9 @@ import { useVideoDBChat } from "../../context";
 
 import ChatEnterIcon from "../icons/ChatEnter.vue";
 import SendIcon from "../icons/Send.vue";
+import EllipsesLoading from "./elements/EllipsesLoading.vue";
 
 const props = defineProps({
-  inputDisabled: {
-    type: Boolean,
-    default: false,
-  },
   placeholder: {
     type: String,
     default: "Ask a question",
@@ -136,7 +133,7 @@ const props = defineProps({
   },
 });
 
-const { chatInput } = useVideoDBChat();
+const { chatInput, chatLoading } = useVideoDBChat();
 
 const emit = defineEmits(["on-submit", "on-change", "tag-agent"]);
 
@@ -164,7 +161,7 @@ watch(filteredAgents, () => {
 });
 
 const isInputDisabled = computed(() => {
-  return props.inputDisabled || charCount.value < 1;
+  return chatLoading.value || charCount.value < 1;
 });
 
 const handleInput = (e) => {

@@ -20,29 +20,29 @@
         </span>
         <span
           v-else
-          class="vdb-c-bg-roy vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded"
+          class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
         ></span>
       </h1>
       <transition name="fade" mode="out-in">
         <div
           v-if="isOnboardingMessageVisible"
-          class="fade-in-anim vdb-c-bg-vdb-lightgrey vdb-c-relative vdb-c-rounded-lg vdb-c-p-20"
+          class="fade-in-anim vdb-c-relative vdb-c-rounded-lg vdb-c-bg-vdb-lightgrey vdb-c-p-20"
         >
           <div
-            class="hover:vdb-c-bg-roy vdb-c-absolute vdb-c-right-8 vdb-c-top-10 vdb-c-cursor-pointer vdb-c-p-10"
+            class="vdb-c-absolute vdb-c-right-8 vdb-c-top-10 vdb-c-cursor-pointer vdb-c-p-10 hover:vdb-c-bg-roy"
             @click="hideOnboardingMessage"
           >
             <CrossIcon />
           </div>
           <div
-            class="vdb-c-text-pam vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6"
+            class="vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6 vdb-c-text-pam"
           >
             <div class="vdb-c-font-semibold">
               Welcome to Spielberg: a video-first AI agent framework powered by
               <a
                 href="https://www.videodb.io"
                 target="_blank"
-                class="vdb-c-text-pam vdb-c-font-semibold vdb-c-underline"
+                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
               >
                 VideoDB </a
               >.
@@ -52,7 +52,7 @@
               <a
                 href="https://www.videodb.io"
                 target="_blank"
-                class="vdb-c-text-pam vdb-c-font-semibold vdb-c-underline"
+                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
               >
                 create a custom agent
               </a>
@@ -61,7 +61,7 @@
               <a
                 href="https://discord.com/invite/py9P639jGz"
                 target="_blank"
-                class="vdb-c-text-pam vdb-c-font-semibold vdb-c-underline"
+                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
               >
                 Discord.
               </a>
@@ -87,7 +87,7 @@
                 query.type === 'primary',
               'vdb-c-border-roy vdb-c-bg-vdb-lightgrey hover:vdb-c-bg-roy':
                 query.type === 'muted',
-              'vdb-c-bg-vdb-orange hover:vdb-c-bg-orange-500':
+              'vdb-c-bg-vdb-orange hover:vdb-c-bg-[#D45214]':
                 query.type === 'cta',
             },
           ]"
@@ -103,11 +103,17 @@
               },
             ]"
           >
+            <component v-if="query.icon" :is="query.icon"> </component>
             <QuestionMark
-              v-if="query.type === 'muted' || query.type === 'primary'"
-              :fill="query.type === 'muted' ? '#2D2D2D' : '#C14103'"
+              v-else
+              :fill="
+                query.type === 'cta'
+                  ? '#FFFFFF'
+                  : query.type === 'muted'
+                    ? '#2D2D2D'
+                    : '#C14103'
+              "
             />
-            <FileUploadIcon v-else-if="query.type === 'cta'" />
           </div>
           <p
             class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-sm vdb-c-font-semibold lg:vdb-c-text-base"
@@ -119,7 +125,8 @@
               },
             ]"
           >
-            {{ query.text }}
+            <component v-if="query.component" :is="query.component"></component>
+            <span v-else> {{ query.content }} </span>
           </p>
         </div>
       </div>
@@ -131,13 +138,13 @@
     >
       <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
         <h3
-          class="vdb-c-text-vdb-darkishgrey vdb-c-text-2xl vdb-c-font-semibold"
+          class="vdb-c-text-2xl vdb-c-font-semibold vdb-c-text-vdb-darkishgrey"
         >
           Try asking an agent
         </h3>
         <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
           <button
-            class="vdb-c-text-pam vdb-c-flex vdb-c-flex-row vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium"
+            class="vdb-c-flex vdb-c-flex-row vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium vdb-c-text-pam"
           >
             <div
               class="vdb-c-flex vdb-c-h-16 vdb-c-w-16 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-[#12131A40]"
@@ -163,7 +170,7 @@
         <div
           v-for="(agent, index) in allAgents.slice(0, 2)"
           :key="index"
-          class="vdb-c-border-roy vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-rounded-lg vdb-c-border-2 hover:vdb-c-bg-gray-100"
+          class="vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-roy hover:vdb-c-bg-gray-100"
           @click="$emit('agent-click', agent)"
         >
           <div
@@ -176,7 +183,7 @@
             </div>
           </div>
           <div
-            class="vdb-c-border-roy vdb-c-flex vdb-c-flex-col vdb-c-gap-4 vdb-c-border-l vdb-c-px-16 vdb-c-py-10"
+            class="vdb-c-flex vdb-c-flex-col vdb-c-gap-4 vdb-c-border-l vdb-c-border-roy vdb-c-px-16 vdb-c-py-10"
           >
             <h4 class="vdb-c-font-semibold vdb-c-text-kilvish-900">
               <span
@@ -184,9 +191,9 @@
                 >{{ agent.name }}</span
               >
             </h4>
-            <p class="vdb-c-text-vdb-darkishgrey vdb-c-text-sm">
+            <p class="vdb-c-text-sm vdb-c-text-vdb-darkishgrey">
               <span
-                class="vdb-c-text-vdb-darkishgrey vdb-c-line-clamp-2 vdb-c-min-h-[2.5em] vdb-c-text-xs vdb-c-font-normal sm:vdb-c-text-sm"
+                class="vdb-c-line-clamp-2 vdb-c-min-h-[2.5em] vdb-c-text-xs vdb-c-font-normal vdb-c-text-vdb-darkishgrey sm:vdb-c-text-sm"
                 >{{ agent.description }}</span
               >
             </p>
@@ -225,28 +232,7 @@ const props = defineProps({
   },
   actionCardQueries: {
     type: Array,
-    default: () => [
-      {
-        text: "Show me all the videos in my collection",
-        type: "cta",
-        action: "show-collection",
-      },
-      {
-        text: "Upload a video to my default collection",
-        type: "primary",
-        action: "chat",
-      },
-      {
-        text: "Categorise the videos in my collection by size",
-        type: "primary",
-        action: "chat",
-      },
-      {
-        text: "I'm not sure. Help me figure out what you can do.",
-        type: "muted",
-        action: "chat",
-      },
-    ],
+    default: () => [],
   },
   showOnboardingMessage: {
     type: Boolean,
