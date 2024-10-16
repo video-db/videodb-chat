@@ -5,15 +5,15 @@
         class="vdb-c-w-96 vdb-c-min-w-96 sm:vdb-c-w-full sm:vdb-c-min-w-auto vdb-c-mr-24 sm:vdb-c-min-w-0 sm:vdb-c-mb-16"
       >
         <div
-          class="vdb-c-relative vdb-c-rounded-12 vdb-c-bg-gray-400 vdb-c-animate-pulse vdb-c-custom-duration"
+          class="vdb-c-relative vdb-c-rounded-12 vdb-c-bg-roy vdb-c-animate-pulse vdb-c-custom-duration"
           style="padding-bottom: 75%"
         />
       </div>
       <div class="vdb-c-flex vdb-c-flex-col vdb-c-justify-center">
-        <div class="vdb-c-animate-pulse vdb-c-custom-duration vdb-c-h-20 vdb-c-bg-gray-400 vdb-c-mb-8 vdb-c-rounded-full" />
+        <div class="vdb-c-animate-pulse vdb-c-custom-duration vdb-c-h-20 vdb-c-bg-roy vdb-c-mb-8 vdb-c-rounded-full" />
         <div class="vdb-c-flex vdb-c-items-center">
-          <div class="vdb-c-animate-pulse vdb-c-custom-duration vdb-c-w-48 vdb-c-h-20 vdb-c-bg-gray-400 vdb-c-rounded-full vdb-c-mr-12" />
-          <div class="vdb-c-animate-pulse vdb-c-custom-duration vdb-c-w-48 vdb-c-h-20 vdb-c-bg-gray-400 vdb-c-rounded-full" />
+          <div class="vdb-c-animate-pulse vdb-c-custom-duration vdb-c-w-48 vdb-c-h-20 vdb-c-bg-roy vdb-c-rounded-full vdb-c-mr-12" />
+          <div class="vdb-c-animate-pulse vdb-c-custom-duration vdb-c-w-48 vdb-c-h-20 vdb-c-bg-roy vdb-c-rounded-full" />
         </div>
       </div>
     </div>

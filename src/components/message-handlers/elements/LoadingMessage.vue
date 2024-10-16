@@ -12,7 +12,7 @@
       </span>
       <span
         v-else-if="status === 'success'"
-        class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-bold vdb-c-text-[#C14103]"
+        class="vdb-c-text-vdb-darkorange vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-bold"
         key="success"
       >
         <CheckIcon :class="{ bounce: isLastConv }" />
@@ -23,7 +23,7 @@
         class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-bold vdb-c-text-red-500"
         key="error"
       >
-        <RedExclamation class="shake" />
+        <RedExclamation :class="{'shake' : isLastConv }" />
         <span> {{ message || "An error occurred" }} </span>
       </span>
     </transition>
@@ -31,7 +31,8 @@
 </template>
 
 <script setup>
-import { ref, defineProps, onMounted, watch } from "vue";
+import { defineProps, ref, watch } from "vue";
+
 import CheckIcon from "../../icons/Check.vue";
 import RedExclamation from "../../icons/RedExclamation.vue";
 

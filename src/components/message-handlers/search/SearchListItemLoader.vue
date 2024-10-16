@@ -5,7 +5,7 @@
       :key="`search-results-${index}`"
       class="vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 vdb-c-border-b vdb-c-border-outline-xlight vdb-c-py-24"
     >
-      <div to="/video/figma-video" class="vdb-c-col-span-3">
+      <div class="vdb-c-col-span-3">
         <div class="vdb-c-flex vdb-c-h-full vdb-c-flex-col">
           <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-24">
             <div class="vdb-c-mr-24 vdb-c-w-full vdb-c-min-w-96">

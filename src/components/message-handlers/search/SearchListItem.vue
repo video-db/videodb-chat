@@ -13,7 +13,7 @@
         }`"
       >
         <div
-          class="vdb-c-col-span-12 vdb-c-flex vdb-c-h-4/6 vdb-c-justify-center md:vdb-c-col-span-3"
+          class="vdb-c-space-between vdb-c-col-span-12 vdb-c-flex vdb-c-flex-col vdb-c-gap-12 md:vdb-c-col-span-3"
         >
           <VideoDBPlayer
             :ref="
@@ -36,6 +36,11 @@
               />
             </template>
           </VideoDBPlayer>
+          <div
+            class="text-elip vdb-c-mb-8 vdb-c-line-clamp-2 vdb-c-whitespace-normal vdb-c-px-8 vdb-c-text-base vdb-c-font-medium"
+          >
+            {{ videoData.name }}
+          </div>
         </div>
         <div
           class="vdb-c-col-span-12 vdb-c--mt-20 md:vdb-c-col-span-9 md:vdb-c-mt-0 md:vdb-c-pl-16"
@@ -53,7 +58,6 @@
               "
               :search-results="getFormattedSearchResult(videoData)"
               :duration="playerInfo[index]?.duration || 0"
-              :search-content="searchTerm"
             />
           </div>
         </div>
@@ -66,7 +70,7 @@
           class="vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-border vdb-c-border-steelblue vdb-c-bg-white vdb-c-px-12 vdb-c-py-8 vdb-c-font-semibold vdb-c-text-steelblue hover:vdb-c-bg-steelblue-200"
           @click="isExpanded = !isExpanded"
         >
-          {{ isExpanded ? "See less" : "See more relevant moments" }}
+          {{ isExpanded ? "See less" : "See more results" }}
           <down-arrow
             :class-name="`vdb-c-ml-8 ${isExpanded ? 'vdb-c-transform vdb-c-rotate-180' : ''}`"
           />
@@ -89,10 +93,6 @@ const props = defineProps({
   searchResults: {
     type: Object,
     default: () => ({}),
-  },
-  searchTerm: {
-    type: String,
-    default: "",
   },
   isContractable: {
     type: Boolean,

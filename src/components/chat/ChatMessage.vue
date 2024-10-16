@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { computed } from "vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 import ChatMessageSteps from "./elements/ChatMessageSteps.vue";
 
@@ -87,68 +87,9 @@ const props = defineProps({
 
 const { messageHandlers } = useVideoDBChat();
 
-const textBool = ref(false);
-
 const isUser = computed(() => props.message.msg_type === "input");
 const isAssistant = computed(() => props.message.msg_type === "output");
-
 const isSystem = computed(() => props.message.msg_type === "system");
-const isLoading = computed(
-  () =>
-    props.message.clientLoading ||
-    (props.message.status === "progress" && !hasMessageHandler.value),
-);
-const isFirstMessage = computed(() => props.currentIndex === 1);
-const isLastMessage = computed(
-  () => props.currentIndex === props.messageList.length - 1,
-);
-// const lastMessageLoaded = computed(
-//   () =>
-//     isFirstMessage.value ||
-//     props.messageList[props.currentIndex - 1].status !== "progress",
-// );
-
-const showText = computed(() =>
-  isUser.value ? props.message.content : props.message.content,
-);
-// const hasRelMoments = computed(() =>
-//   props.messageList.some((val) => !!val.search_result),
-// );
-const hasMessageHandler = computed(() =>
-  Object.keys(messageHandlers).includes(props.message.content_type),
-);
-
-// const getImageComponent = computed(() =>
-//   typeof (isUser.value ? props.userImage : props.assistantImage) === "object"
-//     ? isUser.value
-//       ? props.userImage
-//       : props.assistantImage
-//     : "img",
-// );
-
-// const getImageSrc = computed(() =>
-//   typeof (isUser.value ? props.userImage : props.assistantImage) === "string"
-//     ? isUser.value
-//       ? props.userImage
-//       : props.assistantImage
-//     : undefined,
-// );
-
-// watch(
-//   showText,
-//   (val) => {
-//     if (val) {
-//       if (props.isStaticPage || isFirstMessage.value || isUser.value) {
-//         textBool.value = true;
-//       } else {
-//         setTimeout(() => {
-//           textBool.value = true;
-//         }, 500);
-//       }
-//     }
-//   },
-//   { immediate: true },
-// );
 </script>
 
 <style>

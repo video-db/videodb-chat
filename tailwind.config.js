@@ -1,5 +1,5 @@
 module.exports = {
-  prefix: 'vdb-c-',
+  prefix: "vdb-c-",
   purge: {
     content: ["./src/**/*.{html,js,ts,vue}"],
     options: {
@@ -276,6 +276,9 @@ module.exports = {
         8: "8px",
       },
       colors: {
+        roy: "#EFEFEF",
+        ota: "#2D2D2D",
+        pam: "#464646",
         textdark: "#0F1D40",
         textmedium: "#525C76",
         textlight: "#8C93A3",
@@ -286,6 +289,12 @@ module.exports = {
           medium: "#CACDD5",
           light: "#E2E4E8",
           xlight: "#EEEFF2",
+        },
+        vdb: {
+          darkorange: "#C14103",
+          orange: "#EC5B16",
+          lightgrey: "#F7F7F7",
+          darkishgrey: "#1E1E1E"
         },
         black: {
           DEFAULT: "#000000",

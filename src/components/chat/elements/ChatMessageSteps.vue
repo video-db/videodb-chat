@@ -9,7 +9,7 @@
         :stroke-width="2"
         :stroke-color="'#343E4F'"
       />
-      <span class="vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#343E4F]"
+      <span class="vdb-c-text-sm vdb-c-font-medium vdb-c-text-kilvish-800"
         >Director's Log</span
       >
     </button>
@@ -52,7 +52,7 @@
             <span 
               class="vdb-c-flex-grow vdb-c-text-sm"
               :class="{
-                'vdb-c-font-bold vdb-c-text-[#343E4F]': status === 'success' && index === displaySteps.length - 1,
+                'vdb-c-font-bold vdb-c-text-kilvish-800': status === 'success' && index === displaySteps.length - 1,
                 'vdb-c-text-gray-600': !(status === 'success' && index === displaySteps.length - 1)
               }"
             >

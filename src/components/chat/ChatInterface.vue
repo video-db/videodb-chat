@@ -46,7 +46,7 @@
                   class="vdb-c-w-full vdb-c-p-16 vdb-c-px-30"
                 >
                   <div
-                    class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-border-b vdb-c-border-[#EFEFEF] vdb-c-py-12 vdb-c-text-lg vdb-c-text-black"
+                    class="vdb-c-border-roy vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-border-b vdb-c-py-12 vdb-c-text-lg vdb-c-text-black"
                   >
                     <span class="vdb-c-flex vdb-c-font-bold">
                       <span
@@ -61,7 +61,7 @@
                       </span>
                       <span
                         v-else
-                        class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-[#EEEFF2]"
+                        class="vdb-c-bg-roy vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded"
                       ></span>
                     </span>
                     <span v-if="showVideoView"> > </span>
@@ -89,16 +89,18 @@
                     v-else-if="showCollectionView"
                     :collection-id="currentCollectionId"
                     :collection-data="activeCollectionData"
+                    :collection-videos="activeCollectionVideos"
                     @video-click="handleVideoClick"
                     class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                   />
                 </div>
 
-                <onboarding-screen
+                <default-screen
                   v-else
                   :user-name="userName"
                   :all-agents="allAgents.slice(0, 2)"
                   :active-collection-data="activeCollectionData"
+                  :show-onboarding-message="isFreshUser"
                   @query-card-click="handleQueryCardClick"
                   @agent-click="handleTagAgent"
                   @explore-agents-click="handleExploreAgentsClick"
@@ -141,32 +143,33 @@
 </template>
 
 <script setup>
-import {
-  ref,
-  reactive,
-  watch,
-  provide,
-  nextTick,
-  onMounted,
-  onBeforeMount,
-  computed,
-} from "vue";
 import { v4 as uuidv4 } from "uuid";
+import {
+  computed,
+  nextTick,
+  onBeforeMount,
+  provide,
+  reactive,
+  ref,
+  watch,
+} from "vue";
 
-import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
 import { useChatInterface } from "../hooks/useChatInterface";
+import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
 
+import ChatInput from "./ChatInput.vue";
+import ChatMessageContainer from "./ChatMessageContainer.vue";
 import CollectionView from "./CollectionView.vue";
 import VideoView from "./VideoView.vue";
+import DefaultScreen from "./elements/DefaultScreen.vue";
 import Sidebar from "./elements/Sidebar.vue";
-import OnboardingScreen from "./elements/OnboardingScreen.vue";
-import ChatMessageContainer from "./ChatMessageContainer.vue";
-import ChatInput from "./ChatInput.vue";
 
-import ChatVideo from "../message-handlers/ChatVideo.vue";
-import TextResponse from "../message-handlers/TextResponse.vue";
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
+import ChatVideo from "../message-handlers/ChatVideo.vue";
 import ImageHandler from "../message-handlers/ImageHandler.vue";
+import TextResponse from "../message-handlers/TextResponse.vue";
+
+import VideoDBLogo from "../icons/VideoDBLogo.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -208,6 +211,7 @@ const props = defineProps({
     default: () => ({
       href: "https://console.videodb.io",
       text: "VideoDB Console",
+      icon: VideoDBLogo,
     }),
   },
   userName: {
@@ -220,8 +224,6 @@ const emit = defineEmits(["backBtnClick", "updateConversations"]);
 const sidebarRef = ref(null);
 const chatInputRef = ref(null);
 
-const allAgents = reactive([]);
-
 const showCollectionView = ref(false);
 const showVideoView = ref(false);
 const taggedAgent = ref([]);
@@ -233,7 +235,9 @@ const {
   videoId: currentVideoId,
   allCollections,
   allSessions,
+  allAgents,
   activeCollectionData,
+  activeCollectionVideos,
   activeVideoData,
   addMessage,
   conversations,
@@ -241,13 +245,6 @@ const {
   loadSession,
   setCollectionId,
   setVideoId,
-  fetchCollection,
-  fetchCollections,
-  fetchSession,
-  fetchSessions,
-  fetchAllAgents,
-  fetchCollectionVideo,
-  fetchCollectionVideos,
 } = useChatHook(props.chatHookConfig);
 
 const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
@@ -277,6 +274,35 @@ watch(chatLoading, (val) => {
 
 const collectionName = computed(() => activeCollectionData.value?.name);
 const videoName = computed(() => activeVideoData.value?.name);
+const isFreshUser = computed(() => {
+  return (
+    allCollections.value.length < 2 && activeCollectionVideos.value.length < 1
+  );
+});
+
+watch(
+  isFreshUser,
+  (val) => {
+    console.log("isFreshUser", val);
+  },
+  { immediate: true },
+);
+
+watch(
+  () => allCollections.value,
+  (val) => {
+    console.log("allCollections", val);
+  },
+  { immediate: true },
+);
+
+watch(
+  () => activeCollectionVideos.value,
+  (val) => {
+    console.log("activeCollectionVideos", val);
+  },
+  { immediate: true },
+);
 
 // --- Sidebar Click Handlers ---
 const handleNewSessionClick = () => {
@@ -358,16 +384,6 @@ const handleAddMessage = (content) => {
   taggedAgent.value = [];
 };
 
-// --- Mounted Hook ---
-onBeforeMount(() => {
-  setCollectionId("default");
-  fetchAllAgents().then((response) => {
-    if (response.status === "success") {
-      allAgents.push(...response.data);
-    }
-  });
-});
-
 defineExpose({
   chatInput,
   chatLoading,
@@ -376,12 +392,6 @@ defineExpose({
   addMessage: handleAddMessage,
   loadSession,
   setChatInput,
-  fetchSession,
-  fetchSessions,
-  fetchCollection,
-  fetchCollections,
-  fetchCollectionVideo,
-  fetchCollectionVideos,
   registerMessageHandler,
 });
 
@@ -393,12 +403,6 @@ provide("videodb-chat", {
   addMessage: handleAddMessage,
   loadSession,
   setChatInput,
-  fetchSession,
-  fetchSessions,
-  fetchCollection,
-  fetchCollections,
-  fetchCollectionVideo,
-  fetchCollectionVideos,
   registerMessageHandler,
 });
 </script>

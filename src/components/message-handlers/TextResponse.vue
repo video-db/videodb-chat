@@ -46,9 +46,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
-import { parse } from "marked";
+import { computed } from "vue";
+import { marked } from "marked";
+import markedKatex from "marked-katex-extension";
 import LoadingMessage from "./elements/LoadingMessage.vue";
+const options = {
+  nonStandard: true,
+};
 
 const props = defineProps({
   message: {
@@ -72,7 +76,8 @@ const props = defineProps({
 const text = computed(() => props.message.text);
 
 const getMarkedMsg = (msg) => {
-  return parse(msg);
+  marked.use(markedKatex(options));
+  return marked.parse(msg);
 };
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="video-card vdb-c-flex vdb-c-h-full vdb-c-cursor-pointer vdb-c-flex-col vdb-c-rounded-lg vdb-c-bg-[#F3F4F6] vdb-c-p-6"
+    class="video-card vdb-c-flex vdb-c-h-full vdb-c-cursor-pointer vdb-c-flex-col vdb-c-rounded-lg vdb-c-bg-kilvish-200 vdb-c-p-6"
   >
     <div
       class="vdb-c-mb-14 vdb-c-flex vdb-c-flex-col sm:vdb-c-block sm:vdb-c-flex-row"
@@ -31,10 +31,10 @@
         </div>
       </div>
       <div
-        class="fade-on-hover vdb-c-flex vdb-c-flex-col vdb-c-justify-center vdb-c-text-black"
+        class="fade-on-hover vdb-c-text-kilvish-900 vdb-c-flex vdb-c-flex-col vdb-c-justify-center"
       >
         <p
-          class="text-elip vdb-c-mb-8 vdb-c-line-clamp-2 vdb-c-whitespace-normal vdb-c-text-xs vdb-c-font-medium vdb-c-h-[2.5em]"
+          class="text-elip vdb-c-mb-8 vdb-c-line-clamp-2 vdb-c-h-[2.5em] vdb-c-whitespace-normal vdb-c-text-xs vdb-c-font-medium"
         >
           {{ item.name }}
         </p>
@@ -44,17 +44,13 @@
 </template>
 
 <script>
-import CommentLine from "../icons/CommentLine.vue";
 import PlayIcon from "../icons/play.vue";
-import TimeIcon from "../icons/time.vue";
 import DefaultThumbnail from "../assets/DefaultThumbnail.vue";
 
 export default {
   name: "VideoCard",
   components: {
-    CommentLine,
     PlayIcon,
-    TimeIcon,
     DefaultThumbnail,
   },
   props: {

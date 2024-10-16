@@ -11,20 +11,37 @@ export function useVideoDBAgent(config) {
     isConnected: false,
     sessionId: null,
     videoId: null,
-    collectionId: null,
+    collectionId: "default",
   });
 
-  const allCollections = reactive([]);
-  const allSessionsRaw = reactive([]);
+  const fetchData = async (endpoint) => {
+    const res = {};
+    try {
+      const response = await fetch(`${httpUrl}${endpoint}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      res.status = "success";
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
+  const allCollections = ref([]);
+  const allSessionsRaw = ref([]);
   const allSessions = computed(() => {
-    return [...allSessionsRaw].sort((a, b) => b.created_at - a.created_at);
+    return [...allSessionsRaw.value].sort((a, b) => b.created_at - a.created_at);
   });
+  const allAgents = ref([]);
 
   const conversations = reactive({});
   const activeCollectionData = ref(null);
+  const activeCollectionVideos = ref([]);
   const activeVideoData = ref(null);
-
-  // const bufferMessages = reactive([]);
 
   const setCollectionId = (collectionId) => {
     session.collectionId = collectionId;
@@ -33,6 +50,29 @@ export function useVideoDBAgent(config) {
   const setVideoId = (videoId) => {
     session.videoId = videoId;
   };
+
+  const fetchSession = async (sessionId) => fetchData(`/session/${sessionId}`);
+  const fetchSessions = async () => fetchData("/session");
+  const fetchCollections = async () => fetchData("/videodb/collection");
+  const fetchCollection = async (collectionId) =>
+    fetchData(`/videodb/collection/${collectionId}`);
+  const fetchCollectionVideo = async (collectionId, videoId) =>
+    fetchData(`/videodb/collection/${collectionId}/video/${videoId}`);
+  const fetchCollectionVideos = async (collectionId) =>
+    fetchData(`/videodb/collection/${collectionId}/video`);
+  const fetchAllAgents = async () => fetchData("/agent");
+
+  onBeforeMount(() => {
+    fetchCollections().then((res) => {
+      allCollections.value = res.data;
+    });
+    fetchSessions().then((res) => {
+      allSessionsRaw.value = res.data;
+    });
+    fetchAllAgents().then((res) => {
+      allAgents.value = res.data;
+    });
+  });
 
   watch(
     () => session.isConnected,
@@ -49,21 +89,13 @@ export function useVideoDBAgent(config) {
     { deep: true },
   );
 
-  onBeforeMount(() => {
-    fetchCollections().then((res) => {
-      allCollections.push(...res.data);
-    });
-    fetchSessions().then((res) => {
-      allSessionsRaw.push(...res.data);
-    });
-  });
-
   watch(
     () => session.collectionId,
     (val) => {
       activeCollectionData.value = null;
+      activeCollectionVideos.value = [];
       if (val) {
-        const collection = allCollections.find((c) => c.id === val);
+        const collection = allCollections.value.find((c) => c.id === val);
         if (collection) {
           activeCollectionData.value = collection;
         } else {
@@ -71,6 +103,9 @@ export function useVideoDBAgent(config) {
             activeCollectionData.value = res.data;
           });
         }
+        fetchCollectionVideos(val).then((res) => {
+          activeCollectionVideos.value = res.data;
+        });
       }
     },
     { immediate: true },
@@ -82,7 +117,6 @@ export function useVideoDBAgent(config) {
       activeVideoData.value = null;
       if (val) {
         fetchCollectionVideo(session.collectionId, val).then((res) => {
-          console.log("debug :videodb-chat activeVideoData", res.data);
           activeVideoData.value = res.data;
         });
       }
@@ -95,7 +129,7 @@ export function useVideoDBAgent(config) {
     if (!fetchPastMessages) {
       Object.keys(conversations).forEach((key) => delete conversations[key]);
     } else {
-      fetchData(`/session/${sessionId}`).then((res) => {
+      fetchSession(sessionId).then((res) => {
         if (debug) console.log("debug :videodb-chat session loaded", res);
         if (res.status === "success") {
           session.videoId = res.data.video_id || null;
@@ -150,7 +184,7 @@ export function useVideoDBAgent(config) {
   const addMessage = (message) => {
     console.log("debug :videodb-chat addMessage", message);
     if (session.isConnected) {
-      if (!allSessionsRaw.some(s => s.session_id === session.sessionId)) {
+      if (!allSessionsRaw.some((s) => s.session_id === session.sessionId)) {
         allSessionsRaw.push({
           session_id: session.sessionId,
           created_at: Date.now() / 1000,
@@ -175,15 +209,12 @@ export function useVideoDBAgent(config) {
       conversations[convId] = { [msgId]: _message };
       socket.emit("chat", _message);
       addClientLoadingMessage(convId);
-    } else {
-      // bufferMessages.push(_message);
     }
   };
 
   socket.on("connect", () => {
     if (debug) console.log("debug :videodb-chat socket emmited connect");
     session.isConnected = true;
-    // bufferMessages.forEach(addMessage);
   });
 
   socket.on("chat", (event) => {
@@ -202,69 +233,23 @@ export function useVideoDBAgent(config) {
 
   const chatLoading = computed(() =>
     Object.values(conversations).some((conv) =>
-      Object.values(conv).some(
-        (content) => content.status === "progress" || content.clientLoading,
-      ),
+      Object.values(conv).some((content) => content.status === "progress"),
     ),
   );
-
-  const fetchData = async (endpoint) => {
-    const res = {};
-    try {
-      const response = await fetch(`${httpUrl}${endpoint}`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      res.status = "success";
-      res.data = data;
-    } catch (error) {
-      res.status = "error";
-      res.error = error;
-    }
-    return res;
-  };
-
-  const fetchSession = async (sessionId) => fetchData(`/session/${sessionId}`);
-  const fetchSessions = async () => fetchData("/session");
-  const fetchCollections = async () => fetchData("/videodb/collection");
-  const fetchCollection = async (collectionId) =>
-    fetchData(`/videodb/collection/${collectionId}`);
-  const fetchCollectionVideo = async (collectionId, videoId) =>
-    fetchData(`/videodb/collection/${collectionId}/video/${videoId}`);
-  const fetchCollectionVideos = async (collectionId) =>
-    fetchData(`/videodb/collection/${collectionId}/video`);
-  const fetchAllAgents = async () => fetchData("/agent");
-
-  const bindEvents = (events, emit) => {
-    events.forEach((customEvent) => {
-      socket.on(customEvent, (event) => {
-        if (debug)
-          console.log("debug :videodb-chat triggered", customEvent, event);
-        emit(customEvent, { event });
-      });
-    });
-  };
 
   return {
     ...toRefs(session),
     allCollections,
     allSessions,
+    allAgents,
     activeCollectionData,
+    activeCollectionVideos,
     activeVideoData,
     chatLoading,
     conversations,
     setVideoId,
     addMessage,
-    bindEvents,
     loadSession,
     setCollectionId,
-    fetchSession,
-    fetchSessions,
-    fetchAllAgents,
-    fetchCollection,
-    fetchCollections,
-    fetchCollectionVideo,
-    fetchCollectionVideos,
   };
 }

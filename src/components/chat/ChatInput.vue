@@ -5,18 +5,18 @@
       class="vdb-c-shadow-md vdb-c-absolute vdb-c-ml-32 vdb-c--translate-y-full vdb-c-transform vdb-c-rounded-md vdb-c-bg-white"
     >
       <div
-        class="vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border vdb-c-border-[#EFEFEF] vdb-c-px-8 vdb-c-py-4"
+        class="vdb-c-border-roy vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border vdb-c-px-8 vdb-c-py-4"
       >
         <div
           v-for="(agent, index) in filteredAgents"
           :key="index"
           :class="[
-            'vdb-c-my-2 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-pr-32 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-[#EFEFEF]',
-            { 'vdb-c-bg-[#EFEFEF]': index === selectedAgentIndex },
+            'hover:vdb-c-bg-roy vdb-c-my-2 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-pr-32 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-300',
+            { 'vdb-c-bg-roy': index === selectedAgentIndex },
           ]"
           @click="selectAgent(agent)"
         >
-          <span class="vdb-c-text-[#EC5B16]"> @ </span>
+          <span class="vdb-c-text-vdb-orange"> @ </span>
           <span> {{ agent.name }} </span>
         </div>
       </div>
@@ -28,7 +28,7 @@
         <form
           class="vdb-c-br-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-overflow-hidden vdb-c-border vdb-c-border-solid vdb-c-bg-white"
           :class="{
-            'vdb-c-border-kilvish-500': inputFocused,
+            'vdb-c-border-kilvish-600': inputFocused,
             'vdb-c-border-kilvish-400': !inputFocused,
           }"
           autocomplete="off"
@@ -37,7 +37,8 @@
           <div>
             <div
               :class="[
-                'vdb-c-ml-6 vdb-c-flex vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-[#FFCFA5] vdb-c-bg-[#FFF5EC] vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black',
+                'vdb-c-ml-6 vdb-c-flex vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-orange-200 vdb-c-bg-orange-50 vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black',
+
                 { 'vdb-c-animate-pulse': !contextData?.name },
               ]"
             >
@@ -52,7 +53,7 @@
               </span>
             </div>
           </div>
-          <div class="vdb-c-relative vdb-c-flex-grow">
+          <div class="vdb-c-relative vdb-c-h-full vdb-c-flex-grow">
             <input
               ref="inputRef"
               class="vdb-c-chat-input vdb-c-h-full vdb-c-w-full vdb-c-bg-white vdb-c-pl-16 vdb-c-pr-8 vdb-c-font-medium vdb-c-text-[#1D2736] vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
@@ -105,8 +106,8 @@ import { ref, computed, watch } from "vue";
 
 import { useVideoDBChat } from "../../context";
 
-import ChatEnterIcon from "../icons/ChatEnterIcon.vue";
-import SendIcon from "../icons/SendIcon.vue";
+import ChatEnterIcon from "../icons/ChatEnter.vue";
+import SendIcon from "../icons/Send.vue";
 
 const props = defineProps({
   inputDisabled: {

@@ -6,9 +6,8 @@
       <h1
         class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-5xl vdb-c-leading-tight"
       >
-        <span class="vdb-c-text-black">Collection</span>
-        <span class="vdb-c-text-black"> : </span>
         <span
+          v-if="collectionName"
           class="vdb-c-inline-block vdb-c-max-w-[60%] vdb-c-truncate vdb-c-font-extrabold"
           style="
             background-image: radial-gradient(circle, #ff7e32, #ff5b0a);
@@ -19,51 +18,57 @@
         >
           {{ collectionName }}
         </span>
+        <span
+          v-else
+          class="vdb-c-bg-roy vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded"
+        ></span>
       </h1>
-      <div
-        v-if="isOnboardingMessageVisible"
-        class="fade-in-anim vdb-c-relative vdb-c-rounded-lg vdb-c-bg-[#F7F7F7] vdb-c-p-20"
-      >
+      <transition name="fade" mode="out-in">
         <div
-          class="vdb-c-absolute vdb-c-right-8 vdb-c-top-10 vdb-c-cursor-pointer vdb-c-p-10 hover:vdb-c-bg-[#EFEFEF]"
-          @click="hideOnboardingMessage"
+          v-if="isOnboardingMessageVisible"
+          class="fade-in-anim vdb-c-bg-vdb-lightgrey vdb-c-relative vdb-c-rounded-lg vdb-c-p-20"
         >
-          <CrossIcon />
-        </div>
-        <div
-          class="vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6 vdb-c-text-[#464646]"
-        >
-          <div class="vdb-c-font-semibold">
-            Welcome to Spielberg: a video-first AI agent framework powered by
-            <a
-              href="https://www.videodb.io"
-              target="_blank"
-              class="vdb-c-font-semibold vdb-c-text-[#464646] vdb-c-underline hover:vdb-c-text-[#333333]"
-            >
-              VideoDB </a
-            >.
+          <div
+            class="hover:vdb-c-bg-roy vdb-c-absolute vdb-c-right-8 vdb-c-top-10 vdb-c-cursor-pointer vdb-c-p-10"
+            @click="hideOnboardingMessage"
+          >
+            <CrossIcon />
           </div>
-          <div>
-            Feel free to explore our agents, or
-            <a
-              href="https://www.videodb.io"
-              target="_blank"
-              class="vdb-c-font-semibold vdb-c-text-[#464646] vdb-c-underline hover:vdb-c-text-[#333333]"
-            >
-              create a custom agent
-            </a>
-            that suits your workflows. From upload to publish - Spielberg can
-            get it all done right here! Let us know how you like it on our
-            <a
-              href="https://discord.com/invite/py9P639jGz"
-              target="_blank"
-              class="vdb-c-font-semibold vdb-c-text-[#464646] vdb-c-underline hover:vdb-c-text-[#333333]"
-            >
-              Discord.
-            </a>
+          <div
+            class="vdb-c-text-pam vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6"
+          >
+            <div class="vdb-c-font-semibold">
+              Welcome to Spielberg: a video-first AI agent framework powered by
+              <a
+                href="https://www.videodb.io"
+                target="_blank"
+                class="vdb-c-text-pam vdb-c-font-semibold vdb-c-underline"
+              >
+                VideoDB </a
+              >.
+            </div>
+            <div>
+              Feel free to explore our agents, or
+              <a
+                href="https://www.videodb.io"
+                target="_blank"
+                class="vdb-c-text-pam vdb-c-font-semibold vdb-c-underline"
+              >
+                create a custom agent
+              </a>
+              that suits your workflows. From upload to publish - Spielberg can
+              get it all done right here! Let us know how you like it on our
+              <a
+                href="https://discord.com/invite/py9P639jGz"
+                target="_blank"
+                class="vdb-c-text-pam vdb-c-font-semibold vdb-c-underline"
+              >
+                Discord.
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+      </transition>
     </div>
     <!-- Action Cards -->
     <div
@@ -78,11 +83,11 @@
           :class="[
             'vdb-c-w-160 vdb-c-h-120 hover:vdb-c-shadow-md vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
             {
-              'vdb-c-bg-[#FFF5EC] hover:vdb-c-bg-[#FFE9D3]':
+              'vdb-c-bg-orange-50 hover:vdb-c-bg-orange-100':
                 query.type === 'primary',
-              'vdb-c-border-[#EFEFEF] vdb-c-bg-[#F7F7F7] hover:vdb-c-bg-[#E5E5E5]':
+              'vdb-c-border-roy vdb-c-bg-vdb-lightgrey hover:vdb-c-bg-roy':
                 query.type === 'muted',
-              'vdb-c-bg-[#CC2B02] hover:vdb-c-bg-[#CC2B02]':
+              'vdb-c-bg-vdb-orange hover:vdb-c-bg-orange-500':
                 query.type === 'cta',
             },
           ]"
@@ -92,9 +97,9 @@
             :class="[
               'vdb-c-hidden vdb-c-h-48 vdb-c-w-48 vdb-c-items-center vdb-c-justify-center vdb-c-self-start vdb-c-rounded-full vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-flex',
               {
-                'vdb-c-bg-[#460C0459]': query.type === 'cta',
-                'vdb-c-bg-[#EFEFEF]': query.type === 'muted',
-                'vdb-c-bg-[#FFE9D3]': query.type === 'primary',
+                'vdb-c-bg-[#B92600A6]': query.type === 'cta',
+                'vdb-c-bg-roy': query.type === 'muted',
+                'vdb-c-bg-orange-100': query.type === 'primary',
               },
             ]"
           >
@@ -108,8 +113,9 @@
             class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-sm vdb-c-font-semibold lg:vdb-c-text-base"
             :class="[
               {
-                'vdb-c-text-[#1D2736]': query.type === 'muted' || 'primary',
-                'vdb-c-text-[#FFF5EC]': query.type === 'cta',
+                'vdb-c-text-pam': query.type === 'muted',
+                'vdb-c-text-kilvish-900': query.type === 'primary',
+                'vdb-c-text-orange-50': query.type === 'cta',
               },
             ]"
           >
@@ -124,12 +130,14 @@
       class="vdb-c-flex vdb-c-min-h-0 vdb-c-flex-grow vdb-c-flex-col vdb-c-gap-16"
     >
       <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
-        <h3 class="vdb-c-text-2xl vdb-c-font-semibold vdb-c-text-[#1E1E1E]">
+        <h3
+          class="vdb-c-text-vdb-darkishgrey vdb-c-text-2xl vdb-c-font-semibold"
+        >
           Try asking an agent
         </h3>
         <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
           <button
-            class="vdb-c-flex vdb-c-flex-row vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#464646]"
+            class="vdb-c-text-pam vdb-c-flex vdb-c-flex-row vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium"
           >
             <div
               class="vdb-c-flex vdb-c-h-16 vdb-c-w-16 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-[#12131A40]"
@@ -155,30 +163,30 @@
         <div
           v-for="(agent, index) in allAgents.slice(0, 2)"
           :key="index"
-          class="vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-[#EFEFEF] hover:vdb-c-bg-[#FAFAFA]"
+          class="vdb-c-border-roy vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-rounded-lg vdb-c-border-2 hover:vdb-c-bg-gray-100"
           @click="$emit('agent-click', agent)"
         >
           <div
             class="flex items-center justify-center vdb-c-rounded-full vdb-c-px-20 vdb-c-py-24"
           >
             <div
-              class="vdb-c-flex vdb-c-h-34 vdb-c-w-34 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-[#FFE9D3]"
+              class="vdb-c-flex vdb-c-h-34 vdb-c-w-34 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-orange-100"
             >
               <AtIcon />
             </div>
           </div>
           <div
-            class="vdb-c-flex vdb-c-flex-col vdb-c-gap-4 vdb-c-border-l vdb-c-border-[#EFEFEF] vdb-c-px-16 vdb-c-py-10"
+            class="vdb-c-border-roy vdb-c-flex vdb-c-flex-col vdb-c-gap-4 vdb-c-border-l vdb-c-px-16 vdb-c-py-10"
           >
-            <h4 class="vdb-c-font-semibold vdb-c-text-[#1D2736]">
+            <h4 class="vdb-c-font-semibold vdb-c-text-kilvish-900">
               <span
-                class="vdb-c-text-base vdb-c-font-bold vdb-c-text-[#1D2736] sm:vdb-c-text-lg"
+                class="vdb-c-text-kivlish-900 vdb-c-text-base vdb-c-font-bold sm:vdb-c-text-lg"
                 >{{ agent.name }}</span
               >
             </h4>
-            <p class="vdb-c-text-sm vdb-c-text-[#1E1E1E]">
+            <p class="vdb-c-text-vdb-darkishgrey vdb-c-text-sm">
               <span
-                class="vdb-c-line-clamp-2 vdb-c-h-[2.5em] vdb-c-text-xs vdb-c-font-normal vdb-c-text-[#1E1E1E] sm:vdb-c-text-sm"
+                class="vdb-c-text-vdb-darkishgrey vdb-c-line-clamp-2 vdb-c-min-h-[2.5em] vdb-c-text-xs vdb-c-font-normal sm:vdb-c-text-sm"
                 >{{ agent.description }}</span
               >
             </p>
@@ -190,15 +198,16 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
+
+import Button from "../../buttons/Button.vue";
 
 import QuestionMark from "../../icons/QuestionMark.vue";
 import FileUploadIcon from "../../icons/FileUpload.vue";
-import InfoIcon from "../../icons/InfoIcon.vue";
+import InfoIcon from "../../icons/Info.vue";
 import CrossIcon from "../../icons/Cross.vue";
 import AtIcon from "../../icons/AtIcon.vue";
-import MenuIcon from "../../icons/MenuIcon.vue";
-import Button from "../../buttons/Button.vue";
+import MenuIcon from "../../icons/Menu.vue";
 
 const props = defineProps({
   userName: {
@@ -246,7 +255,15 @@ const props = defineProps({
 });
 
 const collectionName = computed(() => props.activeCollectionData?.name);
-const isOnboardingMessageVisible = ref(props.showOnboardingMessage);
+const isOnboardingMessageVisible = ref(false);
+
+watch(
+  () => props.showOnboardingMessage,
+  (val) => {
+    isOnboardingMessageVisible.value = val;
+  },
+  { immediate: true },
+);
 
 const hideOnboardingMessage = () => {
   isOnboardingMessageVisible.value = false;
@@ -256,6 +273,15 @@ defineEmits(["query-card-click", "agent-click", "explore-agents-click"]);
 </script>
 
 <style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 .fade-in-anim {
   animation: fadeIn 0.3s ease-in-out;
 }

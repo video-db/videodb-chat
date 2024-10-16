@@ -8,8 +8,7 @@
     <div v-if="message.status === 'success'">
       <search-list-item
         :search-results="message.search_results"
-        :search-term="searchTerm"
-        :is-contractable="isContractable"
+        :is-contractable="message.search_results.length > 1"
       />
     </div>
     <div v-else-if="message.status === 'progress'">
@@ -27,10 +26,6 @@ const props = defineProps({
   message: {
     type: Object,
     required: true,
-  },
-  searchTerm: {
-    type: String,
-    default: "",
   },
   isLastConv: {
     type: Boolean,

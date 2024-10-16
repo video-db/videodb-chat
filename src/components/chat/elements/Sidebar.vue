@@ -3,7 +3,7 @@
     class="vdb-c-flex vdb-c-h-full vdb-c-flex-col vdb-c-gap-16 vdb-c-border-r vdb-c-bg-white vdb-c-p-16 vdb-c-pl-12 vdb-c-pr-20 vdb-c-text-black"
   >
     <div class="vdb-c-p-12 vdb-c-text-2xl vdb-c-font-bold">
-      <VideoDBIcon />
+      <SpielbergIcon />
     </div>
     <Button
       variant="primary"
@@ -13,7 +13,7 @@
       <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-6">
         <ComposeIcon />
         <span
-          class="vdb-c-hidden vdb-c-text-sm vdb-c-font-normal md:vdb-c-block"
+          class="vdb-c-hidden vdb-c-text-sm vdb-c-font-medium md:vdb-c-block"
           >New Session</span
         >
       </div>
@@ -29,7 +29,7 @@
         <button
           @click="toggleExploreAgents()"
           :class="[
-            'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-10 vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#1E1E1E] vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-[#EFEFEF]',
+            'vdb-c-text-vdb-darkishgrey hover:vdb-c-bg-roy vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-10 vdb-c-text-sm vdb-c-font-medium vdb-c-transition-all vdb-c-duration-300',
           ]"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
@@ -52,10 +52,10 @@
             <div
               @click="$emit('agent-click', agent)"
               :class="[
-                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-75 hover:vdb-c-border-[#FFAD6D] hover:vdb-c-bg-[#FFF5EC]',
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-black vdb-c-transition-all vdb-c-duration-75 hover:vdb-c-bg-[#FFF5EC]',
               ]"
             >
-              <span class="vdb-c-text-[#EC5B16]"> @ </span>
+              <span class="vdb-c-text-vdb-orange"> @ </span>
               <span> {{ agent.name }} </span>
             </div>
           </template>
@@ -68,7 +68,7 @@
       >
         <button
           @click="toggleSessions()"
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4 vdb-c-text-[#464646]"
+          class="vdb-c-text-pam vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4"
         >
           <span
             class="vdb-c-text-xs vdb-c-font-bold vdb-c-uppercase vdb-c-leading-5"
@@ -87,7 +87,7 @@
         <div v-if="showSessions" class="vdb-c-mt-4 vdb-c-overflow-y-auto">
           <div v-if="addDummySession">
             <div
-              class="vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#1E1E1E]"
+              class="vdb-c-bg-roy vdb-c-text-vdb-darkishgrey vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium"
             >
               (new session)
             </div>
@@ -96,9 +96,9 @@
             <div
               @click="$emit('session-click', session.session_id)"
               :class="[
-                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#1E1E1E]',
+                'vdb-c-text-vdb-darkishgrey vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium',
                 {
-                  'vdb-c-bg-[#EFEFEF]': session.session_id === selectedSession,
+                  'vdb-c-bg-roy': session.session_id === selectedSession,
                   'hover:vdb-c-bg-gray-100':
                     session.session_id !== selectedSession,
                 },
@@ -129,7 +129,7 @@
       >
         <button
           @click="toggleCollections()"
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4 vdb-c-text-[#464646]"
+          class="vdb-c-text-pam vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4"
         >
           <span
             class="vdb-c-text-xs vdb-c-font-bold vdb-c-uppercase vdb-c-leading-5"
@@ -150,9 +150,9 @@
             <div
               @click="$emit('collection-click', collection.id)"
               :class="[
-                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-[#1E1E1E]',
+                'vdb-c-text-vdb-darkishgrey vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium',
                 {
-                  'vdb-c-bg-[#EFEFEF]':
+                  'vdb-c-bg-roy':
                     showSelectedCollection &&
                     collection.id === computedSelectedCollection,
                   'hover:vdb-c-bg-gray-100':
@@ -171,7 +171,7 @@
       <a
         v-for="(link, index) in links"
         :key="index"
-        class="vdb-c-mx-8 vdb-c-my-12 vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#1E1E1E] hover:vdb-c-text-[#1E1E1E] hover:vdb-c-no-underline"
+        class="vdb-c-text-vdb-darkishgrey hover:vdb-c-text-vdb-darkishgrey vdb-c-mx-8 vdb-c-my-12 vdb-c-text-sm vdb-c-font-medium hover:vdb-c-no-underline"
         :href="link.href"
         :target="link.target || '_blank'"
         rel="noopener noreferrer"
@@ -185,8 +185,21 @@
           :href="primaryLink.href"
           :target="primaryLink.target || '_blank'"
           rel="noopener noreferrer"
-          class="vdb-c-text-white hover:vdb-c-text-white hover:vdb-c-no-underline"
+          class="vdb-c-flex vdb-c-items-center vdb-c-text-white hover:vdb-c-text-white hover:vdb-c-no-underline"
         >
+          <template v-if="primaryLink.icon">
+            <img
+              v-if="typeof primaryLink.icon === 'string'"
+              :src="primaryLink.icon"
+              alt="Primary Link Icon"
+              class="vdb-c-mr-8 vdb-c-h-16 vdb-c-w-16"
+            />
+            <component
+              v-else-if="typeof primaryLink.icon === 'object'"
+              :is="primaryLink.icon"
+              class="vdb-c-mr-8 vdb-c-h-16 vdb-c-w-16"
+            />
+          </template>
           {{ primaryLink.text }}
         </a>
       </button>
@@ -196,11 +209,13 @@
 
 <script setup>
 import { nextTick, ref, watch, computed } from "vue";
+
 import Button from "../../buttons/Button.vue";
-import VideoDBIcon from "../../icons/VideoDBIcon.vue";
+
+import SpielbergIcon from "../../icons/Spielberg2.vue";
 import ComposeIcon from "../../icons/Compose.vue";
 import DownArrowIcon from "../../icons/DownArrow.vue";
-import MenuIcon from "../../icons/MenuIcon.vue";
+import MenuIcon from "../../icons/Menu.vue";
 
 const showExploreAgents = ref(false);
 const showSessions = ref(true);

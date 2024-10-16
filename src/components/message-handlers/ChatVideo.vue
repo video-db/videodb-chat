@@ -70,7 +70,6 @@ import {
   FullScreenButton,
   ProgressBar,
 } from "@videodb/player-vue";
-import RedExclamation from "../icons/RedExclamation.vue";
 import LoadingMessage from "./elements/LoadingMessage.vue";
 
 const props = defineProps({

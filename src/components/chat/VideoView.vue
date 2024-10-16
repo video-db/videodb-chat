@@ -1,6 +1,6 @@
 <template>
   <div
-    class="vdb-c-relative vdb-c-w-full vdb-c-py-28 md:vdb-c-w-5/6 lg:vdb-c-w-4/5 xl:vdb-c-w-3/4 vdb-c-mx-auto"
+    class="vdb-c-relative vdb-c-mx-auto vdb-c-w-full vdb-c-py-28 md:vdb-c-w-5/6 lg:vdb-c-w-4/5 xl:vdb-c-w-3/4"
   >
     <div
       class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden vdb-c-rounded-xl vdb-c-bg-black"
@@ -28,7 +28,7 @@
     <!-- Video Player Loading -->
     <div
       v-else
-      class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-rounded-xl vdb-c-bg-[#EEEFF2] vdb-c-py-28 md:vdb-c-w-5/6 lg:vdb-c-w-4/5 xl:vdb-c-w-3/4"
+      class="vdb-c-bg-roy vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-rounded-xl vdb-c-py-28 md:vdb-c-w-5/6 lg:vdb-c-w-4/5 xl:vdb-c-w-3/4"
     >
       <div class="videoPlayerContainer">
         <div
@@ -62,9 +62,6 @@ const props = defineProps({
     default: null,
   },
 });
-
-const collectionName = computed(() => props.collectionData?.name);
-const videoTitle = computed(() => props.videoData?.name);
 
 const isFullScreen = ref(false);
 
