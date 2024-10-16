@@ -29,7 +29,7 @@
         <button
           @click="toggleExploreAgents()"
           :class="[
-            'vdb-c-text-vdb-darkishgrey hover:vdb-c-bg-roy vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-10 vdb-c-text-sm vdb-c-font-medium vdb-c-transition-all vdb-c-duration-300',
+            'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-10 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-roy',
           ]"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
@@ -68,7 +68,7 @@
       >
         <button
           @click="toggleSessions()"
-          class="vdb-c-text-pam vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4 vdb-c-text-pam"
         >
           <span
             class="vdb-c-text-xs vdb-c-font-bold vdb-c-uppercase vdb-c-leading-5"
@@ -87,7 +87,7 @@
         <div v-if="showSessions" class="vdb-c-mt-4 vdb-c-overflow-y-auto">
           <div v-if="addDummySession">
             <div
-              class="vdb-c-bg-roy vdb-c-text-vdb-darkishgrey vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium"
+              class="vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-bg-roy vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey"
             >
               (new session)
             </div>
@@ -96,7 +96,7 @@
             <div
               @click="$emit('session-click', session.session_id)"
               :class="[
-                'vdb-c-text-vdb-darkishgrey vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium',
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
                 {
                   'vdb-c-bg-roy': session.session_id === selectedSession,
                   'hover:vdb-c-bg-gray-100':
@@ -129,7 +129,7 @@
       >
         <button
           @click="toggleCollections()"
-          class="vdb-c-text-pam vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4 vdb-c-text-pam"
         >
           <span
             class="vdb-c-text-xs vdb-c-font-bold vdb-c-uppercase vdb-c-leading-5"
@@ -150,7 +150,7 @@
             <div
               @click="$emit('collection-click', collection.id)"
               :class="[
-                'vdb-c-text-vdb-darkishgrey vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium',
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
                 {
                   'vdb-c-bg-roy':
                     showSelectedCollection &&
@@ -167,42 +167,44 @@
       </div>
     </div>
 
-    <div class="vdb-c-mt-auto">
+    <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col vdb-c-gap-16">
       <a
         v-for="(link, index) in links"
         :key="index"
-        class="vdb-c-text-vdb-darkishgrey hover:vdb-c-text-vdb-darkishgrey vdb-c-mx-8 vdb-c-my-12 vdb-c-text-sm vdb-c-font-medium hover:vdb-c-no-underline"
+        class="vdb-c-mx-8 vdb-c-my-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey hover:vdb-c-text-vdb-darkishgrey hover:vdb-c-no-underline"
         :href="link.href"
         :target="link.target || '_blank'"
         rel="noopener noreferrer"
       >
         {{ link.text }}
       </a>
-      <button
-        class="vdb-c-mt-16 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-rounded vdb-c-bg-orange-500 vdb-c-px-16 vdb-c-py-8 vdb-c-text-white"
-      >
-        <a
-          :href="primaryLink.href"
-          :target="primaryLink.target || '_blank'"
-          rel="noopener noreferrer"
-          class="vdb-c-flex vdb-c-items-center vdb-c-text-white hover:vdb-c-text-white hover:vdb-c-no-underline"
+      <Button class="vdb-c-w-full" variant="tertiary">
+        <div
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-gap-6"
         >
-          <template v-if="primaryLink.icon">
-            <img
-              v-if="typeof primaryLink.icon === 'string'"
-              :src="primaryLink.icon"
-              alt="Primary Link Icon"
-              class="vdb-c-mr-8 vdb-c-h-16 vdb-c-w-16"
-            />
-            <component
-              v-else-if="typeof primaryLink.icon === 'object'"
-              :is="primaryLink.icon"
-              class="vdb-c-mr-8 vdb-c-h-16 vdb-c-w-16"
-            />
-          </template>
-          {{ primaryLink.text }}
-        </a>
-      </button>
+          <a
+            :href="primaryLink.href"
+            :target="primaryLink.target || '_blank'"
+            rel="noopener noreferrer"
+            class="vdb-c-flex vdb-c-items-center vdb-c-text-white hover:vdb-c-text-white hover:vdb-c-no-underline"
+          >
+            <template v-if="primaryLink.icon">
+              <img
+                v-if="typeof primaryLink.icon === 'string'"
+                :src="primaryLink.icon"
+                alt="Primary Link Icon"
+                class="vdb-c-mr-8 vdb-c-h-16 vdb-c-w-16"
+              />
+              <component
+                v-else-if="typeof primaryLink.icon === 'object'"
+                :is="primaryLink.icon"
+                class="vdb-c-mr-8 vdb-c-h-16 vdb-c-w-16"
+              />
+            </template>
+            {{ primaryLink.text }}
+          </a>
+        </div>
+      </Button>
     </div>
   </div>
 </template>
@@ -309,17 +311,25 @@ const computedSelectedCollection = computed(() => {
   return props.allCollections.length > 0 ? props.allCollections[0].id : null;
 });
 
-watch(() => props.initialSessionsOpen, (newValue) => {
-  if (!userClickedSessions.value) {
-    showSessions.value = newValue;
-  }
-}, { immediate: true });
+watch(
+  () => props.initialSessionsOpen,
+  (newValue) => {
+    if (!userClickedSessions.value) {
+      showSessions.value = newValue;
+    }
+  },
+  { immediate: true },
+);
 
-watch(() => props.initialCollectionsOpen, (newValue) => {
-  if (!userClickedCollections.value) {
-    showCollections.value = newValue;
-  }
-}, { immediate: true });
+watch(
+  () => props.initialCollectionsOpen,
+  (newValue) => {
+    if (!userClickedCollections.value) {
+      showCollections.value = newValue;
+    }
+  },
+  { immediate: true },
+);
 
 watch(showExploreAgents, (newValue) => {
   if (newValue) {
