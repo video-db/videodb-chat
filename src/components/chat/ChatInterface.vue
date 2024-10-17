@@ -413,7 +413,7 @@ const handleAddMessage = (content) => {
   }
   addMessage({
     content: [{ type: "text", text: content }],
-    agents_name: taggedAgent.value,
+    agents: taggedAgent.value,
   });
   taggedAgent.value = [];
 };
