@@ -17,12 +17,12 @@
         "
         :initial-sessions-open="!isFreshUser"
         :initial-collections-open="isFreshUser"
-        :selected-session="currentSessionId"
+        :selected-session="sessionId"
         :add-dummy-session="Object.keys(conversations).length === 0"
-        :selected-collection="currentCollectionId"
-        :all-agents="allAgents"
-        :all-sessions="allSessions"
-        :all-collections="allCollections"
+        :selected-collection="collectionId"
+        :agents="agents"
+        :sessions="sessions"
+        :collections="collections"
         :links="links"
         :primary-link="primaryLink"
         @create-new-session="handleNewSessionClick"
@@ -55,7 +55,7 @@
                         v-if="collectionName"
                         class="vdb-c-cursor-pointer"
                         @click="
-                          setVideoId(null);
+                          videoId.value = null;
                           showVideoView = false;
                         "
                       >
@@ -80,8 +80,8 @@
                   </div>
                   <video-view
                     v-if="showVideoView"
-                    :collection-id="currentCollectionId"
-                    :video-id="currentVideoId"
+                    :collection-id="collectionId"
+                    :video-id="videoId"
                     :collection-data="activeCollectionData"
                     :video-data="activeVideoData"
                     class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
@@ -89,7 +89,7 @@
 
                   <collection-view
                     v-else-if="showCollectionView"
-                    :collection-id="currentCollectionId"
+                    :collection-id="collectionId"
                     :collection-data="activeCollectionData"
                     :collection-videos="activeCollectionVideos"
                     @video-click="handleVideoClick"
@@ -100,7 +100,7 @@
                 <default-screen
                   v-else
                   :user-name="userName"
-                  :all-agents="allAgents.slice(0, 2)"
+                  :agents="agents.slice(0, 2)"
                   :active-collection-data="activeCollectionData"
                   :show-onboarding-message="isFreshUser"
                   :action-card-queries="actionCardQueries"
@@ -131,7 +131,7 @@
           >
             <chat-input
               ref="chatInputRef"
-              :agents="allAgents"
+              :agents="agents"
               :input-disabled="chatLoading"
               :placeholder="chatInputPlaceholder"
               :context-data="activeVideoData || activeCollectionData"
@@ -146,7 +146,6 @@
 </template>
 
 <script setup>
-import { v4 as uuidv4 } from "uuid";
 import { computed, nextTick, provide, ref, watch } from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
@@ -232,21 +231,18 @@ const taggedAgent = ref([]);
 
 const useChatHook = props.customChatHook || useVideoDBAgent;
 const {
-  sessionId: currentSessionId,
-  collectionId: currentCollectionId,
-  videoId: currentVideoId,
-  allCollections,
-  allSessions,
-  allAgents,
+  sessionId,
+  collectionId,
+  videoId,
+  collections,
+  sessions,
+  agents,
   activeCollectionData,
   activeCollectionVideos,
   activeVideoData,
   addMessage,
   conversations,
-  chatLoading,
   loadSession,
-  setCollectionId,
-  setVideoId,
 } = useChatHook(props.chatHookConfig);
 
 const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
@@ -260,30 +256,23 @@ registerMessageHandler("image", ImageHandler);
 const isStaticPage = ref(false);
 const chatWindow = ref(null);
 
-const scrollToBottom = () => {
-  const element = chatWindow.value;
-  if (!element) return;
-  nextTick(() => {
-    element.scroll({ top: element.scrollHeight - 50, behavior: "smooth" });
-  });
-};
-
-watch(chatLoading, (val) => {
-  if (val) {
-    scrollToBottom();
-  }
-});
-
 const collectionName = computed(() => activeCollectionData.value?.name);
 const videoName = computed(() => activeVideoData.value?.name);
 const isFreshUser = computed(() => {
-  if (allCollections.value && activeCollectionVideos.value) {
+  if (collections.value && activeCollectionVideos.value) {
     return (
-      allCollections.value.length < 2 && activeCollectionVideos.value.length < 1
+      collections.value.length < 2 && activeCollectionVideos.value.length < 1
     );
   }
   return false;
 });
+const chatLoading = computed(() =>
+  Object.values(conversations).some((conv) =>
+    Object.values(conv).some(
+      (content) => content.status === "progress" || content.clientLoading,
+    ),
+  ),
+);
 const actionCardQueries = computed(() => {
   return isFreshUser.value
     ? [
@@ -301,13 +290,13 @@ const actionCardQueries = computed(() => {
         },
         {
           content:
-            "How will I be charged for using VideoDB’s integration on Spielberg?",
+            "How will I be charged for using VideoDB's integration on Spielberg?",
           type: "primary",
           action: "chat",
         },
         {
           content:
-            "I’m not sure what Spielberg is about.Help me figure out what you can do.",
+            "I'm not sure what Spielberg is about.Help me figure out what you can do.",
           type: "muted",
           action: "chat",
         },
@@ -337,29 +326,41 @@ const actionCardQueries = computed(() => {
       ];
 });
 
+const scrollToBottom = () => {
+  const element = chatWindow.value;
+  if (!element) return;
+  nextTick(() => {
+    element.scroll({ top: element.scrollHeight - 50, behavior: "smooth" });
+  });
+};
+
+watch(chatLoading, (val) => {
+  if (val) {
+    scrollToBottom();
+  }
+});
+
 // --- Sidebar Click Handlers ---
 const handleNewSessionClick = () => {
   showCollectionView.value = false;
-  setVideoId(null);
+  videoId.value = null;
   showVideoView.value = false;
-  // #TODO: Add a new entry in allSessionObject
   taggedAgent.value = [];
-  handleLoadSession();
+  loadSession();
 };
 
 const handleSessionClick = (sessionId) => {
   showCollectionView.value = false;
   showVideoView.value = false;
-  handleLoadSession(sessionId);
+  loadSession(sessionId);
 };
 
-const handleCollectionClick = (collectionId) => {
-  setCollectionId(collectionId);
-  setVideoId(null);
+const handleCollectionClick = (_collectionId) => {
+  collectionId.value = _collectionId;
+  videoId.value = null;
   showCollectionView.value = false;
   showVideoView.value = false;
-  // #TODO: Add a new entry in allSessionObject
-  handleLoadSession();
+  loadSession();
 };
 
 // --- Onboarding Screen Click Handlers ---
@@ -393,23 +394,13 @@ const handleTagAgent = (agent, addToInput = true) => {
 
 // --- CollectionView/VideoView Click Handlers ---
 const handleVideoClick = (video) => {
-  setVideoId(video.id);
+  videoId.value = video.id;
   showVideoView.value = true;
 };
 
-const handleLoadSession = (sessionId) => {
-  let fetchPastMessages = true;
-  if (!sessionId) {
-    sessionId = uuidv4();
-    fetchPastMessages = false;
-  }
-  loadSession(sessionId, fetchPastMessages);
-  return sessionId;
-};
-
 const handleAddMessage = (content) => {
-  if (!currentSessionId.value) {
-    loadSession(uuidv4());
+  if (!sessionId.value) {
+    loadSession();
   }
   addMessage({
     content: [{ type: "text", text: content }],
@@ -420,7 +411,6 @@ const handleAddMessage = (content) => {
 
 defineExpose({
   chatInput,
-  chatLoading,
   conversations,
   messageHandlers,
   addMessage,

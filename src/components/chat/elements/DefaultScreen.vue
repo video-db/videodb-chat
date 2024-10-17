@@ -168,7 +168,7 @@
         class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-content-start vdb-c-gap-16 vdb-c-overflow-y-auto lg:vdb-c-grid-cols-2"
       >
         <div
-          v-for="(agent, index) in allAgents.slice(0, 2)"
+          v-for="(agent, index) in agents.slice(0, 2)"
           :key="index"
           class="vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-roy hover:vdb-c-bg-gray-100"
           @click="$emit('agent-click', agent)"
@@ -210,7 +210,6 @@ import { computed, ref, watch } from "vue";
 import Button from "../../buttons/Button.vue";
 
 import QuestionMark from "../../icons/QuestionMark.vue";
-import FileUploadIcon from "../../icons/FileUpload.vue";
 import InfoIcon from "../../icons/Info.vue";
 import CrossIcon from "../../icons/Cross.vue";
 import AtIcon from "../../icons/AtIcon.vue";
@@ -222,7 +221,7 @@ const props = defineProps({
     required: true,
     default: "",
   },
-  allAgents: {
+  agents: {
     type: Array,
     default: () => [],
   },

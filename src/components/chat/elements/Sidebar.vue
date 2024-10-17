@@ -48,7 +48,7 @@
           v-if="showExploreAgents"
           class="vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-px-8 vdb-c-py-4"
         >
-          <template v-for="(agent, index) in allAgents" :key="index">
+          <template v-for="(agent, index) in agents" :key="index">
             <div
               @click="$emit('agent-click', agent)"
               :class="[
@@ -92,7 +92,7 @@
               (new session)
             </div>
           </div>
-          <template v-for="session in allSessions" :key="session.session_id">
+          <template v-for="session in sessions" :key="session.session_id">
             <div
               @click="$emit('session-click', session.session_id)"
               :class="[
@@ -146,7 +146,7 @@
           </div>
         </button>
         <div v-if="showCollections" class="vdb-c-mt-4 vdb-c-overflow-y-auto">
-          <template v-for="collection in allCollections" :key="collection.id">
+          <template v-for="collection in collections" :key="collection.id">
             <div
               @click="$emit('collection-click', collection.id)"
               :class="[
@@ -256,15 +256,15 @@ const triggerExploreAgentsFocusAnimation = () => {
 };
 
 const props = defineProps({
-  allSessions: {
+  sessions: {
     type: Array,
     required: true,
   },
-  allCollections: {
+  collections: {
     type: Array,
     required: true,
   },
-  allAgents: {
+  agents: {
     type: Array,
     required: true,
   },
@@ -308,7 +308,7 @@ const computedSelectedCollection = computed(() => {
   if (props.selectedCollection !== "default") {
     return props.selectedCollection;
   }
-  return props.allCollections.length > 0 ? props.allCollections[0].id : null;
+  return props.collections.length > 0 ? props.collections[0].id : null;
 });
 
 watch(
