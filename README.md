@@ -78,7 +78,7 @@ This component displays both past and current conversations within a session. Co
 
 Each conversation consists of input and output messages, which are rendered as `<ChatMessage/>` components. Output messages can contain various content types such as `text`, `video`, or `image`. These are rendered by their respective message handlers.
 
-> ℹ️ **Note:** To add support for additional content types, please refer to the [Custom Message Handler](#custom-message-handler) section.
+> ℹ️ **Note:** To add support for additional content types, please refer to the [Custom Message Handler](#-custom-message-handler) section.
 
 ### `<ChatMessageInput/>`
 
@@ -88,7 +88,7 @@ When a user sends a message, this component calls the `addMessage()` function, w
 
 The default chat hook is `videoDBChatHook`, which integrates with [Spielberg](https://github.com/video-db/spielberg).
 
-> ℹ️ **Note:** To configure your own chat hook, please refer to the [Custom ChatHook](#custom-chathook) section.
+> ℹ️ **Note:** To configure your own chat hook, please refer to the [Custom ChatHook](#-custom-chathook) section.
 
 # 🧑‍💻 Additional Components
 
@@ -136,9 +136,7 @@ The `ChatInterface` component exposes a method `registerMessageHandler` accessib
 
 **Checkout these resources to understand better:**
 
-- [View default message handlers](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/)
-- [View custom message handler example on CodeSandbox](https://stackblitz.com/edit/vitejs-vite-qnka6j?file=src%2FApp.vue)
-
+- [View default message handlers Implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/)
 ### 🔧 Custom ChatHook
 
 ---
@@ -150,16 +148,49 @@ The Custom ChatHook is an advanced feature of this package that allows you to:
 - Control conversation state and manage side effects.
 
 To use a custom hook, pass a function to the `customChatHook` prop. This function should return an object with the following properties:
+- `session`: _Object_ (reactive)  
+  Session object.
+  ```js
+  {
+    isConnected: false,
+    sessionId: null,
+    videoId: null,
+    collectionId: "default",
+  }
+  ```
+
+- `collections`: _Array_ (reactive)  
+  List of collections.
+
+- `sessions`: _Array_ (reactive)  
+  List of sessions.
+
+- `agents`: _Array_ (reactive)  
+  List of agents.
+
+- `activeCollectionData`: _Object_ (reactive)  
+  Data of the collection in context.
+
+- `activeCollectionVideos`: _Array_ (reactive)  
+  List of videos of the collection in context.
+
+- `activeVideoData`: _Object_ (reactive)  
+  Data of the video in context.
 
 - `conversations`: _Object_ (reactive)  
   See the [Conversations](#conversations) section for more details.
 
-- `addMessage`: _Function_  
+- `addMessage()`: _Function_  
   Adds a message to the conversation. This function is called when the user clicks the **Send** button
+
+- `loadSession()`: _Function_  
+  Loads a session. This function is called either when new session needs to be created or when the user clicks on a past session from sidebar.
+  When new session needs to be create, no arguments are passed to the function.
+  When the user clicks on a past session, the `sessionId` is passed as an argument.
 
 **Checkout these resources to understand better:**
 
-- [View default chat hook](https://github.com/video-db/videodb-chat/blob/main/src/components/hooks/useVideoDBAgent.js)
+- [View default chat hook Implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/hooks/useVideoDBAgent.js)
 - [View custom chat hook example on CodeSandbox](https://stackblitz.com/edit/vitejs-vite-knrrbv?file=src%2FApp.vue)
 
 # 📡 Interface
