@@ -3,26 +3,27 @@
     class="vdb-c-relative vdb-c-flex vdb-c-w-full vdb-c-flex-col vdb-c-gap-8 vdb-c-py-14 vdb-c-text-left"
   >
     <LoadingMessage
-      :status="message.status"
-      :message="message.status_message"
+      :status="content.status"
+      :message="content.status_message"
       :is-last-conv="isLastConv"
     />
     <transition name="fade" mode="out-in">
       <div
-        v-if="message.status === 'success' && message.video.stream_url"
+        v-if="content.status === 'success' && content.video.stream_url"
         class="vdb-c-w-full vdb-c-py-6"
       >
         <div
           class="vdb-c-full xl:vdb-c-1/2 vdb-c-overflow-hidden vdb-c-rounded-20 sm:vdb-c-w-3/4 lg:vdb-c-w-3/5 xl:vdb-c-w-1/2"
         >
           <VideoDBPlayer
-            :stream-url="message.video.stream_url"
+            :stream-url="content.video.stream_url"
             :default-controls="false"
+            @fullScreenChange="handleFullScreenChange"
           >
             <template #controls>
               <div class="vdb-p-pt-0 vdb-c-p-20">
                 <div class="sm:vdb-p-mx-8 vdb-c-mb-12">
-                  <ProgressBar :stream-url="message.video.stream_url" />
+                  <ProgressBar :stream-url="content.video.stream_url" />
                 </div>
                 <div class="vdb-c-flex vdb-c-w-full vdb-c-justify-between">
                   <div
@@ -43,7 +44,7 @@
           </VideoDBPlayer>
         </div>
       </div>
-      <div v-else-if="message.status === 'progress'">
+      <div v-else-if="content.status === 'progress'">
         <div
           class="vdb-c-full xl:vdb-c-1/2 vdb-c-animate-pulse vdb-c-overflow-hidden vdb-c-rounded-20 sm:vdb-c-w-3/4 lg:vdb-c-w-3/5 xl:vdb-c-w-1/2"
         >
@@ -55,7 +56,7 @@
         </div>
       </div>
       <div
-        v-else-if="message.status === 'not_generated'"
+        v-else-if="content.status === 'not_generated'"
         class="vdb-c-flex vdb-c-flex-col"
       ></div>
     </transition>
@@ -63,6 +64,7 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
 import {
   VideoDBPlayer,
   TimeCode,
@@ -73,7 +75,7 @@ import {
 import LoadingMessage from "./elements/LoadingMessage.vue";
 
 const props = defineProps({
-  message: {
+  content: {
     type: Object,
     required: true,
   },
@@ -82,6 +84,12 @@ const props = defineProps({
     default: false,
   },
 });
+
+const isFullScreen = ref(false);
+
+const handleFullScreenChange = () => {
+  isFullScreen.value = !isFullScreen.value;
+};
 </script>
 
 <style lang="scss">

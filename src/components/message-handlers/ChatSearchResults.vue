@@ -1,17 +1,17 @@
 <template>
   <div class="vdb-c-relative vdb-c-rounded-20 vdb-c-bg-white">
     <LoadingMessage
-      :status="message.status"
-      :message="message.status_message"
+      :status="content.status"
+      :message="content.status_message"
       :is-last-conv="isLastConv"
     />
-    <div v-if="message.status === 'success'">
+    <div v-if="content.status === 'success'">
       <search-list-item
-        :search-results="message.search_results"
-        :is-contractable="message.search_results.length > 1"
+        :search-results="content.search_results"
+        :is-contractable="content.search_results.length > 1"
       />
     </div>
-    <div v-else-if="message.status === 'progress'">
+    <div v-else-if="content.status === 'progress'">
       <search-list-item-loader />
     </div>
   </div>
@@ -23,7 +23,7 @@ import LoadingMessage from "./elements/LoadingMessage.vue";
 import SearchListItemLoader from "./search/SearchListItemLoader.vue";
 
 const props = defineProps({
-  message: {
+  content: {
     type: Object,
     required: true,
   },

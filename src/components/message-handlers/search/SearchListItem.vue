@@ -37,9 +37,9 @@
             </template>
           </VideoDBPlayer>
           <div
-            class="text-elip vdb-c-mb-8 vdb-c-line-clamp-2 vdb-c-whitespace-normal vdb-c-px-8 vdb-c-text-base vdb-c-font-medium"
+            class="text-elip vdb-c-mb-8 vdb-c-line-clamp-2 vdb-c-whitespace-normal vdb-c-px-8 vdb-c-text-base vdb-c-font-medium vdb-c-text-black"
           >
-            {{ videoData.name }}
+            {{ videoData.video_title }}
           </div>
         </div>
         <div

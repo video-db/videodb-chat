@@ -5,14 +5,14 @@
   >
     <LoadingMessage
       v-if="!isUser"
-      :status="message.status"
-      :message="message.status_message"
+      :status="content.status"
+      :message="content.status_message"
       :isLastConv="isLastConv"
     />
 
     <transition name="fade" mode="out-in">
       <div
-        v-if="message.status === 'success'"
+        v-if="content.status === 'success'"
         class="vdb-c-shadow-md vdb-c-overflow-hidden"
       >
         <img
@@ -22,11 +22,11 @@
         />
       </div>
       <div
-        v-else-if="message.status === 'progress'"
+        v-else-if="content.status === 'progress'"
         class="vdb-c-animate-pulse vdb-c-rounded-lg vdb-c-bg-gray-200"
       ></div>
       <div
-        v-else-if="message.status === 'error'"
+        v-else-if="content.status === 'error'"
         class="vdb-c-flex vdb-c-flex-col"
       >
         <p class="vdb-c-text-red-500">Error loading image.</p>
@@ -40,7 +40,7 @@ import { computed } from "vue";
 import LoadingMessage from "./elements/LoadingMessage.vue";
 
 const props = defineProps({
-  message: {
+  content: {
     type: Object,
     required: true,
   },
@@ -54,7 +54,7 @@ const props = defineProps({
   },
 });
 
-const image = computed(() => props.message.image || {});
+const image = computed(() => props.content.image || {});
 </script>
 
 <style>

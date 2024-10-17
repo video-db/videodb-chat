@@ -2,8 +2,8 @@
   <div
     class="vdb-c-flex vdb-c-h-full vdb-c-flex-col vdb-c-gap-16 vdb-c-border-r vdb-c-bg-white vdb-c-p-16 vdb-c-pl-12 vdb-c-pr-20 vdb-c-text-black"
   >
-    <div class="vdb-c-p-12 vdb-c-text-2xl vdb-c-font-bold">
-      <SpielbergIcon />
+    <div class="vdb-c-pt-12 vdb-c-text-2xl vdb-c-font-bold">
+      <component :is="config.icon" />
     </div>
     <Button
       variant="primary"
@@ -169,7 +169,7 @@
 
     <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col vdb-c-gap-16">
       <a
-        v-for="(link, index) in links"
+        v-for="(link, index) in config.links"
         :key="index"
         class="vdb-c-mx-8 vdb-c-my-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey hover:vdb-c-text-vdb-darkishgrey hover:vdb-c-no-underline"
         :href="link.href"
@@ -183,25 +183,25 @@
           class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-gap-6"
         >
           <a
-            :href="primaryLink.href"
-            :target="primaryLink.target || '_blank'"
+            :href="config.primaryLink.href"
+            :target="config.primaryLink.target || '_blank'"
             rel="noopener noreferrer"
             class="vdb-c-flex vdb-c-items-center vdb-c-text-white hover:vdb-c-text-white hover:vdb-c-no-underline"
           >
-            <template v-if="primaryLink.icon">
+            <template v-if="config.primaryLink.icon">
               <img
-                v-if="typeof primaryLink.icon === 'string'"
-                :src="primaryLink.icon"
+                v-if="typeof config.primaryLink.icon === 'string'"
+                :src="config.primaryLink.icon"
                 alt="Primary Link Icon"
                 class="vdb-c-mr-8 vdb-c-h-16 vdb-c-w-16"
               />
               <component
-                v-else-if="typeof primaryLink.icon === 'object'"
-                :is="primaryLink.icon"
+                v-else-if="typeof config.primaryLink.icon === 'object'"
+                :is="config.primaryLink.icon"
                 class="vdb-c-mr-8 vdb-c-h-16 vdb-c-w-16"
               />
             </template>
-            {{ primaryLink.text }}
+            {{ config.primaryLink.text }}
           </a>
         </div>
       </Button>
@@ -268,15 +268,9 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  links: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  primaryLink: {
+  config: {
     type: Object,
     required: true,
-    default: () => ({}),
   },
   selectedCollection: {
     type: String,

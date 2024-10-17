@@ -7,7 +7,11 @@
       v-if="videoData"
     >
       <div
-        :class="isFullScreen ? 'vdb-c-h-screen vdb-c-w-screen' : 'vdb-c-w-full'"
+        :class="
+          isFullScreen
+            ? 'vdb-c-fixed vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64'
+            : 'vdb-c-w-full'
+        "
       >
         <VideoDBPlayer
           ref="videoPlayer"
@@ -64,7 +68,7 @@ const props = defineProps({
 const isFullScreen = ref(false);
 
 const handleFullScreenChange = () => {
-  // isFullScreen.value = !isFullScreen.value;
+  isFullScreen.value = !isFullScreen.value;
 };
 </script>
 

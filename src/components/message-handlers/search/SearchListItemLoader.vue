@@ -28,10 +28,6 @@
               </div>
             </div>
           </div>
-          <div
-            v-if="borderB"
-            class="vdb-c-border-b vdb-c-border-outline-xlight"
-          />
         </div>
       </div>
       <div class="vdb-c-col-span-9">

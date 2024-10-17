@@ -216,11 +216,6 @@ import AtIcon from "../../icons/AtIcon.vue";
 import MenuIcon from "../../icons/Menu.vue";
 
 const props = defineProps({
-  userName: {
-    type: String,
-    required: true,
-    default: "",
-  },
   agents: {
     type: Array,
     default: () => [],

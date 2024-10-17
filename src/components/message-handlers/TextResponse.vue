@@ -5,14 +5,14 @@
   >
     <LoadingMessage
       v-if="!isUser"
-      :status="message.status"
-      :message="message?.status_message"
+      :status="content.status"
+      :message="content?.status_message"
       :is-last-conv="isLastConv"
     />
 
     <transition name="fade" mode="out-in">
       <div
-        v-if="message.status === 'success' || isUser"
+        v-if="content.status === 'success' || isUser"
         class="vdb-c-flex vdb-c-flex-col"
       >
         <p
@@ -24,7 +24,7 @@
         ></p>
       </div>
       <div
-        v-else-if="message.status === 'progress'"
+        v-else-if="content.status === 'progress'"
         class="vdb-c-flex-start vdb-c-flex vdb-c-flex-col"
       >
         <div
@@ -38,7 +38,7 @@
         ></div>
       </div>
       <div
-        v-else-if="message.status === 'error'"
+        v-else-if="content.status === 'error'"
         class="vdb-c-flex vdb-c-flex-col"
       ></div>
     </transition>
@@ -55,7 +55,7 @@ const options = {
 };
 
 const props = defineProps({
-  message: {
+  content: {
     type: Object,
     required: true,
   },
@@ -73,7 +73,7 @@ const props = defineProps({
   },
 });
 
-const text = computed(() => props.message.text);
+const text = computed(() => props.content.text);
 
 const getMarkedMsg = (msg) => {
   marked.use(markedKatex(options));

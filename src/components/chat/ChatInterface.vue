@@ -10,6 +10,7 @@
       <sidebar
         ref="sidebarRef"
         class="vdb-c-w-1/5 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+        :config="sidebarConfig"
         :show-selected-collection="
           Object.keys(conversations).length === 0 &&
           !showVideoView &&
@@ -23,8 +24,6 @@
         :agents="agents"
         :sessions="sessions"
         :collections="collections"
-        :links="links"
-        :primary-link="primaryLink"
         @create-new-session="handleNewSessionClick"
         @agent-click="handleTagAgent"
         @session-click="handleSessionClick"
@@ -99,11 +98,10 @@
 
                 <default-screen
                   v-else
-                  :user-name="userName"
                   :agents="agents.slice(0, 2)"
                   :active-collection-data="activeCollectionData"
                   :show-onboarding-message="isFreshUser"
-                  :action-card-queries="actionCardQueries"
+                  :action-card-queries="dynamicActionCards"
                   @query-card-click="handleQueryCardClick"
                   @agent-click="handleTagAgent"
                   @explore-agents-click="handleExploreAgentsClick"
@@ -167,15 +165,12 @@ import TextResponse from "../message-handlers/TextResponse.vue";
 import VideoDBLogo from "../icons/VideoDBLogo.vue";
 import FileUploadIcon from "../icons/FileUpload.vue";
 import EyeIcon from "../icons/Eye.vue";
+import SpielbergIcon from "../icons/Spielberg2.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
     type: String,
     default: "Ask Spielberg",
-  },
-  searchSuggestions: {
-    type: Array,
-    default: () => [],
   },
   customChatHook: {
     type: Function,
@@ -194,33 +189,31 @@ const props = defineProps({
     default: "full",
     validator: (value) => ["full", "embedded"].includes(value),
   },
-  links: {
-    type: Array,
-    default: () => [
-      {
-        href: "https://docs.videodb.io",
-        text: "Documentation",
-      },
-    ],
-  },
-  primaryLink: {
+  sidebarConfig: {
     type: Object,
     default: () => ({
-      href: "https://console.videodb.io",
-      text: "VideoDB Console",
-      icon: VideoDBLogo,
+      icon: SpielbergIcon,
+      links: [
+        {
+          href: "https://docs.videodb.io",
+          text: "Documentation",
+        },
+      ],
+      primaryLink: {
+        href: "https://console.videodb.io",
+        text: "VideoDB Console",
+        icon: VideoDBLogo,
+      },
     }),
   },
-  userName: {
-    type: String,
-    default: "",
-  },
-  actionCardQueries: {
-    type: Array,
-    default: () => [],
+  defaultScreenConfig: {
+    type: Object,
+    default: () => ({
+      actionCardQueries: null,
+    }),
   },
 });
-const emit = defineEmits(["backBtnClick", "updateConversations"]);
+const emit = defineEmits([]);
 
 const sidebarRef = ref(null);
 const chatInputRef = ref(null);
@@ -273,57 +266,60 @@ const chatLoading = computed(() =>
     ),
   ),
 );
-const actionCardQueries = computed(() => {
-  return isFreshUser.value
-    ? [
-        {
-          component: UploadVideoQueryCard,
-          content: "Upload a video to this collection",
-          type: "cta",
-          action: "chat",
-          icon: FileUploadIcon,
-        },
-        {
-          content: "What are agents and How do they work ?",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content:
-            "How will I be charged for using VideoDB's integration on Spielberg?",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content:
-            "I'm not sure what Spielberg is about.Help me figure out what you can do.",
-          type: "muted",
-          action: "chat",
-        },
-      ]
-    : [
-        {
-          content: "View all videos in this collection",
-          type: "cta",
-          action: "show-collection",
-          icon: EyeIcon,
-        },
-        {
-          content: "Upload a video to this collection",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content: "Categorise the videos in my collection",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content: "I'm not sure. Help me figure out what you can do",
-          type: "muted",
-          action: "chat",
-        },
-      ];
+const dynamicActionCards = computed(() => {
+  return (
+    props.defaultScreenConfig.actionCardQueries ||
+    (isFreshUser.value
+      ? [
+          {
+            component: UploadVideoQueryCard,
+            content: "Upload a video to this collection",
+            type: "cta",
+            action: "chat",
+            icon: FileUploadIcon,
+          },
+          {
+            content: "What are agents and How do they work ?",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content:
+              "How will I be charged for using VideoDB's integration on Spielberg?",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content:
+              "I'm not sure what Spielberg is about.Help me figure out what you can do.",
+            type: "muted",
+            action: "chat",
+          },
+        ]
+      : [
+          {
+            content: "View all videos in this collection",
+            type: "cta",
+            action: "show-collection",
+            icon: EyeIcon,
+          },
+          {
+            content: "Upload a video to this collection",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content: "Categorise the videos in my collection",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content: "I'm not sure. Help me figure out what you can do",
+            type: "muted",
+            action: "chat",
+          },
+        ])
+  );
 });
 
 const scrollToBottom = () => {
@@ -342,8 +338,8 @@ watch(chatLoading, (val) => {
 
 // --- Sidebar Click Handlers ---
 const handleNewSessionClick = () => {
-  showCollectionView.value = false;
   videoId.value = null;
+  showCollectionView.value = false;
   showVideoView.value = false;
   taggedAgent.value = [];
   loadSession();

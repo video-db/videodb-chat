@@ -13,8 +13,7 @@
         v-if="isUser"
         class="vdb-c-w-full vdb-c-transform vdb-c-transition-all"
       >
-        <!--TODO: don't hardcode to first element-->
-        <text-response :message="message.content[0]" :is-user="true" />
+        <text-response :content="message.content[0]" :is-user="true" />
       </div>
 
       <div v-else-if="isAssistant">
@@ -32,7 +31,7 @@
               v-if="Object.keys(messageHandlers).includes(content.type)"
               :is="messageHandlers[content.type]"
               :is-last-conv="isLastConv"
-              :message="content"
+              :content="content"
               :is-user="isUser"
               :search-term="searchTerm"
             />
