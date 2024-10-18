@@ -14,7 +14,7 @@
   <h3 align="center">VideoDB Chat</h3>
 
   <p align="center">
-    Chat UI Components for <a href="https://github.com/video-db/video-agents">  Video Agents</a>
+    Chat UI Components for <a href="https://github.com/video-db/spielberg">  Spielberg</a>
     <br />
     <a href="https://stackblitz.com/edit/vitejs-vite-zyq2no?file=src%2FApp.vue"><strong>View Demo »</strong></a>
     <br />
@@ -23,86 +23,175 @@
     ·
     <a href="https://github.com/video-db/videodb-chat/issues">Request Feature</a>
   </p>
-</p> 
+</p>
 
 # 💬 VideoDB Chat
 
-These are Chat UI components to use with [Video Agents](https://github.com/video-db/video-agents).
-
+These are Chat UI components to use with [Spielberg](https://github.com/video-db/spielberg).
 
 # 🚀 Quickstart
 
 ### Installation
+
 ```
 npm install @videodb/chat-vue
 ```
 
 ### Usage
 
-Import the necessary components and styles. ( Currently supports Vue.js only )
+Import the necessary components and styles.
 
-> If you are using default ChatHook, make sure your backend is running and the socket url is correct  
-> Checkout [video-agents](https://github.com/video-db/video-agents) for more details of backend setup for default ChatHook.
-
-> If you want to setup with your own backend, checkout [using custom chatHook](#using-custom-chatHook) section
+If you are using [Spielberg](https://github.com/video-db/spielberg), make sure it's backend is running and the socket url is correctly passed in `chat-hook-config`
 
 ```html
 <script setup>
-  import { ref } from "vue";
   import { ChatInterface } from "@videodb/chat-vue";
   import "@videodb/chat-vue/dist/style.css";
 
-  const isChatOpened = ref(true);
-  const sessionId = Date.now();
-  const collectionId = "default";
-
-  // Set videoId to Chat With Video
-  const videoId = null;
-
-  const backendUrl = "http://127.0.0.1:5000/chat";
+  const socketUrl = "http://127.0.0.1:8000/chat";
+  const httpUrl = "http://127.0.0.1:8000";
 </script>
 
 <template>
-  <ChatInterface
-    v-if="isChatOpened"
-    :chat-hook-config="{
-      sessionId: sessionId,
-      collectionId: collectionId,
-      videoId: videoId,
-      url: backendUrl,
-      debug: true,
-    }"
-    @backBtnClick="isChatOpened = false"
-  />
+  <div>
+    <ChatInterface
+      :chat-hook-config="{
+        socketUrl: socketUrl,
+        httpUrl: httpUrl,
+        debug: true,
+      }"
+    />
+  </div>
 </template>
 ```
 
+# 📖 Application Flow
+
+The `ChatInterface` component is composed of two primary sub-components:
+
+- `<ChatMessageContainer/>`
+- `<ChatMessageInput/>`
+
+### `<ChatMessageContainer/>`
+
+This component displays both past and current conversations within a session. Conversations are stored in the `conversations` variable, a reactive object exported by the chat hook. This variable updates in real-time as the conversation progresses.
+
+Each conversation consists of input and output messages, which are rendered as `<ChatMessage/>` components. Output messages can contain various content types such as `text`, `video`, or `image`. These are rendered by their respective message handlers.
+
+> ℹ️ **Note:** To add support for additional content types, please refer to the [Custom Message Handler](#-custom-message-handler) section.
+
+### `<ChatMessageInput/>`
+
+When a user sends a message, this component calls the `addMessage()` function, which in turn invokes the `addMessage` function of the chat hook.
+
+### Default Chat Hook
+
+The default chat hook is `videoDBChatHook`, which integrates with [Spielberg](https://github.com/video-db/spielberg).
+
+> ℹ️ **Note:** To configure your own chat hook, please refer to the [Custom ChatHook](#-custom-chathook) section.
+
+# 🧑‍💻 Additional Components
+
+_This package includes other UI components that enhance the chat experience_
+
+### `<Sidebar/>`
+
+This component facilitates navigation between different sessions and collections. It can be used to switch between various conversations or collections.
+
+> You can customize the branding of the sidebar by passing a `sidebarConfig` prop to `<ChatInterface/>`.
+
+### `<DefaultScreen/>`
+
+This component displays the default screen when there are no conversations in the chat. It showcases the agents and action cards.
+
+> You can configure the `DefaultScreen` by passing a `defaultScreenConfig` prop to `<ChatInterface/>`.
+
+### `<CollectionView/>` and `<VideoView/>`
+
+These components are used to display collection and video views, helping users better understand the context of the conversation.
+
 # 🧑‍💻 Advanced Usage
 
+### 🔧 Custom Message Handler
 
-### Leveraging Custom Hooks
+---
 
-Custom hooks offer a versatile approach to enhancing chat functionality:
+_Custom message handlers allow you to register specialized UI components for various content types. This is particularly useful when adding new agents that require UI elements beyond the currently supported types._
 
-- Connect to your own backend, bypassing VideoDB's video agent integration
-- Develop custom logic for agent interactions
-- Control conversation state and manage side effects
-- Seamlessly integrate with your existing application architecture
+The `ChatInterface` component exposes a method `registerMessageHandler` accessible via `ref`, enabling you to register custom message handlers. This function accepts two arguments:
 
-This flexibility enables you to customize the chat experience to meet your specific requirements while ensuring compatibility with the ChatInterface component.
+- `contentType`: _String_  
+  The name of the agent for which the message handler is registered. The handler will be used for content types where message's content has a content type that matches `contentType`.
 
-[View Custom Hook Example on StackBlitz](https://stackblitz.com/edit/vitejs-vite-knrrbv?file=src%2FApp.vue)
+- `handler`: _Component_  
+  The UI component to be rendered for the message type.
 
-### Implementing Custom Message Handlers
+**The handler component will receive the following props:**
 
-Custom message handlers allow you to process various message types from different agents:
+- `content`: _Object_  
+  The content object of matched content type.
 
-- Render custom UI components for specific agent types
-- Fine-grained control over message processing
-- Extensibility to support new agent types or response formats
-- Improved user experience through tailored message rendering
+- `isLastConv`: _Boolean_  
+  Indicates if the message is the last conversation.
 
-[View Custom Message Handler Example on StackBlitz](https://stackblitz.com/edit/vitejs-vite-qnka6j?file=src%2FApp.vue)
+**Checkout these resources to understand better:**
+
+- [View default message handlers Implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/)
+### 🔧 Custom ChatHook
+
+---
+
+The Custom ChatHook is an advanced feature of this package that allows you to:
+
+- Connect to your own backend, bypassing or configuring Spielberg's default backend.
+- Develop custom logic for agent interactions.
+- Control conversation state and manage side effects.
+
+To use a custom hook, pass a function to the `customChatHook` prop. This function should return an object with the following properties:
+- `session`: _Object_ (reactive)  
+  Session object.
+  ```js
+  {
+    isConnected: false,
+    sessionId: null,
+    videoId: null,
+    collectionId: "default",
+  }
+  ```
+
+- `collections`: _Array_ (reactive)  
+  List of collections.
+
+- `sessions`: _Array_ (reactive)  
+  List of sessions.
+
+- `agents`: _Array_ (reactive)  
+  List of agents.
+
+- `activeCollectionData`: _Object_ (reactive)  
+  Data of the collection in context.
+
+- `activeCollectionVideos`: _Array_ (reactive)  
+  List of videos of the collection in context.
+
+- `activeVideoData`: _Object_ (reactive)  
+  Data of the video in context.
+
+- `conversations`: _Object_ (reactive)  
+  See the [Conversations](#conversations) section for more details.
+
+- `addMessage()`: _Function_  
+  Adds a message to the conversation. This function is called when the user clicks the **Send** button
+
+- `loadSession()`: _Function_  
+  Loads a session. This function is called either when new session needs to be created or when the user clicks on a past session from sidebar.
+  When new session needs to be create, no arguments are passed to the function.
+  When the user clicks on a past session, the `sessionId` is passed as an argument.
+
+**Checkout these resources to understand better:**
+
+- [View default chat hook Implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/hooks/useVideoDBAgent.js)
+- [View custom chat hook example on CodeSandbox](https://stackblitz.com/edit/vitejs-vite-knrrbv?file=src%2FApp.vue)
 
 # 📡 Interface
 
@@ -112,65 +201,67 @@ Custom message handlers allow you to process various message types from differen
 
 The ChatInterface component accepts the following props:
 
-- `userImage`: String or Component (default: ChatUser Component)
-  Specifies the image or component to represent user messages in the chat.
+- `chatInputPlaceholder`: 
+  - default: "Ask Speilberg"
+  - Customizes the placeholder text for the chat input field.
 
-- `assistantImage`: String or Component (default: AssistantIcon Component)
-  Defines the image or component for assistant messages.
+- `size(string)`: 
+  - default: full  
+  - Determines the size of the chat interface. Options are `full` or `embedded`.
+      Full takes up the entire width of the screen.
+      Embedded takes up space of the parent container.
 
-- `emptyContainerLogo`: String or Component (default: SpextLogoBlue Component)
-  Sets the logo displayed when the chat is empty.
+- `customChatHook(Function)`: 
+  - default: [videoDBChatHook](https://github.com/video-db/videodb-chat/blob/main/src/components/hooks/useVideoDBAgent.js)
+  - Allows for a custom hook to handle chat functionality.
 
-- `chatInputPlaceholder`: String (default: "Ask a question")
-Customizes the placeholder text for the chat input field.
+- `chatHookConfig(object)`: 
+  - Configures the chat hook. For the default chat hook, it includes:
+  - default
+    ```js
+      socketUrl: "http://127.0.0.1:8000/chat",
+      httpUrl: "http://127.0.0.1:8000",
+      debug: false,
+    ```
 
-- `searchSuggestions`: Array (default: [])
-  Provides a list of search suggestions. Each suggestion should be an object with the format `{ "text": "search suggestion" }`.
+- `sidebarConfig(string)`: 
+  - Customizes the sidebar.  
+  - default:
+    ```js
+    {
+          icon: SpielbergIcon,
+          links: [
+            {
+              href: "https://docs.videodb.io",
+              text: "Documentation",
+            },
+          ],
+          primaryLink: {
+            href: "https://console.videodb.io",
+            text: "VideoDB Console",
+            icon: VideoDBLogo,
+          },
+    }
+    ```
 
-- `shareUrl`: String (default: "")
-  Specifies the URL for sharing the chat.
-
-- `customChatHook`: Function (default: videoDBChatHook)
-  Allows for a custom hook to handle chat functionality.
-
-- `chatHookConfig`: Object
-Configures the chat hook. For the default videoDBChatHook, it includes:
-
-  - `url`: String (default: `http://127.0.0.1:5000/chat`) - URL for the chat backend socket.
-  - `sessionId`: String (default: generated UUID) - Unique identifier for the chat session.
-  - `collectionId`: String (default: null) - ID of the collection.
-  - `videoId`: String (default: null) - ID of the video.
-  - `debug`: Boolean (default: false) - Enables debug mode.
-
-- `size`: String (default: `full`)
-  Determines the size of the chat interface. Options are `full` or `embedded`.
-  Full takes up the entire width of the screen.
-  Embedded takes up space of the parent container.
+- `defaultScreenConfig(Object)`: 
+  - default: a list of action cards with default queries  
+  - Customizes the default screen.
 
 ### Exposed Variables
 
-- `conversations`: Object
-  Contains the conversation data.
+#### State Variables
 
-- `addMessage`: Function
-  Adds a message to the conversation.
+- `conversations`: Object  
+
+#### Methods
+
+- `addMessage(message)`:   
+    Adds a message to the conversation.
+- `registerMessageHandler(contentType, handler)`:   
+  Registers a custom message handler for a specific content type.
 
 
-### Conversation
-
-Conversation is a collection of messages between user and agent of a session. Each conversation contains a list of messages objects 
-
-- `conversationId` : ID of the conversation.
-  - `msgId` : ID of the message.
-    - `agent_type` : Type of the agent that generated the message.
-    - `content` : Text content of the message. (input/output)
-    - `conv_id` : ID of the collection.
-    - `data` : JSON data associated with the agent message.
-    - `msg_id` : ID of the message.
-    - `msg_type` : Type of the message. (input/output)
-    - `session_id` : Unique identifier for the chat session.
-    - `sender` : Sender of the message. (assistant/user)
-    - `status` : Status of the message. (progress/success/error)
 
 [npm-shield]: https://img.shields.io/npm/v/@videodb/chat-vue?style=for-the-badge
 [npm-url]: https://www.npmjs.com/package/@videodb/chat-vue

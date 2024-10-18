@@ -69,7 +69,9 @@
 	"dependencies": {
 		"@videodb/player-vue": "^0.0.2",
 		"dayjs": "^1.11.13",
+		"katex": "^0.16.11",
 		"marked": "^4.2.5",
+		"marked-katex-extension": "^5.1.2",
 		"socket.io-client": "^4.7.5",
 		"swiper": "^11.1.10",
 		"uuid": "^10.0.0"

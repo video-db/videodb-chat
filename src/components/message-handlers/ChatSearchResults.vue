@@ -1,60 +1,44 @@
 <template>
-  <div
-    class="vdb-c-relative vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-12 md:vdb-c-p-24"
-  >
-    <div v-if="message.status === 'progress'" class="vdb-c-py-10">
-      <bouncing-ellipses />
-    </div>
-    <div
-      v-else-if="message.status === 'not_generated' || !message?.data?.shots"
-      class="vdb-c-flex vdb-c-flex-col"
-    >
-      <div
-        class="vdb-c-mb-8 vdb-c-flex vdb-c-text-subheader vdb-c-text-steelblue-600"
-      >
-        No relevant results were found
-      </div>
-      <p class="vdb-c-markdown-body vdb-c-text-kilvish-900">
-        Couldn't find any matching results for your query. Try searching for
-        something else?
-      </p>
-    </div>
-    <div v-else-if="message.status === 'success'">
+  <div class="vdb-c-relative vdb-c-rounded-20 vdb-c-bg-white">
+    <LoadingMessage
+      :status="content.status"
+      :message="content.status_message"
+      :is-last-conv="isLastConv"
+    />
+    <div v-if="content.status === 'success'">
       <search-list-item
-        :search-results="adjustedSearchResults"
-        :search-term="searchTerm"
-        :is-contractable="isContractable"
+        :search-results="content.search_results"
+        :is-contractable="content.search_results.length > 1"
       />
+    </div>
+    <div v-else-if="content.status === 'progress'">
+      <search-list-item-loader />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import BouncingEllipses from "../atoms/BouncingEllipses.vue";
-import SearchListItem from "../search/SearchListItem.vue";
+import SearchListItem from "./search/SearchListItem.vue";
+import LoadingMessage from "./elements/LoadingMessage.vue";
+import SearchListItemLoader from "./search/SearchListItemLoader.vue";
 
 const props = defineProps({
-  message: {
+  content: {
     type: Object,
     required: true,
   },
-  searchTerm: {
-    type: String,
-    default: "",
+  isLastConv: {
+    type: Boolean,
+    default: false,
   },
 });
-
-const adjustedSearchResults = computed(() => {
-  return { data: { results: [props.message.data] } };
-});
-
-const isContractable = computed(() => {
-  return (
-    adjustedSearchResults.value &&
-    adjustedSearchResults.value.data.results.length > 1
-  );
-});
+const getArr = () => {
+  const arr = [];
+  for (let i = 0; i < 2; i++) {
+    arr.push(i + 1);
+  }
+  return arr;
+};
 </script>
 
 <style></style>

@@ -1,6 +1,7 @@
 <template>
   <div
-    class="vdb-c-relative vdb-c-h-auto vdb-c-min-h-full vdb-c-w-full vdb-c-pb-10"
+    class="vdb-c-relative vdb-c-h-auto vdb-c-w-full vdb-c-px-30"
+    :class="{ 'vdb-c-pt-16 vdb-c-min-h-full': isLastConv }"
   >
     <div
       v-for="(message, i) in messages"
@@ -9,8 +10,6 @@
     >
       <chat-message
         :message="message"
-        :user-image="userImage"
-        :assistant-image="assistantImage"
         :is-static-page="isStaticPage"
         :is-last-conv="isLastConv"
         :message-list="messages"
@@ -30,14 +29,6 @@ const props = defineProps({
   conversation: {
     type: Object,
     default: () => ({}),
-  },
-  userImage: {
-    type: [String, Object],
-    default: null,
-  },
-  assistantImage: {
-    type: [String, Object],
-    default: null,
   },
   isStaticPage: {
     type: Boolean,

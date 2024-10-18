@@ -1,5 +1,16 @@
 # Changelog
 
+### [0.0.4]() - 2024-09-18
+
+### Added
+- Addtional UI Components for Sidebar, VideoView, CollectionView &  Default Screen 
+- Enhanced UX 
+
+### Changed
+- Update default chat hook
+- Update Message handlers to support new conversation structure
+
+
 ## [0.0.3]() - 2024-09-16
 
 ### Changed

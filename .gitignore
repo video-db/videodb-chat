@@ -8,6 +8,8 @@ packages/docs/.vitepress/cache
 packages/*/dist
 packages/*/types
 
+package-lock.json
+
 *.tsbuildinfo
 
 TODO.md

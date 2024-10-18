@@ -3,158 +3,174 @@
     :class="{
       'vdb-c-fixed': size === 'full',
     }"
-    class="vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64 vdb-c-text-textdark md:vdb-c-p-20 md:vdb-c-pl-40"
+    class="vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64"
   >
-    <div
-      class="vdb-c-z-10 vdb-c-flex vdb-c-h-auto vdb-c-w-full vdb-c-justify-between vdb-c-bg-kilvish-300 vdb-c-px-10 vdb-c-py-6 md:vdb-c-hidden md:vdb-c-bg-transparent md:vdb-c-px-0 md:vdb-c-py-0"
-    >
-      <button
-        class="vdb-c-flex vdb-c-items-center vdb-c-rounded-24 vdb-c-bg-white vdb-c-p-8 vdb-c-pr-12 focus:vdb-c-bg-kilvish-100 md:vdb-c-hidden"
-        @click="$emit('backBtnClick')"
-      >
-        <chat-chevron-left class-name="vdb-c-w-16 vdb-c-h-16 vdb-c-mr-8" />
-        <span class="vdb-c-text-xs vdb-c-font-medium">Back</span>
-      </button>
-      <red-share-button
-        v-show="showShareButton"
-        base-class="md:vdb-c-hidden vdb-c-rounded-24 vdb-c-rsb"
-        :text-to-copy="shareUrl"
-        success-message="Copied Link"
-        initial-message="Share Chat"
+    <div class="vdb-c-flex vdb-c-h-full vdb-c-w-full">
+      <!-- Collapsible Sidebar -->
+      <sidebar
+        ref="sidebarRef"
+        class="vdb-c-w-1/5 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+        :config="sidebarConfig"
+        :show-selected-collection="
+          Object.keys(conversations).length === 0 &&
+          !showVideoView &&
+          !showCollectionView
+        "
+        :initial-sessions-open="!isFreshUser"
+        :initial-collections-open="isFreshUser"
+        :selected-session="sessionId"
+        :add-dummy-session="Object.keys(conversations).length === 0"
+        :selected-collection="collectionId"
+        :agents="agents"
+        :sessions="sessions"
+        :collections="collections"
+        @create-new-session="handleNewSessionClick"
+        @agent-click="handleTagAgent"
+        @session-click="handleSessionClick"
+        @collection-click="handleCollectionClick"
       />
-    </div>
-    <div
-      class="vdb-c-relative vdb-c-h-full vdb-c-w-full vdb-c-bg-white vdb-c-p-10 vdb-c-shadow-2 md:vdb-c-w-11/12 md:vdb-c-rounded-20"
-    >
-      <div
-        class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden vdb-c-rounded-t-20 vdb-c-bg-superman-200"
-      >
-        <section
-          ref="chatWindow"
-          class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
+
+      <!-- Main Content -->
+      <div class="vdb-c-flex vdb-c-flex-1 vdb-c-flex-col">
+        <div
+          class="vdb-c-relative vdb-c-flex-1 vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
         >
-          <!-- Empty Container; if no messages are there-->
-          <div
-            class="vdb-c-flex vdb-c-w-full vdb-c-transform vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-transition-all vdb-c-duration-500"
-            :class="{
-              'vdb-c-h-full vdb-c-opacity-100': showEmptyContainer,
-              'vdb-c-h-0 vdb-c-opacity-0': !showEmptyContainer,
-            }"
-          >
-            <div
-              class="vdb-c-mb-30 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-rounded-20 vdb-c-bg-white vdb-c-p-20"
+          <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
+            <section
+              ref="chatWindow"
+              class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
             >
-              <component
-                :is="emptyContainerLogo"
-                v-if="typeof emptyContainerLogo === 'object'"
+              <template v-if="Object.keys(conversations).length === 0">
+                <!-- Empty Container -->
+                <div
+                  v-if="showVideoView || showCollectionView"
+                  class="vdb-c-w-full vdb-c-p-16 vdb-c-px-30"
+                >
+                  <div
+                    class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-border-b vdb-c-border-roy vdb-c-py-12 vdb-c-text-lg vdb-c-text-black"
+                  >
+                    <span class="vdb-c-flex vdb-c-font-bold">
+                      <span
+                        v-if="collectionName"
+                        class="vdb-c-cursor-pointer"
+                        @click="
+                          videoId.value = null;
+                          showVideoView = false;
+                        "
+                      >
+                        {{ collectionName }}
+                      </span>
+                      <span
+                        v-else
+                        class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
+                      ></span>
+                    </span>
+                    <span v-if="showVideoView"> > </span>
+                    <span
+                      v-if="showVideoView"
+                      class="vdb-c-flex vdb-c-max-w-[300px] vdb-c-truncate"
+                    >
+                      <span v-if="videoName"> {{ videoName }} </span>
+                      <span
+                        v-else
+                        class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-[#EEEFF2]"
+                      ></span>
+                    </span>
+                  </div>
+                  <video-view
+                    v-if="showVideoView"
+                    :collection-id="collectionId"
+                    :video-id="videoId"
+                    :collection-data="activeCollectionData"
+                    :video-data="activeVideoData"
+                    class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                  />
+
+                  <collection-view
+                    v-else-if="showCollectionView"
+                    :collection-id="collectionId"
+                    :collection-data="activeCollectionData"
+                    :collection-videos="activeCollectionVideos"
+                    @video-click="handleVideoClick"
+                    class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                  />
+                </div>
+
+                <default-screen
+                  v-else
+                  :agents="agents.slice(0, 2)"
+                  :active-collection-data="activeCollectionData"
+                  :show-onboarding-message="isFreshUser"
+                  :action-card-queries="dynamicActionCards"
+                  @query-card-click="handleQueryCardClick"
+                  @agent-click="handleTagAgent"
+                  @explore-agents-click="handleExploreAgentsClick"
+                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                />
+              </template>
+
+              <!-- Message Container -->
+              <chat-message-container
+                v-else
+                v-for="(key, i) in Object.keys(conversations)"
+                :key="key"
+                :conversation="conversations[key]"
+                :search-term="chatInput"
+                :is-static-page="isStaticPage"
+                :is-last-conv="i === Object.keys(conversations).length - 1"
+                class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
               />
-              <img
-                :src="emptyContainerLogo"
-                v-else-if="typeof emptyContainerLogo === 'string'"
-                alt="Logo"
-              />
-            </div>
-            <div
-              class="vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0"
-            >
-              <follow-up-container
-                :follow-up-prompts="searchSuggestions"
-                :is-empty="showEmptyContainer"
-                @followUpClicked="handleFollowUp"
-              />
-            </div>
+            </section>
           </div>
 
-          <!-- Message Container -->
-          <chat-message-container
-            v-for="(key, i) in Object.keys(conversations)"
-            :key="key"
-            :conversation="conversations[key]"
-            :user-image="userImage"
-            :assistant-image="assistantImage"
-            :search-term="searchTerm"
-            :is-static-page="isStaticPage"
-            :is-last-conv="i === Object.keys(conversations).length - 1"
-          />
-        </section>
-      </div>
-
-      <!-- chat input -->
-      <div
-        class="vdb-c-chat-input-container vdb-c-relative vdb-c-rounded-b-20 vdb-c-border vdb-c-border-kilvish-300 vdb-c-bg-white vdb-c-shadow-minimal-up"
-      >
-        <chat-input
-          :input-disabled="chatLoading"
-          :placeholder="chatInputPlaceholder"
-          @onChange="searchTerm = $event"
-          @onSubmit="addMessage({ content: $event })"
-        />
-      </div>
-
-      <!-- Share & Back buttons -->
-      <div
-        class="vdb-c-absolute vdb-c--right-46 vdb-c-top-20 vdb-c-hidden vdb-c-w-56 vdb-c-flex-col vdb-c-gap-18 vdb-c-rounded-r-16 vdb-c-bg-white vdb-c-px-8 vdb-c-py-20 md:vdb-c-flex"
-      >
-        <button
-          class="vdb-c-flex vdb-c-h-40 vdb-c-w-40 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-white hover:vdb-c-bg-kilvish-400"
-          @click="emit('backBtnClick')"
-        >
-          <chat-chevron-left class-name="vdb-c-w-28 vdb-c-h-28" />
-        </button>
-        <share-button v-show="showShareButton" :value="shareUrl" />
+          <!-- chat input -->
+          <div
+            class="vdb-c-chat-input-container vdb-c-relative vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+          >
+            <chat-input
+              ref="chatInputRef"
+              :agents="agents"
+              :input-disabled="chatLoading"
+              :placeholder="chatInputPlaceholder"
+              :context-data="activeVideoData || activeCollectionData"
+              @on-submit="handleAddMessage"
+              @tag-agent="handleTagAgent($event, false)"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, computed, watch, provide, nextTick } from "vue";
-import { v4 as uuidv4 } from "uuid";
+import { computed, nextTick, provide, ref, watch } from "vue";
 
-import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
 import { useChatInterface } from "../hooks/useChatInterface";
+import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
 
 import ChatInput from "./ChatInput.vue";
-
 import ChatMessageContainer from "./ChatMessageContainer.vue";
-
-import FollowUpContainer from "./elements/FollowUpContainer.vue";
+import CollectionView from "./CollectionView.vue";
+import VideoView from "./VideoView.vue";
+import DefaultScreen from "./elements/DefaultScreen.vue";
+import Sidebar from "./elements/Sidebar.vue";
+import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
+import ImageHandler from "../message-handlers/ImageHandler.vue";
+import TextResponse from "../message-handlers/TextResponse.vue";
 
-import RedShareButton from "../buttons/RedShareButton.vue";
-import ShareButton from "../buttons/ShareButton.vue";
-
-import ChatChevronLeft from "../icons/ChatChevronLeft.vue";
-import ChatUser from "../icons/ChatUser.vue";
-import AssistantIcon from "../icons/AssistantIcon.vue";
-import SpextLogoBlue from "../icons/SpextLogoBlue.vue";
+import VideoDBLogo from "../icons/VideoDBLogo.vue";
+import FileUploadIcon from "../icons/FileUpload.vue";
+import EyeIcon from "../icons/Eye.vue";
+import SpielbergIcon from "../icons/Spielberg2.vue";
 
 const props = defineProps({
-  userImage: {
-    type: [String, Object],
-    default: ChatUser,
-  },
-  assistantImage: {
-    type: [String, Object],
-    default: AssistantIcon,
-  },
-  emptyContainerLogo: {
-    type: [String, Object],
-    default: SpextLogoBlue,
-  },
   chatInputPlaceholder: {
     type: String,
-    default: "Ask a question",
-  },
-  searchSuggestions: {
-    type: Array,
-    default: () => [],
-  },
-  shareUrl: {
-    type: String,
-    default: "",
+    default: "Ask Spielberg",
   },
   customChatHook: {
     type: Function,
@@ -163,10 +179,8 @@ const props = defineProps({
   chatHookConfig: {
     type: Object,
     default: () => ({
-      url: "http://127.0.0.1:5000/chat",
-      sessionId: uuidv4(),
-      collectionId: null,
-      videoId: null,
+      socketUrl: "http://127.0.0.1:8000/chat",
+      httpUrl: "http://127.0.0.1:8000",
       debug: false,
     }),
   },
@@ -175,27 +189,138 @@ const props = defineProps({
     default: "full",
     validator: (value) => ["full", "embedded"].includes(value),
   },
+  sidebarConfig: {
+    type: Object,
+    default: () => ({
+      icon: SpielbergIcon,
+      links: [
+        {
+          href: "https://docs.videodb.io",
+          text: "Documentation",
+        },
+      ],
+      primaryLink: {
+        href: "https://console.videodb.io",
+        text: "VideoDB Console",
+        icon: VideoDBLogo,
+      },
+    }),
+  },
+  defaultScreenConfig: {
+    type: Object,
+    default: () => ({
+      actionCardQueries: null,
+    }),
+  },
 });
+const emit = defineEmits([]);
+
+const sidebarRef = ref(null);
+const chatInputRef = ref(null);
+
+const showCollectionView = ref(false);
+const showVideoView = ref(false);
+const taggedAgent = ref([]);
 
 const useChatHook = props.customChatHook || useVideoDBAgent;
-const { addMessage, conversations, chatLoading } = useChatHook(
-  props.chatHookConfig,
-);
+const {
+  sessionId,
+  collectionId,
+  videoId,
+  collections,
+  sessions,
+  agents,
+  activeCollectionData,
+  activeCollectionVideos,
+  activeVideoData,
+  addMessage,
+  conversations,
+  loadSession,
+} = useChatHook(props.chatHookConfig);
 
-const { messageHandlers, registerMessageHandler } = useChatInterface();
+const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
+  useChatInterface();
 
-if (!props.customChatHook) {
-  registerMessageHandler("search", ChatSearchResults);
-  registerMessageHandler("search", ChatVideo);
-}
+registerMessageHandler("video", ChatVideo);
+registerMessageHandler("text", TextResponse);
+registerMessageHandler("search_results", ChatSearchResults);
+registerMessageHandler("image", ImageHandler);
 
 const isStaticPage = ref(false);
 const chatWindow = ref(null);
-const searchTerm = ref("");
 
-const showEmptyContainer = computed(
-  () => Object.keys(conversations).length === 0,
+const collectionName = computed(() => activeCollectionData.value?.name);
+const videoName = computed(() => activeVideoData.value?.name);
+const isFreshUser = computed(() => {
+  if (collections.value && activeCollectionVideos.value) {
+    return (
+      collections.value.length < 2 && activeCollectionVideos.value.length < 1
+    );
+  }
+  return false;
+});
+const chatLoading = computed(() =>
+  Object.values(conversations).some((conv) =>
+    Object.values(conv).some(
+      (content) => content.status === "progress" || content.clientLoading,
+    ),
+  ),
 );
+const dynamicActionCards = computed(() => {
+  return (
+    props.defaultScreenConfig.actionCardQueries ||
+    (isFreshUser.value
+      ? [
+          {
+            component: UploadVideoQueryCard,
+            content: "Upload a video to this collection",
+            type: "cta",
+            action: "chat",
+            icon: FileUploadIcon,
+          },
+          {
+            content: "What are agents and How do they work ?",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content:
+              "How will I be charged for using VideoDB's integration on Spielberg?",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content:
+              "I'm not sure what Spielberg is about.Help me figure out what you can do.",
+            type: "muted",
+            action: "chat",
+          },
+        ]
+      : [
+          {
+            content: "View all videos in this collection",
+            type: "cta",
+            action: "show-collection",
+            icon: EyeIcon,
+          },
+          {
+            content: "Upload a video to this collection",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content: "Categorise the videos in my collection",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content: "I'm not sure. Help me figure out what you can do",
+            type: "muted",
+            action: "chat",
+          },
+        ])
+  );
+});
 
 const scrollToBottom = () => {
   const element = chatWindow.value;
@@ -211,32 +336,94 @@ watch(chatLoading, (val) => {
   }
 });
 
-const showShareButton = computed(
-  () => Object.keys(conversations).length && props.shareUrl,
-);
+// --- Sidebar Click Handlers ---
+const handleNewSessionClick = () => {
+  videoId.value = null;
+  showCollectionView.value = false;
+  showVideoView.value = false;
+  taggedAgent.value = [];
+  loadSession();
+};
 
-const emit = defineEmits(["backBtnClick"]);
+const handleSessionClick = (sessionId) => {
+  showCollectionView.value = false;
+  showVideoView.value = false;
+  loadSession(sessionId);
+};
 
-const handleFollowUp = (val) => {
-  if (val.text) {
-    addMessage({ content: val.text });
+const handleCollectionClick = (_collectionId) => {
+  collectionId.value = _collectionId;
+  videoId.value = null;
+  showCollectionView.value = false;
+  showVideoView.value = false;
+  loadSession();
+};
+
+// --- Onboarding Screen Click Handlers ---
+const handleQueryCardClick = (query) => {
+  if (query.action === "show-collection") {
+    showCollectionView.value = true;
+    chatInput.value = "";
+  } else if (query.action === "chat") {
+    chatInput.value = query.content;
   }
 };
 
+const handleExploreAgentsClick = () => {
+  sidebarRef.value.triggerExploreAgentsFocusAnimation();
+  sidebarRef.value.toggleExploreAgents(true);
+};
+
+const handleTagAgent = (agent, addToInput = true) => {
+  const agentName = agent.name || agent;
+  if (agentName) {
+    taggedAgent.value.push(agentName);
+    if (addToInput) {
+      chatInput.value =
+        chatInput.value.trim() === ""
+          ? `@${agentName}`
+          : `${chatInput.value} @${agentName}`;
+      chatInputRef.value.focus();
+    }
+  }
+};
+
+// --- CollectionView/VideoView Click Handlers ---
+const handleVideoClick = (video) => {
+  videoId.value = video.id;
+  showVideoView.value = true;
+};
+
+const handleAddMessage = (content) => {
+  if (!sessionId.value) {
+    loadSession();
+  }
+  addMessage({
+    content: [{ type: "text", text: content }],
+    agents: taggedAgent.value,
+  });
+  taggedAgent.value = [];
+};
+
 defineExpose({
+  chatInput,
   conversations,
-  chatLoading,
   messageHandlers,
-  registerMessageHandler,
   addMessage,
+  loadSession,
+  setChatInput,
+  registerMessageHandler,
 });
 
 provide("videodb-chat", {
-  conversations,
+  chatInput,
   chatLoading,
+  conversations,
   messageHandlers,
-  registerMessageHandler,
   addMessage,
+  loadSession,
+  setChatInput,
+  registerMessageHandler,
 });
 </script>
 
