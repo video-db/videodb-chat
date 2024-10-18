@@ -16,7 +16,7 @@
   <p align="center">
     Chat UI Components for <a href="https://github.com/video-db/spielberg">  Spielberg</a>
     <br />
-    <a href="https://stackblitz.com/edit/vitejs-vite-zyq2no?file=src%2FApp.vue"><strong>View Demo »</strong></a>
+    <a href="https://codesandbox.io/p/sandbox/nifty-mendeleev-tnxpnt"><strong>View Demo »</strong></a>
     <br />
     <br />
     <a href="https://github.com/video-db/videodb-chat/issues">Report Bug</a>
@@ -191,7 +191,7 @@ To use a custom hook, pass a function to the `customChatHook` prop. This functio
 **Checkout these resources to understand better:**
 
 - [View default chat hook Implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/hooks/useVideoDBAgent.js)
-- [View custom chat hook example on CodeSandbox](https://stackblitz.com/edit/vitejs-vite-knrrbv?file=src%2FApp.vue)
+- [View custom chat hook example on CodeSandbox](https://codesandbox.io/p/sandbox/nifty-mendeleev-tnxpnt)
 
 # 📡 Interface
 
