@@ -67,6 +67,8 @@ If you are using [Spielberg](https://github.com/video-db/spielberg), make sure i
 
 # 📖 Application Flow
 
+![image](https://github.com/user-attachments/assets/3b796945-ab67-4f86-afe9-827079f74a9c)
+
 The `ChatInterface` component is composed of two primary sub-components:
 
 - `<ChatMessageContainer/>`
@@ -93,6 +95,9 @@ The default chat hook is `videoDBChatHook`, which integrates with [Spielberg](ht
 # 🧑‍💻 Additional Components
 
 _This package includes other UI components that enhance the chat experience_
+
+![image (1)](https://github.com/user-attachments/assets/f4524358-882b-4563-9d0b-b5c864d46dd4)
+
 
 ### `<Sidebar/>`
 
