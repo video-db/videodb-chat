@@ -4,6 +4,7 @@
       'vdb-c-fixed': size === 'full',
     }"
     class="vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64"
+    tabindex="0"
   >
     <div class="vdb-c-flex vdb-c-h-full vdb-c-w-full">
       <!-- Collapsible Sidebar -->
@@ -111,6 +112,11 @@
           <!-- chat input -->
           <div
             class="vdb-c-chat-input-container vdb-c-relative vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+            :class="{
+              'vdb-c-pointer-events-none vdb-c-opacity-20': !(
+                configStatus !== null && isSetupComplete
+              ),
+            }"
           >
             <chat-input
               ref="chatInputRef"
@@ -129,7 +135,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, provide, ref, watch } from "vue";
+import { computed, nextTick, provide, ref, watch, onMounted, onUnmounted } from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -302,7 +308,7 @@ const dynamicActionCards = computed(() => {
             action: "chat",
           },
           {
-            content: "Categorise the videos in my collection",
+            content: "Categorise the videos in this collection by title",
             type: "primary",
             action: "chat",
           },
@@ -362,7 +368,8 @@ const handleQueryCardClick = (query) => {
     showCollectionView.value = true;
     chatInput.value = "";
   } else if (query.action === "chat") {
-    chatInput.value = query.content;
+    chatInput.value = "";
+    handleAddMessage(query.content);
   }
 };
 
@@ -401,6 +408,23 @@ const handleAddMessage = (content) => {
   });
   taggedAgent.value = [];
 };
+
+// Add global event listener for Ctrl/Cmd + K shortcut
+const handleKeyDown = (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key === 'k' && isSetupComplete.value) {
+    event.preventDefault();
+    handleNewSessionClick();
+    chatInputRef.value.focus();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
 
 defineExpose({
   chatInput,

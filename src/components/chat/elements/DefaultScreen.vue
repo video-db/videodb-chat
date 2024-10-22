@@ -4,7 +4,7 @@
   >
     <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
       <h1
-        class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-5xl vdb-c-leading-tight"
+        class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-xl vdb-c-leading-tight sm:vdb-c-text-3xl md:vdb-c-text-5xl"
       >
         <span
           v-if="collectionName"
@@ -134,7 +134,7 @@
 
     <!-- Try asking an agent -->
     <div
-      class="vdb-c-flex vdb-c-min-h-0 vdb-c-flex-grow vdb-c-flex-col vdb-c-gap-16"
+      class="vdb-c-hidden vdb-c-min-h-0 vdb-c-flex-grow vdb-c-flex-col vdb-c-gap-16 sm:vdb-c-flex"
     >
       <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
         <h3

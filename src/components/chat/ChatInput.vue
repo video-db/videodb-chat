@@ -5,7 +5,7 @@
       class="vdb-c-absolute vdb-c-z-50 vdb-c-w-full vdb-c--translate-y-full vdb-c-transform vdb-c-px-18"
     >
       <div
-        class="vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-roy vdb-c-bg-white vdb-c-px-8 vdb-c-py-4 vdb-c-shadow-lg vdb-c-max-h-[160px]"
+        class="vdb-c-max-h-[160px] vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-roy vdb-c-bg-white vdb-c-px-8 vdb-c-py-4 vdb-c-shadow-lg"
       >
         <div
           v-for="(agent, index) in filteredAgents"
@@ -37,7 +37,7 @@
           <div>
             <div
               :class="[
-                'vdb-c-ml-6 vdb-c-flex vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-orange-200 vdb-c-bg-orange-50 vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black',
+                'vdb-c-ml-6 vdb-c-hidden vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-orange-200 vdb-c-bg-orange-50 vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black md:vdb-c-flex',
 
                 { 'vdb-c-animate-pulse': !contextData?.name },
               ]"
@@ -70,7 +70,7 @@
           <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-end">
             <button
               :disabled="isInputDisabled"
-              class="vdb-c-font-sans vdb-c-mx-8 vdb-c-flex vdb-c-h-40 vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-primary vdb-c-p-12 vdb-c-text-sm vdb-c-font-bold vdb-c-uppercase vdb-c-text-white vdb-c-transition hover:vdb-c-bg-primary-800"
+              class="vdb-c-font-sans vdb-c-mx-8 vdb-c-hidden vdb-c-h-40 vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-primary vdb-c-px-12 vdb-c-py-8 vdb-c-text-sm vdb-c-font-bold vdb-c-uppercase vdb-c-text-white vdb-c-transition hover:vdb-c-bg-primary-800 md:vdb-c-flex"
               :class="{
                 'vdb-c-cursor-not-allowed vdb-c-bg-kilvish-400 hover:vdb-c-bg-kilvish-400':
                   charCount.value < 1,
@@ -78,7 +78,7 @@
               type="submit"
             >
               <EllipsesLoading v-if="chatLoading" />
-              <div v-else class="md:vdb-c-flex">
+              <div v-else class="vdb-c-flex vdb-c-items-center vdb-c-pl-4">
                 <span class="vdb-c-inline">Send</span>
                 <chat-enter-icon class-name="vdb-c-ml-4" />
               </div>

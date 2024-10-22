@@ -58,6 +58,6 @@ defineProps({
     validator: (value) => ["incomplete", "complete"].includes(value),
   },
   message: String,
-  action: String,
+  action: Object,
 });
 </script>

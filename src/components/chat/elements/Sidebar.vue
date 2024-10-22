@@ -2,15 +2,16 @@
   <div
     class="vdb-c-flex vdb-c-h-full vdb-c-flex-col vdb-c-gap-16 vdb-c-border-r vdb-c-bg-white vdb-c-p-16 vdb-c-pl-12 vdb-c-pr-20 vdb-c-text-black"
   >
-    <div class="vdb-c-pt-12 vdb-c-text-2xl vdb-c-font-bold">
+    <div class="vdb-c-text-2xl vdb-c-font-bold">
       <component :is="config.icon" />
     </div>
     <Button
       variant="primary"
-      @click="status !== 'inactive' && $emit('create-new-session')"
       class="vdb-c-px-10 vdb-c-py-12"
-      :disabled="status === 'inactive'"
-      :class="{ 'vdb-c-opacity-20': status === 'inactive' }"
+      :class="{
+        'vdb-c-pointer-events-none vdb-c-opacity-20': status === 'inactive',
+      }"
+      @click="$emit('create-new-session')"
     >
       <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-6">
         <ComposeIcon />
@@ -22,7 +23,9 @@
     </Button>
     <div
       class="vdb-c-flex vdb-c-flex-grow vdb-c-flex-col vdb-c-gap-16 vdb-c-overflow-hidden"
-      :class="{ 'vdb-c-opacity-20': status === 'inactive' }"
+      :class="{
+        'vdb-c-pointer-events-none vdb-c-opacity-20': status === 'inactive',
+      }"
     >
       <!-- Explore Agents -->
       <div
@@ -30,7 +33,7 @@
         :class="{ 'vdb-c-explore-agents-animation': isExploreAgentsFocused }"
       >
         <button
-          @click="status !== 'inactive' && toggleExploreAgents()"
+          @click="toggleExploreAgents()"
           :class="[
             'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-10 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-roy',
           ]"
@@ -48,12 +51,12 @@
           />
         </button>
         <div
-          v-if="showExploreAgents"
+          v-if="status !== 'inactive' && showExploreAgents"
           class="vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-px-8 vdb-c-py-4"
         >
           <template v-for="(agent, index) in agents" :key="index">
             <div
-              @click="status !== 'inactive' && $emit('agent-click', agent)"
+              @click="$emit('agent-click', agent)"
               :class="[
                 'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-black vdb-c-transition-all vdb-c-duration-75 hover:vdb-c-bg-[#FFF5EC]',
               ]"
@@ -70,7 +73,7 @@
         class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-overflow-hidden"
       >
         <button
-          @click="status !== 'inactive' && toggleSessions()"
+          @click="toggleSessions()"
           class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4 vdb-c-text-pam"
         >
           <span
@@ -87,7 +90,10 @@
             />
           </div>
         </button>
-        <div v-if="showSessions" class="vdb-c-mt-4 vdb-c-overflow-y-auto">
+        <div
+          v-if="status !== 'inactive' && showSessions"
+          class="vdb-c-mt-4 vdb-c-overflow-y-auto"
+        >
           <transition name="fade" mode="out-in">
             <div v-if="addDummySession">
               <div
@@ -101,21 +107,15 @@
             <div
               v-for="session in sessions"
               :key="session.session_id"
-              @click="
-                status !== 'inactive' &&
-                  $emit('session-click', session.session_id)
-              "
-              @mouseenter="
-                status !== 'inactive' && (hoveredSession = session.session_id)
-              "
-              @mouseleave="status !== 'inactive' && (hoveredSession = null)"
+              @click="$emit('session-click', session.session_id)"
+              @mouseenter="hoveredSession = session.session_id"
+              @mouseleave="hoveredSession = null"
               :class="[
                 'vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-between vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-px-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
                 {
                   'vdb-c-bg-roy': session.session_id === selectedSession,
                   'hover:vdb-c-bg-gray-100':
-                    session.session_id !== selectedSession &&
-                    status !== 'inactive',
+                    session.session_id !== selectedSession,
                 },
               ]"
             >
@@ -137,15 +137,10 @@
               </span>
               <DeleteIcon
                 :fill="
-                  hoveredSession === session.session_id && status !== 'inactive'
-                    ? 'black'
-                    : '#CCCCCC'
+                  hoveredSession === session.session_id ? 'black' : '#CCCCCC'
                 "
                 class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
-                @click.stop="
-                  status !== 'inactive' &&
-                    $emit('delete-session', session.session_id)
-                "
+                @click.stop="$emit('delete-session', session.session_id)"
               />
             </div>
           </transition-group>
@@ -157,7 +152,7 @@
         class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-overflow-hidden"
       >
         <button
-          @click="status !== 'inactive' && toggleCollections()"
+          @click="toggleCollections()"
           class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4 vdb-c-text-pam"
         >
           <span
@@ -174,13 +169,13 @@
             />
           </div>
         </button>
-        <div v-if="showCollections" class="vdb-c-mt-4 vdb-c-overflow-y-auto">
+        <div
+          v-if="status !== 'inactive' && showCollections"
+          class="vdb-c-mt-4 vdb-c-overflow-y-auto"
+        >
           <template v-for="collection in collections" :key="collection.id">
             <div
-              @click="
-                status !== 'inactive' &&
-                  $emit('collection-click', collection.id)
-              "
+              @click="$emit('collection-click', collection.id)"
               :class="[
                 'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
                 {
@@ -188,8 +183,7 @@
                     showSelectedCollection &&
                     collection.id === computedSelectedCollection,
                   'hover:vdb-c-bg-gray-100':
-                    collection.id !== computedSelectedCollection &&
-                    status !== 'inactive',
+                    collection.id !== computedSelectedCollection,
                 },
               ]"
             >
@@ -204,14 +198,20 @@
       <a
         v-for="(link, index) in config.links"
         :key="index"
-        class="vdb-c-mx-8 vdb-c-my-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey hover:vdb-c-text-vdb-darkishgrey hover:vdb-c-no-underline"
+        class="vdb-c-mx-8 vdb-c-my-12 vdb-c-pl-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey hover:vdb-c-text-[#0f0f0f] hover:vdb-c-no-underline"
         :href="link.href"
         :target="link.target || '_blank'"
         rel="noopener noreferrer"
       >
         {{ link.text }}
       </a>
-      <Button class="vdb-c-w-full" variant="tertiary">
+      <Button
+        class="vdb-c-w-full"
+        variant="tertiary"
+        :class="{
+          'vdb-c-pointer-events-none vdb-c-opacity-20': status === 'inactive',
+        }"
+      >
         <div
           class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-gap-6"
         >
@@ -226,12 +226,12 @@
                 v-if="typeof config.primaryLink.icon === 'string'"
                 :src="config.primaryLink.icon"
                 alt="Primary Link Icon"
-                class="vdb-c-mr-8 vdb-c-h-16 vdb-c-w-16"
+                class="vdb-c-mr-8 vdb-c-h-20 vdb-c-w-20"
               />
               <component
                 v-else-if="typeof config.primaryLink.icon === 'object'"
                 :is="config.primaryLink.icon"
-                class="vdb-c-mr-8 vdb-c-h-16 vdb-c-w-16"
+                class="vdb-c-mr-8 vdb-c-h-20 vdb-c-w-20"
               />
             </template>
             {{ config.primaryLink.text }}
@@ -346,7 +346,7 @@ const computedSelectedCollection = computed(() => {
 watch(
   () => props.initialSessionsOpen,
   (newValue) => {
-    if (!userClickedSessions.value && props.status !== "inactive") {
+    if (!userClickedSessions.value) {
       showSessions.value = newValue;
     }
   },
@@ -356,7 +356,7 @@ watch(
 watch(
   () => props.initialCollectionsOpen,
   (newValue) => {
-    if (!userClickedCollections.value && props.status !== "inactive") {
+    if (!userClickedCollections.value) {
       showCollections.value = newValue;
     }
   },

@@ -41,7 +41,11 @@
               ? setupMapping[key].completeText
               : setupMapping[key].incompleteText
           "
-          :action="setupMapping[key].action"
+          :action="
+            status
+              ? setupMapping[key].completeAction
+              : setupMapping[key].incompleteAction
+          "
         />
       </div>
     </div>
@@ -65,7 +69,12 @@ const setupMapping = {
     title: "Database Config",
     completeText: "",
     incompleteText: "Unable to locate",
-    action: {
+    completeAction: {
+      text: "Manage setup",
+      link: "https://docs.videodb.io",
+      target: "_blank",
+    },
+    incompleteAction: {
       text: "Manage setup",
       link: "https://docs.videodb.io",
       target: "_blank",
@@ -75,8 +84,13 @@ const setupMapping = {
     title: "LLM Connection",
     completeText: "LLM Configured",
     incompleteText: "LLM not configured",
-    action: {
+    incompleteAction: {
       text: "Change model",
+      link: "https://docs.videodb.io",
+      target: "_blank",
+    },
+    incompleteAction: {
+      text: "Add model",
       link: "https://docs.videodb.io",
       target: "_blank",
     },
@@ -85,9 +99,14 @@ const setupMapping = {
     title: "VideoDB Setup",
     completeText: "",
     incompleteText: "API key not found",
-    action: {
+    completeAction: {
+      text: "Update key",
+      link: "https://console.videodb.io",
+      target: "_blank",
+    },
+    incompleteAction: {
       text: "Add key",
-      link: "https://docs.videodb.io",
+      link: "https://console.videodb.io",
       target: "_blank",
     },
   },
