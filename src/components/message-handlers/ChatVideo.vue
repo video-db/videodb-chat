@@ -72,6 +72,7 @@ import {
   FullScreenButton,
   ProgressBar,
 } from "@videodb/player-vue";
+import "@videodb/player-vue/dist/style.css";
 import LoadingMessage from "./elements/LoadingMessage.vue";
 
 const props = defineProps({

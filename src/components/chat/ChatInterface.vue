@@ -10,11 +10,12 @@
       <sidebar
         ref="sidebarRef"
         class="vdb-c-w-1/5 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+        :status="
+          configStatus !== null && isSetupComplete ? 'active' : 'inactive'
+        "
         :config="sidebarConfig"
         :show-selected-collection="
-          Object.keys(conversations).length === 0 &&
-          !showVideoView &&
-          !showCollectionView
+          Object.keys(conversations).length === 0 && !showCollectionView
         "
         :initial-sessions-open="!isFreshUser"
         :initial-collections-open="isFreshUser"
@@ -25,6 +26,7 @@
         :sessions="sessions"
         :collections="collections"
         @create-new-session="handleNewSessionClick"
+        @delete-session="handleDeleteSession"
         @agent-click="handleTagAgent"
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
@@ -36,14 +38,20 @@
           class="vdb-c-relative vdb-c-flex-1 vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
         >
           <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
+            <div v-if="configStatus === null"></div>
+            <setup-screen
+              v-else-if="!isSetupComplete"
+              :config-status="configStatus"
+            />
             <section
+              v-else-if="isSetupComplete"
               ref="chatWindow"
               class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
             >
               <template v-if="Object.keys(conversations).length === 0">
                 <!-- Empty Container -->
                 <div
-                  v-if="showVideoView || showCollectionView"
+                  v-if="showCollectionView"
                   class="vdb-c-w-full vdb-c-p-16 vdb-c-px-30"
                 >
                   <div
@@ -53,10 +61,7 @@
                       <span
                         v-if="collectionName"
                         class="vdb-c-cursor-pointer"
-                        @click="
-                          videoId.value = null;
-                          showVideoView = false;
-                        "
+                        @click="videoId = null"
                       >
                         {{ collectionName }}
                       </span>
@@ -65,29 +70,9 @@
                         class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
                       ></span>
                     </span>
-                    <span v-if="showVideoView"> > </span>
-                    <span
-                      v-if="showVideoView"
-                      class="vdb-c-flex vdb-c-max-w-[300px] vdb-c-truncate"
-                    >
-                      <span v-if="videoName"> {{ videoName }} </span>
-                      <span
-                        v-else
-                        class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-[#EEEFF2]"
-                      ></span>
-                    </span>
                   </div>
-                  <video-view
-                    v-if="showVideoView"
-                    :collection-id="collectionId"
-                    :video-id="videoId"
-                    :collection-data="activeCollectionData"
-                    :video-data="activeVideoData"
-                    class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
-                  />
-
                   <collection-view
-                    v-else-if="showCollectionView"
+                    v-if="showCollectionView"
                     :collection-id="collectionId"
                     :collection-data="activeCollectionData"
                     :collection-videos="activeCollectionVideos"
@@ -152,8 +137,8 @@ import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
 import ChatInput from "./ChatInput.vue";
 import ChatMessageContainer from "./ChatMessageContainer.vue";
 import CollectionView from "./CollectionView.vue";
-import VideoView from "./VideoView.vue";
 import DefaultScreen from "./elements/DefaultScreen.vue";
+import SetupScreen from "./elements/SetupScreen.vue";
 import Sidebar from "./elements/Sidebar.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 
@@ -219,11 +204,11 @@ const sidebarRef = ref(null);
 const chatInputRef = ref(null);
 
 const showCollectionView = ref(false);
-const showVideoView = ref(false);
 const taggedAgent = ref([]);
 
 const useChatHook = props.customChatHook || useVideoDBAgent;
 const {
+  configStatus,
   sessionId,
   collectionId,
   videoId,
@@ -234,6 +219,7 @@ const {
   activeCollectionVideos,
   activeVideoData,
   addMessage,
+  deleteSession,
   conversations,
   loadSession,
 } = useChatHook(props.chatHookConfig);
@@ -249,8 +235,15 @@ registerMessageHandler("image", ImageHandler);
 const isStaticPage = ref(false);
 const chatWindow = ref(null);
 
+const isSetupComplete = computed(() => {
+  return (
+    typeof configStatus.value === "object" &&
+    configStatus.value !== null &&
+    Object.values(configStatus.value).every((value) => value === true)
+  );
+});
+
 const collectionName = computed(() => activeCollectionData.value?.name);
-const videoName = computed(() => activeVideoData.value?.name);
 const isFreshUser = computed(() => {
   if (collections.value && activeCollectionVideos.value) {
     return (
@@ -340,14 +333,12 @@ watch(chatLoading, (val) => {
 const handleNewSessionClick = () => {
   videoId.value = null;
   showCollectionView.value = false;
-  showVideoView.value = false;
   taggedAgent.value = [];
   loadSession();
 };
 
 const handleSessionClick = (sessionId) => {
   showCollectionView.value = false;
-  showVideoView.value = false;
   loadSession(sessionId);
 };
 
@@ -355,8 +346,14 @@ const handleCollectionClick = (_collectionId) => {
   collectionId.value = _collectionId;
   videoId.value = null;
   showCollectionView.value = false;
-  showVideoView.value = false;
   loadSession();
+};
+
+const handleDeleteSession = (_sessionId) => {
+  if (_sessionId === sessionId.value) {
+    handleNewSessionClick();
+  }
+  deleteSession(_sessionId);
 };
 
 // --- Onboarding Screen Click Handlers ---
@@ -391,7 +388,7 @@ const handleTagAgent = (agent, addToInput = true) => {
 // --- CollectionView/VideoView Click Handlers ---
 const handleVideoClick = (video) => {
   videoId.value = video.id;
-  showVideoView.value = true;
+  handleAddMessage(`Play ${video.name}`);
 };
 
 const handleAddMessage = (content) => {

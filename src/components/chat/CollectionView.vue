@@ -67,14 +67,6 @@ const props = defineProps({
 
 const emit = defineEmits(["video-click"]);
 
-watch(
-  () => props.collectionVideos,
-  (val) => {
-    console.log("collection Videos ", val);
-  },
-  { immediate: true },
-);
-
 const videos = computed(() => {
   if (props.collectionVideos === null) {
     return [];

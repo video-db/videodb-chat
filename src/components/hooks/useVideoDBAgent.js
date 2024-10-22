@@ -30,6 +30,7 @@ export function useVideoDBAgent(config) {
     videoId: null,
     collectionId: "default",
   });
+  const configStatus = ref(null);
 
   const collections = ref([]);
   const sessions = ref([]);
@@ -55,17 +56,37 @@ export function useVideoDBAgent(config) {
   const fetchCollectionVideos = async (collectionId) =>
     fetchData(httpUrl, `/videodb/collection/${collectionId}/video`);
   const fetchAllAgents = async () => fetchData(httpUrl, "/agent");
+  const fetchConfigStatus = async () => fetchData(httpUrl, "/config/check");
 
   onBeforeMount(() => {
-    fetchCollections().then((res) => {
-      collections.value = res.data;
+    fetchConfigStatus().then((res) => {
+      if (debug) console.log("debug :videodb-chat config status", res);
+      configStatus.value = res.data;
     });
-    fetchSessions().then((res) => {
-      sessions.value = res.data;
-    });
-    fetchAllAgents().then((res) => {
-      agents.value = res.data;
-    });
+  });
+
+  watch(configStatus, (val) => {
+    if (
+      typeof val === "object" &&
+      val !== null &&
+      Object.values(val).every((value) => value === true)
+    ) {
+      Promise.all([
+        fetchCollections().then((res) => {
+          collections.value = res.data;
+          activeCollectionData.value = res.data[0];
+        }),
+        fetchCollectionVideos(session.collectionId).then((res) => {
+          activeCollectionVideos.value = res.data;
+        }),
+      ]);
+      fetchSessions().then((res) => {
+        sessions.value = res.data;
+      });
+      fetchAllAgents().then((res) => {
+        agents.value = res.data;
+      });
+    }
   });
 
   watch(
@@ -102,7 +123,6 @@ export function useVideoDBAgent(config) {
         });
       }
     },
-    { immediate: true },
   );
 
   watch(
@@ -115,7 +135,6 @@ export function useVideoDBAgent(config) {
         });
       }
     },
-    { immediate: true },
   );
 
   const loadSession = (sessionId) => {
@@ -154,6 +173,23 @@ export function useVideoDBAgent(config) {
         }
       });
     }
+  };
+
+  const deleteSession = (sessionId) => {
+    fetch(`${httpUrl}/session/${sessionId}`, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        if (debug) console.log("debug :videodb-chat session deleted", res);
+        sessions.value = sessions.value.filter(
+          (s) => s.session_id !== sessionId,
+        );
+      })
+      .catch((error) => {
+        if (debug)
+          console.error("debug :videodb-chat error deleting session", error);
+      });
   };
 
   const addClientLoadingMessage = (convId) => {
@@ -232,6 +268,7 @@ export function useVideoDBAgent(config) {
 
   return {
     ...toRefs(session),
+    configStatus,
     collections,
     sessions: sessionsSorted,
     agents,
@@ -241,5 +278,6 @@ export function useVideoDBAgent(config) {
     conversations,
     addMessage,
     loadSession,
+    deleteSession,
   };
 }
