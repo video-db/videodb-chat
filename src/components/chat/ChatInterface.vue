@@ -27,7 +27,7 @@
         :sessions="sessions"
         :collections="collections"
         @create-new-session="handleNewSessionClick"
-        @delete-session="handleDeleteSession"
+        @delete-session="showDeleteSessionDialog"
         @agent-click="handleTagAgent"
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
@@ -131,11 +131,65 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Session Dialog -->
+    <div
+      v-if="showDeleteDialog"
+      class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-black vdb-c-bg-opacity-50"
+      @click="cancelDeleteSession"
+    >
+      <div
+        class="vdb-c-shadow-xl vdb-c-overflow-hidden vdb-c-rounded-lg vdb-c-bg-white"
+        @click.stop
+      >
+        <div
+          class="vdb-c-flex vdb-c-gap-16 vdb-c-px-24 vdb-c-py-16 vdb-c-pt-24"
+        >
+          <div
+            class="vdb-c-flex vdb-c-h-40 vdb-c-w-40 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-red-100"
+          >
+            <warning-exclamation />
+          </div>
+          <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
+            <h2 class="vdb-c-text-lg vdb-c-font-medium vdb-c-text-gray-950">
+              Delete Session
+            </h2>
+            <p class="vdb-c-text-sm vdb-c-font-normal vdb-c-text-gray-500">
+              Are you sure you want to delete this session?
+            </p>
+          </div>
+        </div>
+        <div
+          class="vdb-c-flex vdb-c-w-full vdb-c-justify-end vdb-c-gap-12 vdb-c-bg-gray-50 vdb-c-px-24 vdb-c-py-12"
+        >
+          <button
+            @click="cancelDeleteSession"
+            class="vdb-c-shadow-sm vdb-c-rounded-md vdb-c-border vdb-c-border-gray-300 vdb-c-bg-white vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-gray-700 hover:vdb-c-bg-gray-300"
+          >
+            Cancel
+          </button>
+          <button
+            @click="confirmDeleteSession"
+            class="vdb-c-shadow-sm vdb-c-rounded-md vdb-c-bg-[#DC2626] vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-white hover:vdb-c-bg-[#B91C1C]"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
 <script setup>
-import { computed, nextTick, provide, ref, watch, onMounted, onUnmounted } from "vue";
+import {
+  computed,
+  nextTick,
+  provide,
+  ref,
+  watch,
+  onMounted,
+  onUnmounted,
+} from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -155,6 +209,7 @@ import TextResponse from "../message-handlers/TextResponse.vue";
 
 import VideoDBLogo from "../icons/VideoDBLogo.vue";
 import FileUploadIcon from "../icons/FileUpload.vue";
+import WarningExclamation from "../icons/WarningExclamation.vue";
 import EyeIcon from "../icons/Eye.vue";
 import SpielbergIcon from "../icons/Spielberg2.vue";
 
@@ -355,11 +410,26 @@ const handleCollectionClick = (_collectionId) => {
   loadSession();
 };
 
-const handleDeleteSession = (_sessionId) => {
-  if (_sessionId === sessionId.value) {
+const showDeleteDialog = ref(false);
+const sessionToDelete = ref(null);
+
+const showDeleteSessionDialog = (_sessionId) => {
+  sessionToDelete.value = _sessionId;
+  showDeleteDialog.value = true;
+};
+
+const cancelDeleteSession = () => {
+  showDeleteDialog.value = false;
+  sessionToDelete.value = null;
+};
+
+const confirmDeleteSession = () => {
+  if (sessionToDelete.value === sessionId.value) {
     handleNewSessionClick();
   }
-  deleteSession(_sessionId);
+  deleteSession(sessionToDelete.value);
+  showDeleteDialog.value = false;
+  sessionToDelete.value = null;
 };
 
 // --- Onboarding Screen Click Handlers ---
@@ -411,7 +481,11 @@ const handleAddMessage = (content) => {
 
 // Add global event listener for Ctrl/Cmd + K shortcut
 const handleKeyDown = (event) => {
-  if ((event.ctrlKey || event.metaKey) && event.key === 'k' && isSetupComplete.value) {
+  if (
+    (event.ctrlKey || event.metaKey) &&
+    event.key === "k" &&
+    isSetupComplete.value
+  ) {
     event.preventDefault();
     handleNewSessionClick();
     chatInputRef.value.focus();
@@ -419,11 +493,11 @@ const handleKeyDown = (event) => {
 };
 
 onMounted(() => {
-  window.addEventListener('keydown', handleKeyDown);
+  window.addEventListener("keydown", handleKeyDown);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeyDown);
+  window.removeEventListener("keydown", handleKeyDown);
 });
 
 defineExpose({

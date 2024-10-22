@@ -135,13 +135,16 @@
                     .replace(",", " -")
                 }}
               </span>
-              <DeleteIcon
-                :fill="
-                  hoveredSession === session.session_id ? 'black' : '#CCCCCC'
-                "
-                class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
+              <span
                 @click.stop="$emit('delete-session', session.session_id)"
-              />
+                class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
+              >
+                <DeleteIcon
+                  :fill="
+                    hoveredSession === session.session_id ? 'black' : '#CCCCCC'
+                  "
+                />
+              </span>
             </div>
           </transition-group>
         </div>
