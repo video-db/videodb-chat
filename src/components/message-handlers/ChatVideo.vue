@@ -13,9 +13,14 @@
         class="vdb-c-w-full vdb-c-py-6"
       >
         <div
-          class="vdb-c-full xl:vdb-c-1/2 vdb-c-overflow-hidden vdb-c-rounded-20 sm:vdb-c-w-3/4 lg:vdb-c-w-3/5 xl:vdb-c-w-1/2"
+          :class="
+            isFullScreen
+              ? 'vdb-c-fixed vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64'
+              : 'vdb-c-full xl:vdb-c-1/2 vdb-c-overflow-hidden vdb-c-rounded-20 sm:vdb-c-w-3/4 lg:vdb-c-w-3/5 xl:vdb-c-w-1/2'
+          "
         >
           <VideoDBPlayer
+            :class="isFullScreen ? 'vdb-c-h-screen vdb-c-w-screen' : ''"
             :stream-url="content.video.stream_url"
             :default-controls="false"
             @fullScreenChange="handleFullScreenChange"
@@ -30,6 +35,7 @@
                     class="vdb-c-z-10 vdb-c-ml-0 vdb-c-flex vdb-c-items-center"
                   >
                     <PlayPauseButton />
+                    <VolumeControlButton />
                     <TimeCode />
                   </div>
 
@@ -68,6 +74,7 @@ import { ref } from "vue";
 import {
   VideoDBPlayer,
   TimeCode,
+  VolumeControlButton,
   PlayPauseButton,
   FullScreenButton,
   ProgressBar,
@@ -90,6 +97,11 @@ const isFullScreen = ref(false);
 
 const handleFullScreenChange = () => {
   isFullScreen.value = !isFullScreen.value;
+  if (isFullScreen.value) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
 };
 </script>
 
