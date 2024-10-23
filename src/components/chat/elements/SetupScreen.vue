@@ -37,14 +37,7 @@
           :title="setupMapping[key].title"
           :status="status ? 'complete' : 'incomplete'"
           :message="
-            status
-              ? setupMapping[key].completeText
-              : setupMapping[key].incompleteText
-          "
-          :action="
-            status
-              ? setupMapping[key].completeAction
-              : setupMapping[key].incompleteAction
+            status ? setupMapping[key].complete : setupMapping[key].incomplete
           "
         />
       </div>
@@ -67,47 +60,29 @@ const props = defineProps({
 const setupMapping = {
   db_configured: {
     title: "Database Config",
-    completeText: "",
-    incompleteText: "Unable to locate",
-    completeAction: {
-      text: "Manage setup",
-      link: "https://docs.videodb.io",
-      target: "_blank",
+    complete: {
+      text: "Database Configured",
     },
-    incompleteAction: {
-      text: "Manage setup",
-      link: "https://docs.videodb.io",
-      target: "_blank",
+    incomplete: {
+      text: "Unable to locate",
     },
   },
   llm_configured: {
     title: "LLM Connection",
-    completeText: "LLM Configured",
-    incompleteText: "Please set your OpenAI LLM key as OPENAI_API_KEY in the backend .env",
-    incompleteAction: {
-      text: "Change model",
-      link: "https://docs.videodb.io",
-      target: "_blank",
+    complete: {
+      text: "LLM Configured",
     },
-    incompleteAction: {
-      text: "Add model",
-      link: "https://docs.videodb.io",
-      target: "_blank",
+    incomplete: {
+      html: "<span>Please set your OpenAI LLM key as <code style='background-color: #f3f4f6; color: #1f2937; padding: 2px 4px; border-radius: 4px;'>OPENAI_API_KEY</code> in the backend <code style='background-color: #f3f4f6; color: #1f2937; padding: 2px 4px; border-radius: 4px;'>.env</code> file</span>",
     },
   },
   videodb_configured: {
     title: "VideoDB Setup",
-    completeText: "",
-    incompleteText: "Please generate VideoDB key from console (clickable link) and set it to VIDEO_DB_API_KEY in the backend .env",
-    completeAction: {
-      text: "Update key",
-      link: "https://console.videodb.io",
-      target: "_blank",
+    complete: {
+      text: "VideoDB Configured",
     },
-    incompleteAction: {
-      text: "Add key",
-      link: "https://console.videodb.io",
-      target: "_blank",
+    incomplete: {
+      html: "<span>Please generate VideoDB key from <a href='https://console.videodb.ai/keys' target='_blank' style='color: #3b82f6; text-decoration: none;'> console </a> and set it to <code style='background-color: #f3f4f6; color: #1f2937; padding: 2px 4px; border-radius: 4px;'>VIDEO_DB_API_KEY</code> in the backend <code style='background-color: #f3f4f6; color: #1f2937; padding: 2px 4px; border-radius: 4px;'>.env</code> file</span>",
     },
   },
 };
