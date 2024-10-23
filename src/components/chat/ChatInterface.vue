@@ -26,7 +26,7 @@
         :agents="agents"
         :sessions="sessions"
         :collections="collections"
-        @create-new-session="handleNewSessionClick"
+        @create-new-session="createNewSession"
         @delete-session="showDeleteSessionDialog"
         @agent-click="handleTagAgent"
         @session-click="handleSessionClick"
@@ -391,7 +391,7 @@ watch(chatLoading, (val) => {
 });
 
 // --- Sidebar Click Handlers ---
-const handleNewSessionClick = () => {
+const createNewSession = () => {
   videoId.value = null;
   showCollectionView.value = false;
   taggedAgent.value = [];
@@ -425,7 +425,7 @@ const cancelDeleteSession = () => {
 
 const confirmDeleteSession = () => {
   if (sessionToDelete.value === sessionId.value) {
-    handleNewSessionClick();
+    createNewSession();
   }
   deleteSession(sessionToDelete.value);
   showDeleteDialog.value = false;
@@ -479,33 +479,15 @@ const handleAddMessage = (content) => {
   taggedAgent.value = [];
 };
 
-// Add global event listener for Ctrl/Cmd + K shortcut
-const handleKeyDown = (event) => {
-  if (
-    (event.ctrlKey || event.metaKey) &&
-    event.key === "k" &&
-    isSetupComplete.value
-  ) {
-    event.preventDefault();
-    handleNewSessionClick();
-    chatInputRef.value.focus();
-  }
-};
-
-onMounted(() => {
-  window.addEventListener("keydown", handleKeyDown);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("keydown", handleKeyDown);
-});
 
 defineExpose({
   chatInput,
+  chatInputRef,
   conversations,
   messageHandlers,
   addMessage,
   loadSession,
+  createNewSession,
   setChatInput,
   registerMessageHandler,
 });
