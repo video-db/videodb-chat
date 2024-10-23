@@ -214,6 +214,7 @@ module.exports = {
         42: "2.625rem",
         46: "2.875rem",
         48: "3rem",
+        54: "3.375rem",
         56: "3.5rem",
         60: "3.75rem",
         64: "4rem",
@@ -279,6 +280,7 @@ module.exports = {
         roy: "#EFEFEF",
         ota: "#2D2D2D",
         pam: "#464646",
+        nan: "#242424",
         textdark: "#0F1D40",
         textmedium: "#525C76",
         textlight: "#8C93A3",
@@ -294,7 +296,7 @@ module.exports = {
           darkorange: "#C14103",
           orange: "#EC5B16",
           lightgrey: "#F7F7F7",
-          darkishgrey: "#1E1E1E"
+          darkishgrey: "#1E1E1E",
         },
         black: {
           DEFAULT: "#000000",

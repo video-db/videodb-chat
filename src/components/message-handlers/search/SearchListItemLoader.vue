@@ -34,10 +34,6 @@
         <div
           class="vdb-c-custom-duration vdb-c-relative vdb-c-animate-pulse vdb-c-rounded-16 vdb-c-bg-gray-400"
         >
-          <img
-            src=""
-            class="vdb-c-absolute vdb-c--top-16 vdb-c-left-32 vdb-c-h-28 vdb-c-w-16 vdb-c-rotate-90 vdb-c-transform"
-          />
           <div class="vdb-c-h-152 vdb-c-rounded-16 vdb-c-bg-gray-400" />
         </div>
       </div>

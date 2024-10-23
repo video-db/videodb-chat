@@ -115,7 +115,40 @@ This component displays the default screen when there are no conversations in th
 
 These components are used to display collection and video views, helping users better understand the context of the conversation.
 
-# 🧑‍💻 Advanced Usage
+# 🧑‍💻 Concepts 
+
+### 🔧 Message Handlers
+
+---
+
+Message handlers are UI components that are used to render the content of a message that are in `conversations` object. They are registered with the `ChatInterface` component and are used to render the content of messages that have a content type that matches the `contentType` of the handler.
+
+These are the default message handlers that are currently supported by this package:
+
+**Text**:  
+  `contentType`: `text`   
+  _Renders the text/markdown of the message_  
+
+  [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/TextResponse.vue)
+
+**Video**:  
+  `contentType`: `video`  
+  _Renders the video(streaming urls) of the message_
+
+  [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ChatVideo.vue)
+
+**Image**:  
+  `contentType`: `image`  
+  _Renders the image of the message_
+
+  [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ImageHandler.vue)
+
+**Search Results**:  
+  `contentType`: `search_results`  
+  _Renders the search results of the video_ 
+
+  [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ChatSearchResults.vue)
+
 
 ### 🔧 Custom Message Handler
 

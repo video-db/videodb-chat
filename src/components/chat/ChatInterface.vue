@@ -4,17 +4,19 @@
       'vdb-c-fixed': size === 'full',
     }"
     class="vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-justify-center vdb-c-overflow-y-hidden vdb-c-bg-black-64"
+    tabindex="0"
   >
     <div class="vdb-c-flex vdb-c-h-full vdb-c-w-full">
       <!-- Collapsible Sidebar -->
       <sidebar
         ref="sidebarRef"
         class="vdb-c-w-1/5 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+        :status="
+          configStatus !== null && isSetupComplete ? 'active' : 'inactive'
+        "
         :config="sidebarConfig"
         :show-selected-collection="
-          Object.keys(conversations).length === 0 &&
-          !showVideoView &&
-          !showCollectionView
+          Object.keys(conversations).length === 0 && !showCollectionView
         "
         :initial-sessions-open="!isFreshUser"
         :initial-collections-open="isFreshUser"
@@ -24,7 +26,8 @@
         :agents="agents"
         :sessions="sessions"
         :collections="collections"
-        @create-new-session="handleNewSessionClick"
+        @create-new-session="createNewSession"
+        @delete-session="showDeleteSessionDialog"
         @agent-click="handleTagAgent"
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
@@ -36,14 +39,20 @@
           class="vdb-c-relative vdb-c-flex-1 vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
         >
           <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
+            <div v-if="configStatus === null"></div>
+            <setup-screen
+              v-else-if="!isSetupComplete"
+              :config-status="configStatus"
+            />
             <section
+              v-else-if="isSetupComplete"
               ref="chatWindow"
               class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
             >
               <template v-if="Object.keys(conversations).length === 0">
                 <!-- Empty Container -->
                 <div
-                  v-if="showVideoView || showCollectionView"
+                  v-if="showCollectionView"
                   class="vdb-c-w-full vdb-c-p-16 vdb-c-px-30"
                 >
                   <div
@@ -53,10 +62,7 @@
                       <span
                         v-if="collectionName"
                         class="vdb-c-cursor-pointer"
-                        @click="
-                          videoId.value = null;
-                          showVideoView = false;
-                        "
+                        @click="videoId = null"
                       >
                         {{ collectionName }}
                       </span>
@@ -65,29 +71,9 @@
                         class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
                       ></span>
                     </span>
-                    <span v-if="showVideoView"> > </span>
-                    <span
-                      v-if="showVideoView"
-                      class="vdb-c-flex vdb-c-max-w-[300px] vdb-c-truncate"
-                    >
-                      <span v-if="videoName"> {{ videoName }} </span>
-                      <span
-                        v-else
-                        class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-[#EEEFF2]"
-                      ></span>
-                    </span>
                   </div>
-                  <video-view
-                    v-if="showVideoView"
-                    :collection-id="collectionId"
-                    :video-id="videoId"
-                    :collection-data="activeCollectionData"
-                    :video-data="activeVideoData"
-                    class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
-                  />
-
                   <collection-view
-                    v-else-if="showCollectionView"
+                    v-if="showCollectionView"
                     :collection-id="collectionId"
                     :collection-data="activeCollectionData"
                     :collection-videos="activeCollectionVideos"
@@ -126,6 +112,11 @@
           <!-- chat input -->
           <div
             class="vdb-c-chat-input-container vdb-c-relative vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+            :class="{
+              'vdb-c-pointer-events-none vdb-c-opacity-20': !(
+                configStatus !== null && isSetupComplete
+              ),
+            }"
           >
             <chat-input
               ref="chatInputRef"
@@ -140,11 +131,65 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Session Dialog -->
+    <div
+      v-if="showDeleteDialog"
+      class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-black vdb-c-bg-opacity-50"
+      @click="cancelDeleteSession"
+    >
+      <div
+        class="vdb-c-shadow-xl vdb-c-overflow-hidden vdb-c-rounded-lg vdb-c-bg-white"
+        @click.stop
+      >
+        <div
+          class="vdb-c-flex vdb-c-gap-16 vdb-c-px-24 vdb-c-py-16 vdb-c-pt-24"
+        >
+          <div
+            class="vdb-c-flex vdb-c-h-40 vdb-c-w-40 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-red-100"
+          >
+            <warning-exclamation />
+          </div>
+          <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
+            <h2 class="vdb-c-text-lg vdb-c-font-medium vdb-c-text-gray-950">
+              Delete Session
+            </h2>
+            <p class="vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#6B7280]">
+              Are you sure you want to delete this session?
+            </p>
+          </div>
+        </div>
+        <div
+          class="vdb-c-flex vdb-c-w-full vdb-c-justify-end vdb-c-gap-12 vdb-c-bg-gray-50 vdb-c-px-24 vdb-c-py-12"
+        >
+          <button
+            @click="cancelDeleteSession"
+            class="vdb-c-shadow-sm vdb-c-rounded-md vdb-c-border vdb-c-border-gray-300 vdb-c-bg-white vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-gray-700 hover:vdb-c-bg-gray-300"
+          >
+            Cancel
+          </button>
+          <button
+            @click="confirmDeleteSession"
+            class="vdb-c-shadow-sm vdb-c-rounded-md vdb-c-bg-[#DC2626] vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-white hover:vdb-c-bg-[#B91C1C]"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
 <script setup>
-import { computed, nextTick, provide, ref, watch } from "vue";
+import {
+  computed,
+  nextTick,
+  provide,
+  ref,
+  watch,
+  onMounted,
+  onUnmounted,
+} from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -152,8 +197,8 @@ import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
 import ChatInput from "./ChatInput.vue";
 import ChatMessageContainer from "./ChatMessageContainer.vue";
 import CollectionView from "./CollectionView.vue";
-import VideoView from "./VideoView.vue";
 import DefaultScreen from "./elements/DefaultScreen.vue";
+import SetupScreen from "./elements/SetupScreen.vue";
 import Sidebar from "./elements/Sidebar.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 
@@ -164,6 +209,7 @@ import TextResponse from "../message-handlers/TextResponse.vue";
 
 import VideoDBLogo from "../icons/VideoDBLogo.vue";
 import FileUploadIcon from "../icons/FileUpload.vue";
+import WarningExclamation from "../icons/WarningExclamation.vue";
 import EyeIcon from "../icons/Eye.vue";
 import SpielbergIcon from "../icons/Spielberg2.vue";
 
@@ -219,11 +265,11 @@ const sidebarRef = ref(null);
 const chatInputRef = ref(null);
 
 const showCollectionView = ref(false);
-const showVideoView = ref(false);
 const taggedAgent = ref([]);
 
 const useChatHook = props.customChatHook || useVideoDBAgent;
 const {
+  configStatus,
   sessionId,
   collectionId,
   videoId,
@@ -234,6 +280,7 @@ const {
   activeCollectionVideos,
   activeVideoData,
   addMessage,
+  deleteSession,
   conversations,
   loadSession,
 } = useChatHook(props.chatHookConfig);
@@ -249,8 +296,15 @@ registerMessageHandler("image", ImageHandler);
 const isStaticPage = ref(false);
 const chatWindow = ref(null);
 
+const isSetupComplete = computed(() => {
+  return (
+    typeof configStatus.value === "object" &&
+    configStatus.value !== null &&
+    Object.values(configStatus.value).every((value) => value === true)
+  );
+});
+
 const collectionName = computed(() => activeCollectionData.value?.name);
-const videoName = computed(() => activeVideoData.value?.name);
 const isFreshUser = computed(() => {
   if (collections.value && activeCollectionVideos.value) {
     return (
@@ -309,7 +363,7 @@ const dynamicActionCards = computed(() => {
             action: "chat",
           },
           {
-            content: "Categorise the videos in my collection",
+            content: "Categorise the videos in this collection by title",
             type: "primary",
             action: "chat",
           },
@@ -337,17 +391,15 @@ watch(chatLoading, (val) => {
 });
 
 // --- Sidebar Click Handlers ---
-const handleNewSessionClick = () => {
+const createNewSession = () => {
   videoId.value = null;
   showCollectionView.value = false;
-  showVideoView.value = false;
   taggedAgent.value = [];
   loadSession();
 };
 
 const handleSessionClick = (sessionId) => {
   showCollectionView.value = false;
-  showVideoView.value = false;
   loadSession(sessionId);
 };
 
@@ -355,8 +407,29 @@ const handleCollectionClick = (_collectionId) => {
   collectionId.value = _collectionId;
   videoId.value = null;
   showCollectionView.value = false;
-  showVideoView.value = false;
   loadSession();
+};
+
+const showDeleteDialog = ref(false);
+const sessionToDelete = ref(null);
+
+const showDeleteSessionDialog = (_sessionId) => {
+  sessionToDelete.value = _sessionId;
+  showDeleteDialog.value = true;
+};
+
+const cancelDeleteSession = () => {
+  showDeleteDialog.value = false;
+  sessionToDelete.value = null;
+};
+
+const confirmDeleteSession = () => {
+  if (sessionToDelete.value === sessionId.value) {
+    createNewSession();
+  }
+  deleteSession(sessionToDelete.value);
+  showDeleteDialog.value = false;
+  sessionToDelete.value = null;
 };
 
 // --- Onboarding Screen Click Handlers ---
@@ -365,7 +438,8 @@ const handleQueryCardClick = (query) => {
     showCollectionView.value = true;
     chatInput.value = "";
   } else if (query.action === "chat") {
-    chatInput.value = query.content;
+    chatInput.value = "";
+    handleAddMessage(query.content);
   }
 };
 
@@ -391,7 +465,7 @@ const handleTagAgent = (agent, addToInput = true) => {
 // --- CollectionView/VideoView Click Handlers ---
 const handleVideoClick = (video) => {
   videoId.value = video.id;
-  showVideoView.value = true;
+  handleAddMessage(`Play ${video.name}`);
 };
 
 const handleAddMessage = (content) => {
@@ -405,12 +479,15 @@ const handleAddMessage = (content) => {
   taggedAgent.value = [];
 };
 
+
 defineExpose({
   chatInput,
+  chatInputRef,
   conversations,
   messageHandlers,
   addMessage,
   loadSession,
+  createNewSession,
   setChatInput,
   registerMessageHandler,
 });

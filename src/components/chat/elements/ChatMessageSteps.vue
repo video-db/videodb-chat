@@ -79,15 +79,15 @@ const props = defineProps({
     default: "progress",
     validator: (value) => ["progress", "success"].includes(value),
   },
-  isLastConv: {
+  expanded: {
     type: Boolean,
     default: false,
   },
 });
 
-const isExpanded = ref(props.isLastConv);
+const isExpanded = ref(props.expanded);
 
-watch(() => props.isLastConv, (newValue) => {
+watch(() => props.expanded, (newValue) => {
   if (!newValue) {
     isExpanded.value = false;
   }

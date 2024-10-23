@@ -22,7 +22,7 @@
             <ChatMessageSteps
               :steps="message.actions"
               :status="message.status"
-              :is-last-conv="isLastConv"
+              :expanded="isLastConv && message.status !== 'success'"
             />
           </div>
 
