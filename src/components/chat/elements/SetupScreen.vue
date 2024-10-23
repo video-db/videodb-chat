@@ -83,7 +83,7 @@ const setupMapping = {
   llm_configured: {
     title: "LLM Connection",
     completeText: "LLM Configured",
-    incompleteText: "LLM not configured",
+    incompleteText: "Please set your OpenAI LLM key as OPENAI_API_KEY in the backend .env",
     incompleteAction: {
       text: "Change model",
       link: "https://docs.videodb.io",
@@ -98,7 +98,7 @@ const setupMapping = {
   videodb_configured: {
     title: "VideoDB Setup",
     completeText: "",
-    incompleteText: "API key not found",
+    incompleteText: "Please generate VideoDB key from console (clickable link) and set it to VIDEO_DB_API_KEY in the backend .env",
     completeAction: {
       text: "Update key",
       link: "https://console.videodb.io",

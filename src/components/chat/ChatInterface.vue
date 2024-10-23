@@ -154,7 +154,7 @@
             <h2 class="vdb-c-text-lg vdb-c-font-medium vdb-c-text-gray-950">
               Delete Session
             </h2>
-            <p class="vdb-c-text-sm vdb-c-font-normal vdb-c-text-gray-500">
+            <p class="vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#6B7280]">
               Are you sure you want to delete this session?
             </p>
           </div>

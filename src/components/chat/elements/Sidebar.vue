@@ -86,7 +86,8 @@
                 'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
                 { 'vdb-c-rotate-180': showSessions },
               ]"
-              :stroke-width="1.5"
+              stroke-color="#464646"
+              :stroke-width="2"
             />
           </div>
         </button>
@@ -168,7 +169,8 @@
                 'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
                 { 'vdb-c-rotate-180': showCollections },
               ]"
-              :stroke-width="1.5"
+              stroke-color="#464646"
+              :stroke-width="2"
             />
           </div>
         </button>
@@ -201,7 +203,7 @@
       <a
         v-for="(link, index) in config.links"
         :key="index"
-        class="vdb-c-mx-8 vdb-c-my-12 vdb-c-pl-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey hover:vdb-c-text-[#0f0f0f] hover:vdb-c-no-underline"
+        class="vdb-c-mx-8 vdb-c-my-12 vdb-c-pl-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey hover:vdb-c-text-black hover:vdb-c-no-underline"
         :href="link.href"
         :target="link.target || '_blank'"
         rel="noopener noreferrer"
