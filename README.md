@@ -126,26 +126,40 @@ Message handlers are UI components that are used to render the content of a mess
 These are the default message handlers that are currently supported by this package:
 
 **Text**:  
+---
   `contentType`: `text`   
-  _Renders the text/markdown of the message_  
+  _Renders the text/markdown of the message_    
+     
+![TextResponse](https://github.com/user-attachments/assets/6e7cb7a8-0f5a-473d-8b46-a104da92922d)
 
   [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/TextResponse.vue)
 
 **Video**:  
+---
   `contentType`: `video`  
-  _Renders the video(streaming urls) of the message_
+  _Renders the video(streaming urls) of  the message_
+     
+  ![chatvideo](https://github.com/user-attachments/assets/e3b07ad3-5258-42c0-9276-49321d840e95)
+
 
   [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ChatVideo.vue)
 
 **Image**:  
+---
   `contentType`: `image`  
-  _Renders the image of the message_
+  _Renders the image of the message_    
+  
+![ImageHandler](https://github.com/user-attachments/assets/afc02ffb-2704-43ab-8f62-c66e2a0c2178)
+
 
   [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ImageHandler.vue)
 
 **Search Results**:  
+---
   `contentType`: `search_results`  
   _Renders the search results of the video_ 
+  
+![ChatSearchResults](https://github.com/user-attachments/assets/2192a1c0-def2-4472-9c08-14e08d66f6da)
 
   [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ChatSearchResults.vue)
 
