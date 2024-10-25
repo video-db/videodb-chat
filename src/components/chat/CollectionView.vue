@@ -15,7 +15,7 @@
         </div>
         <Button
           @click="
-            loadSession(uuidv4());
+            loadSession();
             addMessage({
               content: [
                 { type: 'text', text: 'Upload a video to this collection' },
