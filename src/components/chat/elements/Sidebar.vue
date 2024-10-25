@@ -1,9 +1,26 @@
 <template>
   <div
-    class="vdb-c-flex vdb-c-h-full vdb-c-flex-col vdb-c-gap-16 vdb-c-border-r vdb-c-bg-white vdb-c-p-16 vdb-c-pl-12 vdb-c-pr-20 vdb-c-text-black"
+    :class="[
+      'vdb-c-flex vdb-c-h-full vdb-c-flex-col vdb-c-gap-16 vdb-c-border-l vdb-c-bg-white vdb-c-p-16 vdb-c-pl-12 vdb-c-pr-20 vdb-c-text-black',
+      {
+        'vdb-c-w-1/5': !isMobile,
+        'vdb-c-fixed vdb-c-left-0 vdb-c-top-0 vdb-c-z-50 vdb-c-h-full vdb-c-w-4/5 vdb-c-transform vdb-c-shadow-lg vdb-c-transition-transform vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-2/5':
+          isMobile,
+        'vdb-c--translate-x-full': isMobile && !isOpen,
+      },
+    ]"
   >
-    <div class="vdb-c-text-2xl vdb-c-font-bold">
-      <component :is="config.icon" />
+    <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
+      <div class="vdb-c-text-2xl vdb-c-font-bold">
+        <component :is="config.icon" />
+      </div>
+      <button
+        v-if="isMobile"
+        @click="closeSidebar"
+        class="vdb-c-text-2xl vdb-c-font-bold"
+      >
+        &times;
+      </button>
     </div>
     <Button
       variant="primary"
@@ -11,12 +28,14 @@
       :class="{
         'vdb-c-pointer-events-none vdb-c-opacity-20': status === 'inactive',
       }"
-      @click="$emit('create-new-session')"
+      @click="
+        $emit('create-new-session');
+        closeSidebar();
+      "
     >
       <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-6">
         <ComposeIcon />
-        <span
-          class="vdb-c-hidden vdb-c-text-sm vdb-c-font-medium md:vdb-c-block"
+        <span class="vdb-c-block vdb-c-text-sm vdb-c-font-medium"
           >New Session</span
         >
       </div>
@@ -56,7 +75,10 @@
         >
           <template v-for="(agent, index) in agents" :key="index">
             <div
-              @click="$emit('agent-click', agent)"
+              @click="
+                $emit('agent-click', agent);
+                closeSidebar();
+              "
               :class="[
                 'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-black vdb-c-transition-all vdb-c-duration-75 hover:vdb-c-bg-[#FFF5EC]',
               ]"
@@ -108,7 +130,10 @@
             <div
               v-for="session in sessions"
               :key="session.session_id"
-              @click="$emit('session-click', session.session_id)"
+              @click="
+                $emit('session-click', session.session_id);
+                closeSidebar();
+              "
               @mouseenter="hoveredSession = session.session_id"
               @mouseleave="hoveredSession = null"
               :class="[
@@ -137,7 +162,10 @@
                 }}
               </span>
               <span
-                @click.stop="$emit('delete-session', session.session_id)"
+                @click.stop="
+                  $emit('delete-session', session.session_id);
+                  closeSidebar();
+                "
                 class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
               >
                 <DeleteIcon
@@ -180,7 +208,10 @@
         >
           <template v-for="collection in collections" :key="collection.id">
             <div
-              @click="$emit('collection-click', collection.id)"
+              @click="
+                $emit('collection-click', collection.id);
+                closeSidebar();
+              "
               :class="[
                 'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
                 {
@@ -245,6 +276,21 @@
       </Button>
     </div>
   </div>
+  <transition name="fade">
+    <button
+      v-if="isMobile && !isOpen"
+      @click="toggleSidebar"
+      class="vdb-c-shadow-md vdb-c-fixed vdb-c-left-16 vdb-c-top-16 vdb-c-z-50 vdb-c-rounded-full vdb-c-bg-white vdb-c-p-8"
+    >
+      <div
+        class="vdb-c-flex vdb-c-h-24 vdb-c-w-24 vdb-c-flex-col vdb-c-items-center vdb-c-justify-center"
+      >
+        <div class="vdb-c-mb-2 vdb-c-h-2 vdb-c-w-20 vdb-c-bg-gray-600"></div>
+        <div class="vdb-c-mb-2 vdb-c-h-2 vdb-c-w-20 vdb-c-bg-gray-600"></div>
+        <div class="vdb-c-mb-2 vdb-c-h-2 vdb-c-w-20 vdb-c-bg-gray-600"></div>
+      </div>
+    </button>
+  </transition>
 </template>
 
 <script setup>
@@ -312,6 +358,22 @@ const exploreAgentsTimeout = ref(null);
 const userClickedSessions = ref(false);
 const userClickedCollections = ref(false);
 const hoveredSession = ref(null);
+const isMobile = ref(window.innerWidth < 1024);
+const isOpen = ref(false);
+
+const emit = defineEmits([
+  "create-new-session",
+  "session-click",
+  "delete-session",
+  "collection-click",
+  "agent-click",
+]);
+
+const closeSidebar = () => {
+  if (isMobile.value) {
+    isOpen.value = false;
+  }
+};
 
 const toggleExploreAgents = (value) => {
   showExploreAgents.value =
@@ -326,6 +388,10 @@ const toggleSessions = (value) => {
 const toggleCollections = (value) => {
   userClickedCollections.value = true;
   showCollections.value = value !== undefined ? value : !showCollections.value;
+};
+
+const toggleSidebar = () => {
+  isOpen.value = !isOpen.value;
 };
 
 const triggerExploreAgentsFocusAnimation = () => {
@@ -374,19 +440,16 @@ watch(showExploreAgents, (newValue) => {
   }
 });
 
-defineEmits([
-  "create-new-session",
-  "session-click",
-  "delete-session",
-  "collection-click",
-  "agent-click",
-]);
+window.addEventListener("resize", () => {
+  isMobile.value = window.innerWidth < 1024;
+});
 
 defineExpose({
   toggleExploreAgents,
   toggleSessions,
   toggleCollections,
   triggerExploreAgentsFocusAnimation,
+  toggleSidebar,
 });
 </script>
 

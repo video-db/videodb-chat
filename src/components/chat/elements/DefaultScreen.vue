@@ -5,10 +5,11 @@
     <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
       <h1
         class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-xl vdb-c-leading-tight sm:vdb-c-text-3xl md:vdb-c-text-5xl"
+        :style="{ lineHeight: '1.2' }"
       >
         <span
           v-if="collectionName"
-          class="vdb-c-inline-block vdb-c-max-w-[60%] vdb-c-truncate vdb-c-font-extrabold"
+          class="vdb-c-inline-block vdb-c-max-w-[80%] vdb-c-truncate vdb-c-font-extrabold"
           style="
             background-image: radial-gradient(circle, #ff7e32, #ff5b0a);
             -webkit-background-clip: text;
