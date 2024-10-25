@@ -10,7 +10,7 @@
       <!-- Collapsible Sidebar -->
       <sidebar
         ref="sidebarRef"
-        class="vdb-c-w-1/5 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+        class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
         :status="
           configStatus !== null && isSetupComplete ? 'active' : 'inactive'
         "
@@ -38,6 +38,11 @@
         <div
           class="vdb-c-relative vdb-c-flex-1 vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
         >
+          <div
+            class="vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-pt-24 lg:vdb-c-hidden"
+          >
+            <spielberg-icon />
+          </div>
           <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
             <div v-if="configStatus === null"></div>
             <setup-screen
@@ -479,7 +484,6 @@ const handleAddMessage = (content) => {
   taggedAgent.value = [];
 };
 
-
 defineExpose({
   chatInput,
   chatInputRef,
@@ -517,12 +521,18 @@ provide("videodb-chat", {
   border: 10px solid white;
 }
 
+@media (max-width: 1024px) {
+  .vdb-c-chat-parent {
+    height: calc(100% - 94px - 64px);
+  }
+}
+
 @media (max-width: 768px) {
   .vdb-c-chat-input-container {
     height: 62px;
   }
   .vdb-c-chat-parent {
-    height: calc(100% - 62px);
+    height: calc(100% - 62px - 64px);
   }
 }
 
