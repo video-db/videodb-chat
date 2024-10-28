@@ -7,6 +7,7 @@
 - Delete Session
 - Video View in session History
 - Expose ChatInputRef & createNewSession()
+- Highlight isFocused state in LoadingMessage 
 
 ### Fixes
 - Full Screen for <ChatVideo/> message handler

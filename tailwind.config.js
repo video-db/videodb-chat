@@ -297,6 +297,7 @@ module.exports = {
           orange: "#EC5B16",
           lightgrey: "#F7F7F7",
           darkishgrey: "#1E1E1E",
+          green: "#0AA910",
         },
         black: {
           DEFAULT: "#000000",

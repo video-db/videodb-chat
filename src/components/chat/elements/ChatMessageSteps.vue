@@ -9,9 +9,7 @@
         :stroke-width="2"
         :stroke-color="'#343E4F'"
       />
-      <span class="vdb-c-text-sm vdb-c-font-medium vdb-c-text-kilvish-800"
-        >Director's Log</span
-      >
+      <span class="vdb-c-font-medium vdb-c-text-black">Director's Log</span>
     </button>
     <transition
       enter-active-class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-out"
@@ -33,10 +31,12 @@
             :key="index"
             class="vdb-c-flex vdb-c-items-center vdb-c-gap-8"
           >
-            <span class="vdb-c-h-20 vdb-c-w-20 vdb-c-flex vdb-c-justify-center vdb-c-items-center">
+            <span
+              class="vdb-c-flex vdb-c-h-20 vdb-c-w-20 vdb-c-items-center vdb-c-justify-center"
+            >
               <span
                 v-if="index !== displaySteps.length - 1"
-                class="vdb-c-text-orange-500"
+                class="vdb-c-text-[#D9D9D9]"
                 >|</span
               >
               <div
@@ -44,19 +44,27 @@
                 class="vdb-c-block vdb-c-h-1/2 vdb-c-w-10 vdb-c-rounded-full"
                 :class="
                   status === 'progress'
-                    ? 'vdb-c-bg-orange-500 vdb-c-animate-pulse'
-                    : 'vdb-c-bg-green-500'
+                    ? 'vdb-c-animate-pulse vdb-c-bg-orange-500'
+                    : 'vdb-c-bg-[#0AA910]'
                 "
               ></div>
             </span>
-            <span 
-              class="vdb-c-flex-grow vdb-c-text-sm"
+            <span
+              class="vdb-c-flex-grow"
               :class="{
-                'vdb-c-font-bold vdb-c-text-kilvish-800': status === 'success' && index === displaySteps.length - 1,
-                'vdb-c-text-gray-600': !(status === 'success' && index === displaySteps.length - 1)
+                'vdb-c-font-semibold vdb-c-text-green':
+                  status === 'success' && index === displaySteps.length - 1,
+                'vdb-c-font-medium vdb-c-text-kilvish-800': !(
+                  status === 'success' && index === displaySteps.length - 1
+                ),
               }"
+              v-html="
+                step.replace(
+                  /@(\w+)/g,
+                  '<span class=\'vdb-c-text-orange-500\'>@$1</span>',
+                )
+              "
             >
-              {{ step }}
             </span>
           </div>
         </div>
@@ -87,11 +95,14 @@ const props = defineProps({
 
 const isExpanded = ref(props.expanded);
 
-watch(() => props.expanded, (newValue) => {
-  if (!newValue) {
-    isExpanded.value = false;
-  }
-});
+watch(
+  () => props.expanded,
+  (newValue) => {
+    if (!newValue) {
+      isExpanded.value = false;
+    }
+  },
+);
 
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value;
@@ -102,7 +113,7 @@ const displaySteps = computed(() => {
     return ["Thinking"];
   }
   if (props.status === "success") {
-    return [...props.steps, "Final Cut Approved by Spielberg"];
+    return [...props.steps, "Final cut ready!"];
   }
   return props.steps;
 });
