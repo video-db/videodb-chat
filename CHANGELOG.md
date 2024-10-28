@@ -14,6 +14,7 @@
 - Delete Session
 - Video View in session History
 - Expose ChatInputRef & createNewSession()
+- Highlight isFocused state in LoadingMessage 
 
 ### Fixes
 

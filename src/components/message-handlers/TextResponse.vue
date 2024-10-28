@@ -7,6 +7,7 @@
       v-if="!isUser"
       :status="content.status"
       :message="content?.status_message"
+      :is-focused="content.agent_name === 'assistant'"
       :is-last-conv="isLastConv"
     />
 
