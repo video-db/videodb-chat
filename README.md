@@ -67,7 +67,9 @@ If you are using [Director](https://github.com/video-db/Director), make sure it'
 
 # 📖 Application Flow
 
-![image](https://github.com/user-attachments/assets/3b796945-ab67-4f86-afe9-827079f74a9c)
+![Structure](https://github.com/user-attachments/assets/3dd8feaa-483a-4f28-bfd2-e8bc23dfffea)
+
+
 
 The `ChatInterface` component is composed of two primary sub-components:
 
