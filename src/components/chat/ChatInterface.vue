@@ -216,12 +216,12 @@ import VideoDBLogo from "../icons/VideoDBLogo.vue";
 import FileUploadIcon from "../icons/FileUpload.vue";
 import WarningExclamation from "../icons/WarningExclamation.vue";
 import EyeIcon from "../icons/Eye.vue";
-import SpielbergIcon from "../icons/Spielberg2.vue";
+import DirectorIcon from "../icons/Director.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
     type: String,
-    default: "Ask Spielberg",
+    default: "Ask Director",
   },
   customChatHook: {
     type: Function,
@@ -243,7 +243,7 @@ const props = defineProps({
   sidebarConfig: {
     type: Object,
     default: () => ({
-      icon: SpielbergIcon,
+      icon: DirectorIcon,
       links: [
         {
           href: "https://docs.videodb.io",
@@ -344,13 +344,13 @@ const dynamicActionCards = computed(() => {
           },
           {
             content:
-              "How will I be charged for using VideoDB's integration on Spielberg?",
+              "How will I be charged for using VideoDB's integration on Director?",
             type: "primary",
             action: "chat",
           },
           {
             content:
-              "I'm not sure what Spielberg is about.Help me figure out what you can do.",
+              "I'm not sure what Director is about.Help me figure out what you can do.",
             type: "muted",
             action: "chat",
           },

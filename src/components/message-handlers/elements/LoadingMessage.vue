@@ -13,7 +13,7 @@
       <span
         v-else-if="status === 'success'"
         :class="[
-          'vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-semibold vdb-c-text-black',
+          'vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-font-semibold vdb-c-text-[#333]',
           { 'vdb-c-text-vdb-green': isFocused },
         ]"
         key="success"
