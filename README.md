@@ -14,7 +14,7 @@
   <h3 align="center">VideoDB Chat</h3>
 
   <p align="center">
-    Chat UI Components for <a href="https://github.com/video-db/spielberg">  Spielberg</a>
+    Chat UI Components for <a href="https://github.com/video-db/Director">  Director</a>
     <br />
     <a href="https://codesandbox.io/p/sandbox/nifty-mendeleev-tnxpnt"><strong>View Demo »</strong></a>
     <br />
@@ -27,7 +27,7 @@
 
 # 💬 VideoDB Chat
 
-These are Chat UI components to use with [Spielberg](https://github.com/video-db/spielberg).
+These are Chat UI components to use with [Director](https://github.com/video-db/Director).
 
 # 🚀 Quickstart
 
@@ -41,7 +41,7 @@ npm install @videodb/chat-vue
 
 Import the necessary components and styles.
 
-If you are using [Spielberg](https://github.com/video-db/spielberg), make sure it's backend is running and the socket url is correctly passed in `chat-hook-config`
+If you are using [Director](https://github.com/video-db/Director), make sure it's backend is running and the socket url is correctly passed in `chat-hook-config`
 
 ```html
 <script setup>
@@ -67,7 +67,9 @@ If you are using [Spielberg](https://github.com/video-db/spielberg), make sure i
 
 # 📖 Application Flow
 
-![image](https://github.com/user-attachments/assets/3b796945-ab67-4f86-afe9-827079f74a9c)
+![Structure](https://github.com/user-attachments/assets/3dd8feaa-483a-4f28-bfd2-e8bc23dfffea)
+
+
 
 The `ChatInterface` component is composed of two primary sub-components:
 
@@ -88,7 +90,7 @@ When a user sends a message, this component calls the `addMessage()` function, w
 
 ### Default Chat Hook
 
-The default chat hook is `videoDBChatHook`, which integrates with [Spielberg](https://github.com/video-db/spielberg).
+The default chat hook is `videoDBChatHook`, which integrates with [Director](https://github.com/video-db/Director).
 
 > ℹ️ **Note:** To configure your own chat hook, please refer to the [Custom ChatHook](#-custom-chathook) section.
 
@@ -195,7 +197,7 @@ The `ChatInterface` component exposes a method `registerMessageHandler` accessib
 
 The Custom ChatHook is an advanced feature of this package that allows you to:
 
-- Connect to your own backend, bypassing or configuring Spielberg's default backend.
+- Connect to your own backend, bypassing or configuring Director's default backend.
 - Develop custom logic for agent interactions.
 - Control conversation state and manage side effects.
 
@@ -281,7 +283,7 @@ The ChatInterface component accepts the following props:
   - default:
     ```js
     {
-          icon: SpielbergIcon,
+          icon: DirectorIcon,
           links: [
             {
               href: "https://docs.videodb.io",

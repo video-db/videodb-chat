@@ -13,7 +13,9 @@
 
     <transition name="fade" mode="out-in">
       <div
-        v-if="content.status === 'success' || isUser"
+        v-if="
+          content.status === 'success' || content.status === 'error' || isUser
+        "
         class="vdb-c-flex vdb-c-flex-col"
       >
         <p
@@ -38,10 +40,6 @@
           class="vdb-c-h-16 vdb-c-w-2/3 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-gray-200"
         ></div>
       </div>
-      <div
-        v-else-if="content.status === 'error'"
-        class="vdb-c-flex vdb-c-flex-col"
-      ></div>
     </transition>
   </div>
 </template>
@@ -74,7 +72,7 @@ const props = defineProps({
   },
 });
 
-const text = computed(() => props.content.text);
+const text = computed(() => props.content?.text || "");
 
 const getMarkedMsg = (msg) => {
   marked.use(markedKatex(options));

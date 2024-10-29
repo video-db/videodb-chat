@@ -1,6 +1,6 @@
 {
 	"name": "@videodb/chat-vue",
-	"description": "Chat component for Spielberg",
+	"description": "Chat component for Director",
 	"version": "0.0.5",
 	"author": "VideoDB",
 	"license": "Apache-2.0",
