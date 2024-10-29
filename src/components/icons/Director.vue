@@ -77,27 +77,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.circle-group {
-  transition: transform 1s ease;
-  transform-origin: 17.4553px 19.1389px; /* Center of the circle */
-}
-
-/* Rotate the group when hovering over the entire SVG */
-.spielberg-icon:hover .circle-group {
-  transform: rotate(360deg);
-}
-
-/* Transition for the circle */
-.spielberg-circle {
-  transition:
-    transform 0.5s ease,
-    fill 0.5s ease;
-}
-
-/* Scale up and change color of the circle when hovering over the entire SVG */
-.spielberg-icon:hover .spielberg-circle {
-  /* transform: scale(1.2); */
-  fill: #ffd700; /* Gold color */
-}
-</style>
+<style scoped></style>

@@ -41,7 +41,7 @@
           <div
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-pt-24 lg:vdb-c-hidden"
           >
-            <spielberg-icon />
+            <director-icon />
           </div>
           <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
             <div v-if="configStatus === null"></div>
