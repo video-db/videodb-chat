@@ -29,7 +29,7 @@
       </div>
 
       <div
-        class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-gap-16 sm:vdb-c-grid-cols-2 md:vdb-c-grid-cols-3 lg:vdb-c-grid-cols-4"
+        class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-gap-16 sm:vdb-c-grid-cols-2 md:vdb-c-grid-cols-3 2xl:vdb-c-grid-cols-4"
       >
         <SetupCard
           v-for="(status, key) in configStatus"

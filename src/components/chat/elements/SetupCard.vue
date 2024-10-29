@@ -22,7 +22,11 @@
         <h3 class="vdb-c-font-semibold vdb-c-text-nan">
           {{ title }}
         </h3>
-        <p :class="['vdb-c-mt-12 vdb-c-text-sm vdb-c-text-gray-600']">
+        <p
+          :class="[
+            'vdb-c-mt-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-nan',
+          ]"
+        >
           <span v-if="message.html" v-html="message.html"></span>
           <template v-else>{{ message.text }}</template>
         </p>
