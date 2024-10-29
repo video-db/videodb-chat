@@ -6,7 +6,7 @@
       <h1
         class="vdb-c-mb-24 vdb-c-text-5xl vdb-c-font-extrabold vdb-c-text-vdb-darkishgrey"
       >
-        Welcome to Spielberg.
+        Welcome to Director.
       </h1>
 
       <div

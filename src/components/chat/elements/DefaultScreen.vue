@@ -38,7 +38,7 @@
             class="vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6 vdb-c-text-pam"
           >
             <div class="vdb-c-font-semibold">
-              Welcome to Spielberg: a video-first AI agent framework powered by
+              Welcome to Director: a video-first AI agent framework powered by
               <a
                 href="https://www.videodb.io"
                 target="_blank"
@@ -56,7 +56,7 @@
               >
                 create a custom agent
               </a>
-              that suits your workflows. From upload to publish - Spielberg can
+              that suits your workflows. From upload to publish - Director can
               get it all done right here! Let us know how you like it on our
               <a
                 href="https://discord.com/invite/py9P639jGz"
