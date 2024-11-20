@@ -73,8 +73,10 @@ export function useVideoDBAgent(config) {
     ) {
       Promise.all([
         fetchCollections().then((res) => {
-          collections.value = res.data;
-          activeCollectionData.value = res.data[0];
+          const defaultCollection = res.data[0];
+          defaultCollection.name = "VideoDB Default Collection";
+          activeCollectionData.value = defaultCollection;
+          collections.value = [defaultCollection, ...res.data.slice(1)];
         }),
         fetchCollectionVideos(session.collectionId).then((res) => {
           activeCollectionVideos.value = res.data;

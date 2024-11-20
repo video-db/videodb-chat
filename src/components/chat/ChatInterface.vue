@@ -14,6 +14,11 @@
         :status="
           configStatus !== null && isSetupComplete ? 'active' : 'inactive'
         "
+        :new-session-button-status="
+          Object.keys(conversations).length === 0 && !showCollectionView
+            ? 'inactive'
+            : 'active'
+        "
         :config="sidebarConfig"
         :show-selected-collection="
           Object.keys(conversations).length === 0 && !showCollectionView
@@ -92,10 +97,18 @@
                   :agents="agents.slice(0, 2)"
                   :active-collection-data="activeCollectionData"
                   :show-onboarding-message="isFreshUser"
+                  :is-fresh-user="isFreshUser"
                   :action-card-queries="dynamicActionCards"
+                  :collection-videos="
+                    isFreshUser
+                      ? defaultScreenConfig.demoVideos.slice(0, 4)
+                      : activeCollectionVideos.slice(0, 4)
+                  "
                   @query-card-click="handleQueryCardClick"
                   @agent-click="handleTagAgent"
+                  @video-click="handleVideoClick"
                   @explore-agents-click="handleExploreAgentsClick"
+                  @view-all-videos-click="handleViewAllVideosClick"
                   class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                 />
               </template>
@@ -216,6 +229,7 @@ import VideoDBLogo from "../icons/VideoDBLogo.vue";
 import FileUploadIcon from "../icons/FileUpload.vue";
 import WarningExclamation from "../icons/WarningExclamation.vue";
 import EyeIcon from "../icons/Eye.vue";
+import ExternalLink from "../icons/ExternalLink.vue";
 import DirectorIcon from "../icons/Director.vue";
 
 const props = defineProps({
@@ -246,7 +260,12 @@ const props = defineProps({
       icon: DirectorIcon,
       links: [
         {
-          href: "https://docs.videodb.io",
+          href: "https://www.youtube.com/playlist?list=PLhxAMFLSSK039xl1UgcZmoFLnb-qNRYQw",
+          text: "Watch Demos",
+          icon: ExternalLink,
+        },
+        {
+          href: "https://director.videodb.io",
           text: "Documentation",
         },
       ],
@@ -261,6 +280,36 @@ const props = defineProps({
     type: Object,
     default: () => ({
       actionCardQueries: null,
+      demoVideos: [
+        {
+          id: 1,
+          externalUrl: true,
+          url: "https://www.youtube.com/watch?v=Dncn_0RWrro",
+          thumbnail_url:
+            "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_automated.png",
+        },
+        {
+          id: 2,
+          externalUrl: true,
+          url: "https://www.youtube.com/watch?v=bct8Vvl2acU",
+          thumbnail_url:
+            "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_gen_ai.png",
+        },
+        {
+          id: 3,
+          externalUrl: true,
+          url: "https://www.youtube.com/watch?v=KcoA0eio1Zo",
+          thumbnail_url:
+            "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_profanity.png",
+        },
+        {
+          id: 4,
+          externalUrl: true,
+          url: "https://www.youtube.com/watch?v=7J7oBIv4eOY",
+          thumbnail_url:
+            "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_keyword.png",
+        },
+      ],
     }),
   },
 });
@@ -318,6 +367,7 @@ const isFreshUser = computed(() => {
   }
   return false;
 });
+
 const chatLoading = computed(() =>
   Object.values(conversations).some((conv) =>
     Object.values(conv).some(
@@ -363,7 +413,9 @@ const dynamicActionCards = computed(() => {
             icon: EyeIcon,
           },
           {
-            content: "Upload a video to this collection",
+            content:
+              "Upload this video [https://www.youtube.com/watch?v=FgrO9ADPZSA] and summarise it.",
+            isDemo: true,
             type: "primary",
             action: "chat",
           },
@@ -437,7 +489,7 @@ const confirmDeleteSession = () => {
   sessionToDelete.value = null;
 };
 
-// --- Onboarding Screen Click Handlers ---
+// --- Handle Default Screen Click Handlers ---
 const handleQueryCardClick = (query) => {
   if (query.action === "show-collection") {
     showCollectionView.value = true;
@@ -445,6 +497,15 @@ const handleQueryCardClick = (query) => {
   } else if (query.action === "chat") {
     chatInput.value = "";
     handleAddMessage(query.content);
+  }
+};
+
+const handleViewAllVideosClick = (redirectTo = "") => {
+  if (redirectTo.includes("youtube.com")) {
+    window.open(redirectTo, "_blank");
+  } else {
+    showCollectionView.value = true;
+    chatInput.value = "";
   }
 };
 
@@ -469,8 +530,12 @@ const handleTagAgent = (agent, addToInput = true) => {
 
 // --- CollectionView/VideoView Click Handlers ---
 const handleVideoClick = (video) => {
-  videoId.value = video.id;
-  handleAddMessage(`Play ${video.name}`);
+  if (video.externalUrl) {
+    window.open(video.url, "_blank");
+  } else {
+    videoId.value = video.id;
+    handleAddMessage(`Play ${video.name}`);
+  }
 };
 
 const handleAddMessage = (content) => {

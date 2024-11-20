@@ -82,7 +82,7 @@
           v-for="(query, index) in actionCardQueries"
           :key="index"
           :class="[
-            'vdb-c-w-160 vdb-c-h-120 hover:vdb-c-shadow-md vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
+            'vdb-c-w-160 vdb-c-h-120 hover:vdb-c-shadow-md vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
             {
               'vdb-c-bg-orange-50 hover:vdb-c-bg-orange-100':
                 query.type === 'primary',
@@ -94,6 +94,13 @@
           ]"
           @click="$emit('query-card-click', query)"
         >
+          <div
+            v-if="query.isDemo"
+            class="vdb-c-absolute vdb-c-right-12 vdb-c-flex vdb-c-flex-row vdb-c-items-center vdb-c-rounded-4 vdb-c-bg-orange-900 vdb-c-px-6 vdb-c-py-3 vdb-c-text-xs vdb-c-font-semibold vdb-c-uppercase vdb-c-text-white"
+          >
+            <span> <StarIcon /> </span>
+            <span class="vdb-c-ml-4"> DEMO </span>
+          </div>
           <div
             :class="[
               'vdb-c-hidden vdb-c-h-48 vdb-c-w-48 vdb-c-items-center vdb-c-justify-center vdb-c-self-start vdb-c-rounded-full vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-flex',
@@ -127,78 +134,75 @@
             ]"
           >
             <component v-if="query.component" :is="query.component"></component>
-            <span v-else> {{ query.content }} </span>
+            <span v-else class="vdb-c-break-words"> {{ query.content }} </span>
           </p>
         </div>
       </div>
     </div>
 
-    <!-- Try asking an agent -->
-    <div
-      class="vdb-c-hidden vdb-c-min-h-0 vdb-c-flex-grow vdb-c-flex-col vdb-c-gap-16 sm:vdb-c-flex"
-    >
-      <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
-        <h3
-          class="vdb-c-text-2xl vdb-c-font-semibold vdb-c-text-vdb-darkishgrey"
-        >
-          Try asking an agent
-        </h3>
-        <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
-          <button
-            class="vdb-c-flex vdb-c-flex-row vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium vdb-c-text-pam"
+    <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-12">
+      <div
+        class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"
+        v-if="!isFreshUser"
+      ></div>
+      <div class="vdb-c-text-xl vdb-c-font-normal vdb-c-text-vdb-darkishgrey">
+        <div v-if="isFreshUser">
+          <div
+            class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
-            <div
-              class="vdb-c-flex vdb-c-h-16 vdb-c-w-16 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-[#12131A40]"
-            >
-              <InfoIcon />
-            </div>
-            <span>Create custom agents</span>
-          </button>
-
-          <Button variant="secondary" @click="$emit('explore-agents-click')">
-            <div
-              class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-font-normal"
-            >
-              <span> Explore agents </span>
-              <MenuIcon />
-            </div>
-          </Button>
+            <span class="vdb-c-font-semibold">
+              Here's how you can use Director:
+            </span>
+            <Button variant="secondary">
+              <div
+                class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+                @click="
+                  $emit(
+                    'view-all-videos-click',
+                    'https://www.youtube.com/playlist?list=PLhxAMFLSSK039xl1UgcZmoFLnb-qNRYQw',
+                  )
+                "
+              >
+                <div class="vdb-c-text-sm vdb-c-font-medium">
+                  Watch more demos
+                </div>
+                <ExternalLinkIcon />
+              </div>
+            </Button>
+          </div>
+        </div>
+        <div v-else>
+          <div
+            class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
+          >
+            <span> <b> Videos </b> in {{ collectionName }} </span>
+            <Button variant="secondary" @click="$emit('view-all-videos-click')">
+              <div
+                class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+              >
+                <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
+                <ChevronRightCircled />
+              </div>
+            </Button>
+          </div>
         </div>
       </div>
       <div
-        class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-content-start vdb-c-gap-16 vdb-c-overflow-y-auto lg:vdb-c-grid-cols-2"
+        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
       >
         <div
-          v-for="(agent, index) in agents.slice(0, 2)"
-          :key="index"
-          class="vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-roy hover:vdb-c-bg-gray-100"
-          @click="$emit('agent-click', agent)"
+          v-for="(item, index) in videos"
+          :key="`post-${item.id}`"
+          class="vdb-c-col-span-12 sm:vdb-c-col-span-6 md:vdb-c-col-span-4 lg:vdb-c-col-span-3"
+          @click="$emit('video-click', item)"
         >
-          <div
-            class="flex items-center justify-center vdb-c-rounded-full vdb-c-px-20 vdb-c-py-24"
-          >
-            <div
-              class="vdb-c-flex vdb-c-h-34 vdb-c-w-34 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-orange-100"
-            >
-              <AtIcon />
-            </div>
-          </div>
-          <div
-            class="vdb-c-flex vdb-c-flex-col vdb-c-gap-4 vdb-c-border-l vdb-c-border-roy vdb-c-px-16 vdb-c-py-10"
-          >
-            <h4 class="vdb-c-font-semibold vdb-c-text-kilvish-900">
-              <span
-                class="vdb-c-text-kivlish-900 vdb-c-text-base vdb-c-font-bold sm:vdb-c-text-lg"
-                >{{ agent.name }}</span
-              >
-            </h4>
-            <p class="vdb-c-text-sm vdb-c-text-vdb-darkishgrey">
-              <span
-                class="vdb-c-line-clamp-2 vdb-c-min-h-[2.5em] vdb-c-text-xs vdb-c-font-normal vdb-c-text-vdb-darkishgrey sm:vdb-c-text-sm"
-                >{{ agent.description }}</span
-              >
-            </p>
-          </div>
+          <video-card
+            :item="item"
+            :border-b="true"
+            :index="index"
+            border-class="sm:vdb-c-hidden"
+            :variant="isFreshUser ? 'hide-title' : 'default'"
+          />
         </div>
       </div>
     </div>
@@ -208,13 +212,19 @@
 <script setup>
 import { computed, ref, watch } from "vue";
 
+import VideoCard from "../../collection/VideoCard.vue";
+
 import Button from "../../buttons/Button.vue";
+import WithPopper from "../../atoms/WithPopper.vue";
 
 import QuestionMark from "../../icons/QuestionMark.vue";
+import ChevronRightCircled from "../../icons/ChevronRightCircled.vue";
+import ExternalLinkIcon from "../../icons/ExternalLink.vue";
 import InfoIcon from "../../icons/Info.vue";
 import CrossIcon from "../../icons/Cross.vue";
 import AtIcon from "../../icons/AtIcon.vue";
 import MenuIcon from "../../icons/Menu.vue";
+import StarIcon from "../../icons/Star.vue";
 
 const props = defineProps({
   agents: {
@@ -233,10 +243,25 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  isFreshUser: {
+    type: Boolean,
+    default: true,
+  },
+  collectionVideos: {
+    type: Array,
+    default: null,
+  },
 });
 
 const collectionName = computed(() => props.activeCollectionData?.name);
 const isOnboardingMessageVisible = ref(false);
+
+const videos = computed(() => {
+  if (props.collectionVideos === null) {
+    return [];
+  }
+  return props.collectionVideos;
+});
 
 watch(
   () => props.showOnboardingMessage,
@@ -250,7 +275,13 @@ const hideOnboardingMessage = () => {
   isOnboardingMessageVisible.value = false;
 };
 
-defineEmits(["query-card-click", "agent-click", "explore-agents-click"]);
+defineEmits([
+  "query-card-click",
+  "agent-click",
+  "explore-agents-click",
+  "video-click",
+  "view-all-videos-click",
+]);
 </script>
 
 <style scoped>

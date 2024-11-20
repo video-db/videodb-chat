@@ -18,7 +18,7 @@
         <img
           :src="image.url"
           :alt="'Generated image'"
-          class="vdb-c-h-auto vdb-c-w-1/2 vdb-c-rounded-lg"
+          class="vdb-c-h-auto vdb-c-w-4/5 vdb-c-max-w-[400px] vdb-c-rounded-lg sm:vdb-c-w-3/4 md:vdb-c-w-1/2"
         />
       </div>
       <div

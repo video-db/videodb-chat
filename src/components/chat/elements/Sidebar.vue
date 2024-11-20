@@ -26,7 +26,8 @@
       variant="primary"
       class="vdb-c-px-10 vdb-c-py-12"
       :class="{
-        'vdb-c-pointer-events-none vdb-c-opacity-20': status === 'inactive',
+        'vdb-c-pointer-events-none vdb-c-opacity-20':
+          newSessionButtonStatus !== 'active',
       }"
       @click="
         $emit('create-new-session');
@@ -71,7 +72,8 @@
         </button>
         <div
           v-if="status !== 'inactive' && showExploreAgents"
-          class="vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-px-8 vdb-c-py-4"
+          class="vdb-c-overflow-y-scroll vdb-c-rounded-lg vdb-c-px-8 vdb-c-py-4"
+          style="scrollbar-gutter: stable"
         >
           <template v-for="(agent, index) in agents" :key="index">
             <div
@@ -230,19 +232,20 @@
       </div>
     </div>
 
-    <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col vdb-c-gap-16">
+    <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col">
       <a
         v-for="(link, index) in config.links"
         :key="index"
-        class="vdb-c-mx-8 vdb-c-my-12 vdb-c-pl-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey hover:vdb-c-text-black hover:vdb-c-no-underline"
+        class="vdb-c-mx-8 vdb-c-my-10 vdb-c-flex vdb-c-items-center vdb-c-gap-12 vdb-c-pl-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey hover:vdb-c-text-black hover:vdb-c-no-underline"
         :href="link.href"
         :target="link.target || '_blank'"
         rel="noopener noreferrer"
       >
-        {{ link.text }}
+        <span> {{ link.text }} </span>
+        <component v-if="link.icon" :is="link.icon" />
       </a>
       <Button
-        class="vdb-c-w-full"
+        class="vdb-c-mt-16 vdb-c-w-full"
         variant="tertiary"
         :class="{
           'vdb-c-pointer-events-none vdb-c-opacity-20': status === 'inactive',
@@ -320,6 +323,10 @@ const props = defineProps({
     type: String,
     default: "active",
   },
+  newSessionButtonStatus: {
+    type: String,
+    default: "active",
+  },
   config: {
     type: Object,
     required: true,
@@ -350,7 +357,7 @@ const props = defineProps({
   },
 });
 
-const showExploreAgents = ref(false);
+const showExploreAgents = ref(true);
 const showSessions = ref(true);
 const showCollections = ref(false);
 const isExploreAgentsFocused = ref(false);

@@ -3,10 +3,20 @@
     class="video-card vdb-c-flex vdb-c-h-full vdb-c-cursor-pointer vdb-c-flex-col vdb-c-rounded-lg vdb-c-bg-kilvish-200 vdb-c-p-6"
   >
     <div
-      class="vdb-c-mb-14 vdb-c-flex vdb-c-flex-col sm:vdb-c-block sm:vdb-c-flex-row"
+      :class="[
+        'vdb-c-flex vdb-c-flex-col sm:vdb-c-block sm:vdb-c-flex-row',
+        {
+          'vdb-c-mb-14': variant === 'default',
+        },
+      ]"
     >
       <div
-        class="sm:vdb-c-min-w-auto sm:vdb-c-min-w-0 vdb-c-mb-8 vdb-c-w-auto vdb-c-min-w-96 sm:vdb-c-mb-16 sm:vdb-c-mr-24 sm:vdb-c-w-full"
+        :class="[
+          'sm:vdb-c-min-w-auto sm:vdb-c-min-w-0 vdb-c-w-auto vdb-c-min-w-96 sm:vdb-c-mr-24 sm:vdb-c-w-full',
+          {
+            'vdb-c-mb-8 sm:vdb-c-mb-16': variant === 'default',
+          },
+        ]"
       >
         <div
           class="vid-pb vdb-c-relative vdb-c-overflow-hidden vdb-c-rounded-[7px]"
@@ -31,7 +41,8 @@
         </div>
       </div>
       <div
-        class="fade-on-hover vdb-c-text-kilvish-900 vdb-c-flex vdb-c-flex-col vdb-c-justify-center"
+        v-if="variant === 'default'"
+        class="fade-on-hover vdb-c-flex vdb-c-flex-col vdb-c-justify-center vdb-c-text-kilvish-900"
       >
         <p
           class="text-elip vdb-c-mb-8 vdb-c-line-clamp-2 vdb-c-h-[2.5em] vdb-c-whitespace-normal vdb-c-text-xs vdb-c-font-medium"
@@ -46,6 +57,7 @@
 <script>
 import PlayIcon from "../icons/play.vue";
 import DefaultThumbnail from "../assets/DefaultThumbnail.vue";
+import { watch } from "vue";
 
 export default {
   name: "VideoCard",
@@ -61,6 +73,10 @@ export default {
     index: {
       type: Number,
       default: 0,
+    },
+    variant: {
+      type: String,
+      default: "default",
     },
   },
   methods: {
