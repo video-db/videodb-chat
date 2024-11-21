@@ -10,7 +10,6 @@
       <!-- Collapsible Sidebar -->
       <Sidebar
         ref="sidebarRef"
-        class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
         :status="
           configStatus !== null && isSetupComplete ? 'active' : 'inactive'
         "

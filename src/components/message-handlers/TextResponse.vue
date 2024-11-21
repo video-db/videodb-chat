@@ -5,9 +5,11 @@
   >
     <LoadingMessage
       v-if="!isUser"
-      :status="content.status"
+      :status="
+        isMainReponse && message.status === 'error' ? 'error' : content.status
+      "
       :message="content?.status_message"
-      :is-focused="content.agent_name === 'assistant'"
+      :is-focused="isMainReponse"
       :is-last-conv="isLastConv"
     />
 
@@ -45,10 +47,11 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { marked } from "marked";
 import markedKatex from "marked-katex-extension";
 import LoadingMessage from "./elements/LoadingMessage.vue";
+import { useVideoDBChat } from "../../context.js";
 const options = {
   nonStandard: true,
 };
@@ -70,14 +73,29 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  convId: {
+    type: String,
+    default: "",
+  },
+  msgId: {
+    type: String,
+    default: "",
+  },
 });
 
 const text = computed(() => props.content?.text || "");
+const { conversations } = useVideoDBChat();
 
 const getMarkedMsg = (msg) => {
   marked.use(markedKatex(options));
   return marked.parse(msg);
 };
+
+const isMainReponse = computed(() => props.content.agent_name === "assistant");
+
+const message = computed(() => {
+  return conversations?.[props.convId]?.[props.msgId];
+});
 </script>
 
 <style>

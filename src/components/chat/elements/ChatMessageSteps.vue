@@ -88,7 +88,7 @@ const props = defineProps({
   },
   status: {
     type: String,
-    default: "progress"
+    default: "progress",
   },
   expanded: {
     type: Boolean,
@@ -105,14 +105,6 @@ watch(
       isExpanded.value = false;
     }
   },
-);
-
-watch(
-  () => props.status,
-  (newValue) => {
-    console.log("Changed the status", newValue);
-  },
-  { immediate: true },
 );
 
 const toggleExpand = () => {

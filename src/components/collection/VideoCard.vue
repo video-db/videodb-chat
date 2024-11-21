@@ -21,12 +21,10 @@
         <div v-if="item.stream_url">
           <div>
             <VideoDBPlayer
-              :class="isFullScreen ? 'vdb-c-h-screen vdb-c-w-screen' : ''"
               :stream-url="item.stream_url"
               :default-controls="false"
               :default-overlay="false"
               class="vdb-c-overflow-hidden vdb-c-rounded-12"
-              @fullScreenChange="handleFullScreenChange"
             >
               <template #overlay>
                 <BigCenterButton
