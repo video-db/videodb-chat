@@ -20,7 +20,7 @@
       >
         <CheckIcon
           :class="{ bounce: isLastConv }"
-          :fill="isFocused ? '#53B745' : '#EC5B16'"
+          :fill="isFocused ? '#000000' : '#EC5B16'"
         />
         <span> {{ message || "Here is your response" }} </span>
       </span>
@@ -32,10 +32,10 @@
         ]"
         key="error"
       >
-        <CrossIcon
+        <CheckIcon
           v-if="isFocused"
           :class="{ shake: isLastConv }"
-          fill="#E2462C"
+          fill="#000000"
         />
         <RedExclamation v-else :class="{ shake: isLastConv }" />
         <span> {{ message || "An error occurred" }} </span>
