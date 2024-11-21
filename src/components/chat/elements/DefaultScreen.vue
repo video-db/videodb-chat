@@ -38,34 +38,40 @@
           <div
             class="vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6 vdb-c-text-pam"
           >
-            <div class="vdb-c-font-semibold">
-              Welcome to Director: a video-first AI agent framework powered by
+            <div class="vdb-c-font-semibold">🎉 Welcome to The Director!</div>
+            <div>
+              Your AI-powered agent framework, built on
               <a
                 href="https://www.videodb.io"
                 target="_blank"
                 class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
               >
-                VideoDB </a
-              >.
+                VideoDB,
+              </a>
+              is ready to revolutionize how you work with videos and audio.
             </div>
             <div>
-              Feel free to explore our agents, or
+              Explore pre-built agents or
               <a
-                href="https://www.videodb.io"
+                href="https://github.com/video-db/Director?tab=readme-ov-file#-creating-a-new-agent"
                 target="_blank"
                 class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
               >
-                create a custom agent
+                create custom ones
               </a>
-              that suits your workflows. From upload to publish - Director can
-              get it all done right here! Let us know how you like it on our
+              tailored to your workflows. From upload to publish, The Director
+              handles it all—quickly and effortlessly.
+            </div>
+            <div>
+              We'd love to hear your thoughts! Join our community and share your
+              experience on
               <a
                 href="https://discord.com/invite/py9P639jGz"
                 target="_blank"
                 class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
               >
-                Discord.
-              </a>
+                Discord </a
+              >.
             </div>
           </div>
         </div>
@@ -173,6 +179,7 @@
         </div>
         <div v-else>
           <div
+            v-if="collectionName"
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
             <span> <b> Videos </b> in {{ collectionName }} </span>
@@ -185,24 +192,42 @@
               </div>
             </Button>
           </div>
+          <div v-else>
+            <div
+              class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-full vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
+            ></div>
+          </div>
         </div>
       </div>
       <div
+        v-if="previewVideos"
         class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
       >
         <div
           v-for="(item, index) in previewVideos"
           :key="`post-${item.id}`"
           class="vdb-c-col-span-12 sm:vdb-c-col-span-6 md:vdb-c-col-span-4 lg:vdb-c-col-span-3"
-          @click="$emit('video-click', item)"
         >
           <video-card
+            border-class="sm:vdb-c-hidden"
             :item="item"
             :border-b="true"
             :index="index"
-            border-class="sm:vdb-c-hidden"
             :variant="showDemoVideos ? 'hide-title' : 'default'"
+            @video-click="$emit('video-click', item)"
           />
+        </div>
+      </div>
+      <div
+        v-else
+        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
+      >
+        <div
+          v-for="(item, index) in [1, 2, 3, 4]"
+          :key="`post-loading-${index}`"
+          class="vdb-c-col-span-12 sm:vdb-c-col-span-6 md:vdb-c-col-span-4 lg:vdb-c-col-span-3"
+        >
+          <video-card-loader :index="index" />
         </div>
       </div>
     </div>
@@ -213,6 +238,7 @@
 import { computed, ref, watch } from "vue";
 
 import VideoCard from "../../collection/VideoCard.vue";
+import VideoCardLoader from "../../collection/VideoCardLoader.vue";
 
 import Button from "../../buttons/Button.vue";
 

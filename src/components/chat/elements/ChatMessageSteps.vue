@@ -45,13 +45,17 @@
                 :class="
                   status === 'progress'
                     ? 'vdb-c-animate-pulse vdb-c-bg-orange-500'
-                    : 'vdb-c-bg-[#0AA910]'
+                    : status === 'success'
+                      ? 'vdb-c-bg-[#0AA910]'
+                      : 'vdb-c-bg-[#0075FF]'
                 "
               ></div>
             </span>
             <span
               class="vdb-c-flex-grow"
               :class="{
+                'vdb-c-font-semibold vdb-c-text-[#0075FF]':
+                  status !== 'success' && index === displaySteps.length - 1,
                 'vdb-c-font-semibold vdb-c-text-green':
                   status === 'success' && index === displaySteps.length - 1,
                 'vdb-c-font-medium vdb-c-text-kilvish-800': !(
@@ -84,8 +88,7 @@ const props = defineProps({
   },
   status: {
     type: String,
-    default: "progress",
-    validator: (value) => ["progress", "success"].includes(value),
+    default: "progress"
   },
   expanded: {
     type: Boolean,
@@ -102,6 +105,14 @@ watch(
       isExpanded.value = false;
     }
   },
+);
+
+watch(
+  () => props.status,
+  (newValue) => {
+    console.log("Changed the status", newValue);
+  },
+  { immediate: true },
 );
 
 const toggleExpand = () => {

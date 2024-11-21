@@ -359,7 +359,7 @@ const props = defineProps({
 
 const showExploreAgents = ref(true);
 const showSessions = ref(true);
-const showCollections = ref(false);
+const showCollections = ref(true);
 const isExploreAgentsFocused = ref(false);
 const exploreAgentsTimeout = ref(null);
 const userClickedSessions = ref(false);

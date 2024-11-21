@@ -8,7 +8,7 @@
   >
     <div class="vdb-c-flex vdb-c-h-full vdb-c-w-full">
       <!-- Collapsible Sidebar -->
-      <sidebar
+      <Sidebar
         ref="sidebarRef"
         class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
         :status="
@@ -24,7 +24,7 @@
           Object.keys(conversations).length === 0 && !showCollectionView
         "
         :initial-sessions-open="!isFreshUser"
-        :initial-collections-open="isFreshUser"
+        :initial-collections-open="true"
         :selected-session="sessionId"
         :add-dummy-session="Object.keys(conversations).length === 0"
         :selected-collection="collectionId"
@@ -110,8 +110,8 @@
                     isFreshUser ||
                     (activeCollectionData &&
                       activeCollectionVideos?.length === 0)
-                      ? defaultScreenConfig.demoVideos.slice(0, 4)
-                      : activeCollectionVideos.slice(0, 4)
+                      ? defaultScreenConfig.demoVideos?.slice(0, 4)
+                      : activeCollectionVideos?.slice(0, 4)
                   "
                   @query-card-click="handleQueryCardClick"
                   @agent-click="handleTagAgent"
@@ -385,61 +385,64 @@ const chatLoading = computed(() =>
   ),
 );
 const dynamicActionCards = computed(() => {
-  return (
-    props.defaultScreenConfig.actionCardQueries ||
-    (isFreshUser.value
-      ? [
-          {
-            component: UploadVideoQueryCard,
-            content: "Upload a video to this collection",
-            type: "cta",
-            action: "chat",
-            icon: FileUploadIcon,
-          },
-          {
-            content: "What are agents and How do they work ?",
-            type: "primary",
-            action: "chat",
-          },
-          {
-            content:
-              "How will I be charged for using VideoDB's integration on Director?",
-            type: "primary",
-            action: "chat",
-          },
-          {
-            content:
-              "I'm not sure what Director is about.Help me figure out what you can do.",
-            type: "muted",
-            action: "chat",
-          },
-        ]
-      : [
-          {
-            content: "View all videos in this collection",
-            type: "cta",
-            action: "show-collection",
-            icon: EyeIcon,
-          },
-          {
-            content:
-              "Upload this video [https://www.youtube.com/watch?v=FgrO9ADPZSA] and summarise it.",
-            isDemo: true,
-            type: "primary",
-            action: "chat",
-          },
-          {
-            content: "Categorise the videos in this collection by title",
-            type: "primary",
-            action: "chat",
-          },
-          {
-            content: "I'm not sure. Help me figure out what you can do",
-            type: "muted",
-            action: "chat",
-          },
-        ])
-  );
+  return props.defaultScreenConfig.actionCardQueries ||
+    (!isFreshUser &&
+      activeCollectionData.value &&
+      activeCollectionVideos.value.length > 0)
+    ? [
+        {
+          component: UploadVideoQueryCard,
+          isDemo: isFreshUser.value,
+          content:
+            "Upload [this video](https://www.youtube.com/watch?v=FgrO9ADPZSA) and generate a bullet point summary.",
+          type: "cta",
+          action: "chat",
+          icon: FileUploadIcon,
+        },
+        {
+          content: "What are the pre-built agents I can use right now?",
+          type: "primary",
+          action: "chat",
+        },
+        {
+          content:
+            "Can you break down the costs of using The Director with VideoDB’s infrastructure?",
+          type: "primary",
+          action: "chat",
+        },
+        {
+          content: "Categorize all the videos in this collection.",
+          type: "primary",
+          action: "chat",
+        },
+      ]
+    : [
+        {
+          component: UploadVideoQueryCard,
+          isDemo: isFreshUser.value,
+          content:
+            "Upload [this video](https://www.youtube.com/watch?v=FgrO9ADPZSA) and generate a bullet point summary.",
+          type: "cta",
+          action: "chat",
+          icon: FileUploadIcon,
+        },
+        {
+          content: "What are the pre-built agents I can use right now?",
+          type: "primary",
+          action: "chat",
+        },
+        {
+          content:
+            "Can you break down the costs of using The Director with VideoDB’s infrastructure?",
+          type: "primary",
+          action: "chat",
+        },
+        {
+          content: "Show me how search agent work with VideoDB SDK?",
+          type: "primary",
+          action: "chat",
+        },
+      ];
 });
 
 const scrollToBottom = () => {
