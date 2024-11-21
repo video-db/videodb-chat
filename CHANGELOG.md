@@ -1,5 +1,15 @@
 # Changelog
 
+### [0.0.7]() - 2024-11-21
+
+
+### Added
+- `<DefaultScreen/>`
+    - UX improvements
+    - Collection Preview
+    - Query Card improvments
+- `<VideoCard/>` to support inline video players
+
 ### [0.0.6]()
 
 ### Fixed
