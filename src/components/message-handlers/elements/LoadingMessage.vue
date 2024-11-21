@@ -20,23 +20,22 @@
       >
         <CheckIcon
           :class="{ bounce: isLastConv }"
-          :fill="isFocused ? '#000000' : '#EC5B16'"
+          :fill="isFocused ? '#53B745' : '#EC5B16'"
         />
         <span> {{ message || "Here is your response" }} </span>
       </span>
       <span
         v-else-if="status === 'error'"
         :class="[
-          'vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-text-primary',
-          { 'vdb-c-font-semibold': isFocused },
+          'vdb-c-flex vdb-c-items-center vdb-c-gap-8',
+          {
+            'vdb-c-font-semibold vdb-c-text-[#0075FF]': isFocused,
+            'vdb-c-text-primary': !isFocused,
+          },
         ]"
         key="error"
       >
-        <CheckIcon
-          v-if="isFocused"
-          :class="{ shake: isLastConv }"
-          fill="#000000"
-        />
+        <Shape1 v-if="isFocused" />
         <RedExclamation v-else :class="{ shake: isLastConv }" />
         <span> {{ message || "An error occurred" }} </span>
       </span>
@@ -48,7 +47,7 @@
 import { defineProps, ref, watch } from "vue";
 
 import CheckIcon from "../../icons/Check.vue";
-import CrossIcon from "../../icons/CrossCircled.vue";
+import Shape1 from "../../icons/Shape1.vue";
 import RedExclamation from "../../icons/RedExclamation.vue";
 
 const props = defineProps({

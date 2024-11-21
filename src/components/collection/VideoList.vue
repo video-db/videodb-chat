@@ -7,13 +7,13 @@
         v-for="(item, index) in paginatedVideos"
         :key="`post-${item.id}`"
         class="vdb-c-col-span-12 sm:vdb-c-col-span-6 md:vdb-c-col-span-4 lg:vdb-c-col-span-3"
-        @click="$emit('video-click', item)"
       >
         <video-card
           :item="item"
           :border-b="true"
           :index="index"
           border-class="sm:vdb-c-hidden"
+          @video-click="$emit('video-click', $event)"
         />
       </div>
     </div>

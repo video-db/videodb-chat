@@ -13,7 +13,12 @@
         v-if="isUser"
         class="vdb-c-w-full vdb-c-transform vdb-c-transition-all"
       >
-        <text-response :content="message.content[0]" :is-user="true" />
+        <text-response
+          :content="message.content[0]"
+          :is-user="true"
+          :conv-id="message.conv_id"
+          :msg-id="message.msg_id"
+        />
       </div>
 
       <div v-else-if="isAssistant">
@@ -21,7 +26,7 @@
           <div class="vdb-c-py-14">
             <ChatMessageSteps
               :steps="message.actions"
-              :status="message.status"
+              :status="finalStatus"
               :expanded="isLastConv && message.status !== 'success'"
             />
           </div>
@@ -34,6 +39,8 @@
               :content="content"
               :is-user="isUser"
               :search-term="searchTerm"
+              :conv-id="message.conv_id"
+              :msg-id="message.msg_id"
             />
           </div>
         </div>
@@ -43,7 +50,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 import ChatMessageSteps from "./elements/ChatMessageSteps.vue";
 
@@ -89,6 +96,16 @@ const { messageHandlers } = useVideoDBChat();
 const isUser = computed(() => props.message.msg_type === "input");
 const isAssistant = computed(() => props.message.msg_type === "output");
 const isSystem = computed(() => props.message.msg_type === "system");
+
+const finalStatus = computed(() => {
+  if (props.message.status === "error") {
+    return "error";
+  }
+  const assistantContent = props.message?.content?.find(
+    (c) => c.agent_name === "assistant",
+  );
+  return assistantContent?.status || props.message.status;
+});
 </script>
 
 <style>
