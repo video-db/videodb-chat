@@ -143,10 +143,10 @@
     <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-12">
       <div
         class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"
-        v-if="!isFreshUser"
+        v-if="!showDemoVideos"
       ></div>
       <div class="vdb-c-text-xl vdb-c-font-normal vdb-c-text-vdb-darkishgrey">
-        <div v-if="isFreshUser">
+        <div v-if="showDemoVideos">
           <div
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
@@ -191,7 +191,7 @@
         class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
       >
         <div
-          v-for="(item, index) in videos"
+          v-for="(item, index) in previewVideos"
           :key="`post-${item.id}`"
           class="vdb-c-col-span-12 sm:vdb-c-col-span-6 md:vdb-c-col-span-4 lg:vdb-c-col-span-3"
           @click="$emit('video-click', item)"
@@ -201,7 +201,7 @@
             :border-b="true"
             :index="index"
             border-class="sm:vdb-c-hidden"
-            :variant="isFreshUser ? 'hide-title' : 'default'"
+            :variant="showDemoVideos ? 'hide-title' : 'default'"
           />
         </div>
       </div>
@@ -215,25 +215,17 @@ import { computed, ref, watch } from "vue";
 import VideoCard from "../../collection/VideoCard.vue";
 
 import Button from "../../buttons/Button.vue";
-import WithPopper from "../../atoms/WithPopper.vue";
 
 import QuestionMark from "../../icons/QuestionMark.vue";
 import ChevronRightCircled from "../../icons/ChevronRightCircled.vue";
 import ExternalLinkIcon from "../../icons/ExternalLink.vue";
-import InfoIcon from "../../icons/Info.vue";
 import CrossIcon from "../../icons/Cross.vue";
-import AtIcon from "../../icons/AtIcon.vue";
-import MenuIcon from "../../icons/Menu.vue";
 import StarIcon from "../../icons/Star.vue";
 
 const props = defineProps({
   agents: {
     type: Array,
     default: () => [],
-  },
-  activeCollectionData: {
-    type: Object,
-    default: () => null,
   },
   actionCardQueries: {
     type: Array,
@@ -243,9 +235,17 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  isFreshUser: {
+  showDemoVideos: {
     type: Boolean,
     default: true,
+  },
+  previewVideos: {
+    type: Array,
+    default: null,
+  },
+  collectionData: {
+    type: Object,
+    default: () => null,
   },
   collectionVideos: {
     type: Array,
@@ -253,15 +253,8 @@ const props = defineProps({
   },
 });
 
-const collectionName = computed(() => props.activeCollectionData?.name);
+const collectionName = computed(() => props.collectionData?.name);
 const isOnboardingMessageVisible = ref(false);
-
-const videos = computed(() => {
-  if (props.collectionVideos === null) {
-    return [];
-  }
-  return props.collectionVideos;
-});
 
 watch(
   () => props.showOnboardingMessage,

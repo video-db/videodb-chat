@@ -99,8 +99,17 @@
                   :show-onboarding-message="isFreshUser"
                   :is-fresh-user="isFreshUser"
                   :action-card-queries="dynamicActionCards"
-                  :collection-videos="
-                    isFreshUser
+                  :show-demo-videos="
+                    isFreshUser ||
+                    (activeCollectionData &&
+                      activeCollectionVideos?.length === 0)
+                  "
+                  :collection-data="activeCollectionData"
+                  :collection-videos="activeCollectionVideos"
+                  :preview-videos="
+                    isFreshUser ||
+                    (activeCollectionData &&
+                      activeCollectionVideos?.length === 0)
                       ? defaultScreenConfig.demoVideos.slice(0, 4)
                       : activeCollectionVideos.slice(0, 4)
                   "
