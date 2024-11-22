@@ -23,11 +23,17 @@
             :class="isFullScreen ? 'vdb-c-h-screen vdb-c-w-screen' : ''"
             :stream-url="content.video.stream_url"
             :default-controls="false"
+            :default-overlay="false"
             @fullScreenChange="handleFullScreenChange"
           >
+            <template #overlay>
+              <BigCenterButton
+                class="vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2 vdb-c-h-32 vdb-c-w-32 md:vdb-c-h-48 md:vdb-c-w-48"
+              />
+            </template>
             <template #controls>
               <div class="vdb-p-pt-0 vdb-c-p-20">
-                <div class="sm:vdb-p-mx-8 vdb-c-mb-12">
+                <div class="sm:vdb-p-mx-8 vdb-c-mb-8 md:vdb-c-mb-12">
                   <ProgressBar :stream-url="content.video.stream_url" />
                 </div>
                 <div class="vdb-c-flex vdb-c-w-full vdb-c-justify-between">
@@ -39,11 +45,7 @@
                     <TimeCode />
                   </div>
 
-                  <div
-                    class="vdb-c-flex vdb-c-w-auto vdb-c-flex-row vdb-c-items-center"
-                  >
-                    <FullScreenButton />
-                  </div>
+                  <FullScreenButton class="" />
                 </div>
               </div>
             </template>
@@ -74,6 +76,7 @@ import { ref } from "vue";
 import {
   VideoDBPlayer,
   TimeCode,
+  BigCenterButton,
   VolumeControlButton,
   PlayPauseButton,
   FullScreenButton,

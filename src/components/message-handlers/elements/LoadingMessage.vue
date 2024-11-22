@@ -27,17 +27,20 @@
       <span
         v-else-if="status === 'error'"
         :class="[
-          'vdb-c-flex vdb-c-items-center vdb-c-gap-8',
+          'vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-text-primary',
           {
-            'vdb-c-font-semibold vdb-c-text-[#0075FF]': isFocused,
-            'vdb-c-text-primary': !isFocused,
+            'vdb-c-font-semibold': isFocused,
           },
         ]"
         key="error"
       >
-        <Shape1 v-if="isFocused" />
-        <RedExclamation v-else :class="{ shake: isLastConv }" />
         <span> {{ message || "An error occurred" }} </span>
+      </span>
+      <span v-else-if="status === 'unknown'">
+        <Shape1 />
+        <span class="vdb-c-font-semibold">
+          {{ message || "Here is your response" }}
+        </span>
       </span>
     </transition>
   </div>
@@ -78,6 +81,22 @@ watch(
       messageKey.value++;
     }
   },
+);
+
+watch(
+  () => props.status,
+  (newStatus) => {
+    console.log("Status changed:", newStatus, "Message:", props.message);
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.isFocused,
+  (newFocused) => {
+    console.log("Focus changed:", newFocused, "Message:", props.message);
+  },
+  { immediate: true },
 );
 </script>
 
