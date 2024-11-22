@@ -1,5 +1,13 @@
 # Changelog
 
+
+### [0.0.8]() - 2024-11-22
+
+### Changed
+- Update `@videodb/player-vue` to `~0.0.3`
+- Responsiveness improvments 
+
+
 ### [0.0.7]() - 2024-11-21
 
 
