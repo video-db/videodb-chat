@@ -36,7 +36,7 @@
             <CrossIcon />
           </div>
           <div
-            class="vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6 vdb-c-text-pam"
+            class="vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6 vdb-c-text-xs vdb-c-text-pam md:vdb-c-text-base"
           >
             <div class="vdb-c-font-semibold">🎉 Welcome to The Director!</div>
             <div>
@@ -102,10 +102,10 @@
         >
           <div
             v-if="query.isDemo"
-            class="vdb-c-absolute vdb-c-right-12 vdb-c-flex vdb-c-flex-row vdb-c-items-center vdb-c-rounded-4 vdb-c-bg-orange-900 vdb-c-px-6 vdb-c-py-3 vdb-c-text-xs vdb-c-font-semibold vdb-c-uppercase vdb-c-text-white"
+            class="vdb-c-absolute vdb-c-right-4 vdb-c-flex vdb-c-flex-row vdb-c-items-center vdb-c-rounded-4 vdb-c-bg-orange-900 vdb-c-px-6 vdb-c-py-3 vdb-c-text-[10px] vdb-c-font-semibold vdb-c-uppercase vdb-c-text-white md:vdb-c-right-12 md:vdb-c-text-xs"
           >
             <span> <StarIcon /> </span>
-            <span class="vdb-c-ml-4"> DEMO </span>
+            <span class="vdb-c-ml-4 vdb-c-hidden md:vdb-c-block"> DEMO </span>
           </div>
           <div
             :class="[
@@ -130,7 +130,7 @@
             />
           </div>
           <p
-            class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-sm vdb-c-font-semibold lg:vdb-c-text-base"
+            class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-xs vdb-c-font-semibold md:vdb-c-text-sm lg:vdb-c-text-base"
             :class="[
               {
                 'vdb-c-text-pam': query.type === 'muted',
@@ -151,7 +151,9 @@
         class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"
         v-if="!showDemoVideos"
       ></div>
-      <div class="vdb-c-text-xl vdb-c-font-normal vdb-c-text-vdb-darkishgrey">
+      <div
+        class="vdb-c-text-base vdb-c-font-normal vdb-c-text-vdb-darkishgrey md:vdb-c-text-xl"
+      >
         <div v-if="showDemoVideos">
           <div
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
@@ -159,7 +161,7 @@
             <span class="vdb-c-font-semibold">
               Here's how you can use Director:
             </span>
-            <Button variant="secondary">
+            <Button variant="secondary" class="vdb-c-hidden md:vdb-c-block">
               <div
                 class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
                 @click="
@@ -183,7 +185,11 @@
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
             <span> <b> Videos </b> in {{ collectionName }} </span>
-            <Button variant="secondary" @click="$emit('view-all-videos-click')">
+            <Button
+              variant="secondary"
+              @click="$emit('view-all-videos-click')"
+              class="vdb-c-hidden md:vdb-c-block"
+            >
               <div
                 class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
               >
@@ -216,6 +222,35 @@
             :variant="showDemoVideos ? 'hide-title' : 'default'"
             @video-click="$emit('video-click', item)"
           />
+        </div>
+        <div
+          class="vdb-c-col-span-12 vdb-c-block sm:vdb-c-col-span-6 md:vdb-c-col-span-4 md:vdb-c-hidden lg:vdb-c-col-span-3"
+        >
+          <Button variant="secondary" class="vdb-c-block">
+            <div
+              v-if="showDemoVideos"
+              class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+              @click="
+                $emit(
+                  'view-all-videos-click',
+                  'https://www.youtube.com/playlist?list=PLhxAMFLSSK039xl1UgcZmoFLnb-qNRYQw',
+                )
+              "
+            >
+              <div class="vdb-c-text-sm vdb-c-font-medium">
+                Watch more demos
+              </div>
+              <ExternalLinkIcon />
+            </div>
+            <div
+              v-else
+              class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+              @click="$emit('view-all-videos-click')"
+            >
+              <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
+              <ChevronRightCircled />
+            </div>
+          </Button>
         </div>
       </div>
       <div

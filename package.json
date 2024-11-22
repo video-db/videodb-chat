@@ -67,7 +67,7 @@
 		"vue-tsc": "^2.0.29"
 	},
 	"dependencies": {
-		"@videodb/player-vue": "^0.0.2",
+		"@videodb/player-vue": "~0.0.3",
 		"dayjs": "^1.11.13",
 		"katex": "^0.16.11",
 		"marked": "^4.2.5",

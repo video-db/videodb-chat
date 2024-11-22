@@ -367,14 +367,16 @@ const isSetupComplete = computed(() => {
 });
 
 const collectionName = computed(() => activeCollectionData.value?.name);
-const isFreshUser = computed(() => {
-  if (collections.value && activeCollectionVideos.value) {
-    return (
-      collections.value.length < 2 && activeCollectionVideos.value.length < 1
-    );
-  }
-  return false;
-});
+// const isFreshUser = computed(() => {
+//   if (collections.value && activeCollectionVideos.value) {
+//     return (
+//       collections.value.length < 2 && activeCollectionVideos.value.length < 1
+//     );
+//   }
+//   return false;
+// });
+
+const isFreshUser = ref(false);
 
 const chatLoading = computed(() =>
   Object.values(conversations).some((conv) =>

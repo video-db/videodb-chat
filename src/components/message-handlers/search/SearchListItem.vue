@@ -31,7 +31,7 @@
           >
             <template #overlay>
               <BigCenterButton
-                class="vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2"
+                class="vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2 vdb-c-w-48 vdb-c-h-48"
                 :style="{ height: '48px', width: '48px' }"
               />
             </template>
