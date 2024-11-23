@@ -54,18 +54,27 @@
             </div>
           </div>
           <div class="vdb-c-relative vdb-c-h-full vdb-c-flex-grow">
-            <input
-              ref="inputRef"
-              class="vdb-c-chat-input vdb-c-h-full vdb-c-w-full vdb-c-bg-white vdb-c-pl-16 vdb-c-pr-8 vdb-c-font-medium vdb-c-text-[#1D2736] vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
-              name="prompt"
-              :placeholder="placeholder"
-              autocomplete="off"
-              :value="chatInput"
-              @input="handleInput"
-              @focus="inputFocused = true"
-              @blur="handleBlur"
-              @keydown="handleKeyDown"
-            />
+            <textarea
+            ref="inputRef"
+            type="text"
+            class="vdb-c-chat-input vdb-c-h-full vdb-c-w-full vdb-c-bg-white vdb-c-pl-16 vdb-c-pr-8 vdb-c-font-medium vdb-c-text-[#1D2736] vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
+            name="prompt"
+            :placeholder="placeholder"
+            autocomplete="off"
+            :value="chatInput"
+            @input="handleInput"
+            @focus="inputFocused = true"
+            @blur="handleBlur"
+            @keydown="handleKeyDown"
+            style="
+              resize: none;
+              min-height: 40px;
+              max-height: 25vh;
+              box-sizing: border-box;
+              padding-top: 13px;
+            "
+          ></textarea>
+
           </div>
           <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-end">
             <button
@@ -215,6 +224,10 @@ const handleKeyDown = (e) => {
   } else if (e.key === "@") {
     agentStartIndex.value = e.target.selectionStart;
     showAgentList.value = true;
+  } else if(e.key ==="Enter" && !e.shiftKey){
+    handleSubmit(e);
+  }else if(e.shiftKey && e.key==="Enter"){
+    return;
   }
 };
 
@@ -241,7 +254,6 @@ const handleSubmit = (e) => {
   e.preventDefault();
   if (!showAgentList.value) {
     emit("on-submit", chatInput.value);
-    e.target.reset();
     chatInput.value = "";
     charCount.value = 0;
     resetTag();
