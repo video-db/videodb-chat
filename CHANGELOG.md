@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.9]() - 2024-11-27
+
+### Updated 
+- Bump `@videodb/player-vue` to `~0.0.4`
 
 ### [0.0.8]() - 2024-11-22
 
