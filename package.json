@@ -1,7 +1,7 @@
 {
 	"name": "@videodb/chat-vue",
 	"description": "Chat component for Director",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"author": "VideoDB",
 	"license": "Apache-2.0",
 	"private": false,
