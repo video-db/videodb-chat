@@ -35,3 +35,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+svg path {
+  color: currentColor;
+  fill: currentColor;
+}
+</style>

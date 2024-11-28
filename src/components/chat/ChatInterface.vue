@@ -115,6 +115,7 @@
                   @query-card-click="handleQueryCardClick"
                   @agent-click="handleTagAgent"
                   @video-click="handleVideoClick"
+                  @upload-button-click="showUploadDialog = true"
                   @explore-agents-click="handleExploreAgentsClick"
                   @view-all-videos-click="handleViewAllVideosClick"
                   class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
@@ -203,19 +204,20 @@
         </div>
       </div>
     </div>
+
+    <!-- Upload Dialog -->
+    <UploadModal
+      :show-upload-dialog="showUploadDialog"
+      :collections="collections"
+      :default-selected-collection-id="collectionId"  
+      @cancel-upload="showUploadDialog = false"
+      @upload="handleUpload"
+    />
   </section>
 </template>
 
 <script setup>
-import {
-  computed,
-  nextTick,
-  provide,
-  ref,
-  watch,
-  onMounted,
-  onUnmounted,
-} from "vue";
+import { computed, nextTick, provide, ref, watch } from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -228,6 +230,8 @@ import SetupScreen from "./elements/SetupScreen.vue";
 import Sidebar from "./elements/Sidebar.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 
+import UploadModal from "../modals/UploadModal.vue";
+
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
 import ImageHandler from "../message-handlers/ImageHandler.vue";
@@ -236,9 +240,9 @@ import TextResponse from "../message-handlers/TextResponse.vue";
 import VideoDBLogo from "../icons/VideoDBLogo.vue";
 import FileUploadIcon from "../icons/FileUpload.vue";
 import WarningExclamation from "../icons/WarningExclamation.vue";
-import EyeIcon from "../icons/Eye.vue";
 import ExternalLink from "../icons/ExternalLink.vue";
 import DirectorIcon from "../icons/Director.vue";
+import CrossIcon from "../icons/Cross.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -345,6 +349,7 @@ const {
   deleteSession,
   conversations,
   loadSession,
+  uploadMedia,
 } = useChatHook(props.chatHookConfig);
 
 const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
@@ -366,17 +371,23 @@ const isSetupComplete = computed(() => {
   );
 });
 
-const collectionName = computed(() => activeCollectionData.value?.name);
-// const isFreshUser = computed(() => {
-//   if (collections.value && activeCollectionVideos.value) {
-//     return (
-//       collections.value.length < 2 && activeCollectionVideos.value.length < 1
-//     );
-//   }
-//   return false;
-// });
+watch(
+  isSetupComplete,
+  (val) => {
+    console.log("isSetupComplete", val);
+  },
+  { immediate: true },
+);
 
-const isFreshUser = ref(false);
+const collectionName = computed(() => activeCollectionData.value?.name);
+const isFreshUser = computed(() => {
+  if (collections.value && activeCollectionVideos.value) {
+    return (
+      collections.value.length < 2 && activeCollectionVideos.value.length < 1
+    );
+  }
+  return false;
+});
 
 const chatLoading = computed(() =>
   Object.values(conversations).some((conv) =>
@@ -407,7 +418,7 @@ const dynamicActionCards = computed(() => {
         },
         {
           content:
-            "Can you break down the costs of using The Director with VideoDB’s infrastructure?",
+            "Can you break down the costs of using The Director with VideoDB's infrastructure?",
           type: "primary",
           action: "chat",
         },
@@ -434,7 +445,7 @@ const dynamicActionCards = computed(() => {
         },
         {
           content:
-            "Can you break down the costs of using The Director with VideoDB’s infrastructure?",
+            "Can you break down the costs of using The Director with VideoDB's infrastructure?",
           type: "primary",
           action: "chat",
         },
@@ -500,6 +511,14 @@ const confirmDeleteSession = () => {
   deleteSession(sessionToDelete.value);
   showDeleteDialog.value = false;
   sessionToDelete.value = null;
+};
+
+// --- Upload Dialog Handlers ---
+const showUploadDialog = ref(false);
+const handleUpload = async (uploadData) => {
+  showUploadDialog.value = false;
+  const res = await uploadMedia(uploadData);
+  const data = await res.json();
 };
 
 // --- Handle Default Screen Click Handlers ---
@@ -569,9 +588,12 @@ defineExpose({
   messageHandlers,
   addMessage,
   loadSession,
+  activeCollectionData,
+  activeCollectionVideos,
   createNewSession,
   setChatInput,
   registerMessageHandler,
+  uploadMedia,
 });
 
 provide("videodb-chat", {
@@ -581,8 +603,11 @@ provide("videodb-chat", {
   messageHandlers,
   addMessage,
   loadSession,
+  activeCollectionData,
+  activeCollectionVideos,
   setChatInput,
   registerMessageHandler,
+  uploadMedia,
 });
 </script>
 
