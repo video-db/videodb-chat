@@ -1,5 +1,11 @@
 # Changelog
 
+### [0.0.10]() - 2024-11-28
+
+### Added
+- Upload Modal
+
+
 ## [0.0.9]() - 2024-11-27
 
 ### Updated 
