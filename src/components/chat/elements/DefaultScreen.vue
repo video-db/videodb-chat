@@ -7,18 +7,34 @@
         class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-xl vdb-c-leading-tight sm:vdb-c-text-3xl md:vdb-c-text-5xl"
         :style="{ lineHeight: '1.2' }"
       >
-        <span
+        <div
           v-if="collectionName"
-          class="vdb-c-inline-block vdb-c-max-w-[80%] vdb-c-truncate vdb-c-font-extrabold"
-          style="
-            background-image: radial-gradient(circle, #ff7e32, #ff5b0a);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-          "
-          :title="collectionName"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between"
         >
-          {{ collectionName }}
-        </span>
+          <span
+            class="vdb-c-inline-block vdb-c-max-w-[80%] vdb-c-truncate vdb-c-font-extrabold"
+            style="
+              background-image: radial-gradient(circle, #ff7e32, #ff5b0a);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            "
+            :title="collectionName"
+          >
+            {{ collectionName }}
+          </span>
+          <Button
+            @click="$emit('upload-button-click')"
+            variant="tertiary"
+            class="!vdb-c-px-8 !vdb-c-py-10"
+          >
+            <div
+              class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium"
+            >
+              <UploadIcon class="vdb-c-h-20 vdb-c-w-20" />
+              <span>Upload Videos</span>
+            </div>
+          </Button>
+        </div>
         <span
           v-else
           class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
@@ -161,22 +177,39 @@
             <span class="vdb-c-font-semibold">
               Here's how you can use Director:
             </span>
-            <Button variant="secondary" class="vdb-c-hidden md:vdb-c-block">
-              <div
-                class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
-                @click="
-                  $emit(
-                    'view-all-videos-click',
-                    'https://www.youtube.com/playlist?list=PLhxAMFLSSK039xl1UgcZmoFLnb-qNRYQw',
-                  )
-                "
+
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
+              <Button
+                variant="secondary"
+                @click="$emit('upload-button-click')"
+                class="vdb-c-hidden !vdb-c-px-8 !vdb-c-py-10 md:vdb-c-block"
               >
-                <div class="vdb-c-text-sm vdb-c-font-medium">
-                  Watch more demos
+                <div
+                  class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+                >
+                  <UploadIcon class="vdb-c-h-20 vdb-c-w-20" fill="#000000" />
+                  <div class="vdb-c-text-sm vdb-c-font-medium">
+                    Upload Videos
+                  </div>
                 </div>
-                <ExternalLinkIcon />
-              </div>
-            </Button>
+              </Button>
+              <Button variant="secondary" class="vdb-c-hidden md:vdb-c-block">
+                <div
+                  class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+                  @click="
+                    $emit(
+                      'view-all-videos-click',
+                      'https://www.youtube.com/playlist?list=PLhxAMFLSSK039xl1UgcZmoFLnb-qNRYQw',
+                    )
+                  "
+                >
+                  <div class="vdb-c-text-sm vdb-c-font-medium">
+                    Watch more demos
+                  </div>
+                  <ExternalLinkIcon />
+                </div>
+              </Button>
+            </div>
           </div>
         </div>
         <div v-else>
@@ -185,18 +218,34 @@
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
             <span> <b> Videos </b> in {{ collectionName }} </span>
-            <Button
-              variant="secondary"
-              @click="$emit('view-all-videos-click')"
-              class="vdb-c-hidden md:vdb-c-block"
-            >
-              <div
-                class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
+              <Button
+                variant="secondary"
+                @click="$emit('upload-button-click')"
+                class="vdb-c-hidden !vdb-c-px-8 !vdb-c-py-10 md:vdb-c-block"
               >
-                <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
-                <ChevronRightCircled />
-              </div>
-            </Button>
+                <div
+                  class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+                >
+                  <UploadIcon class="vdb-c-h-20 vdb-c-w-20" fill="#000000" />
+                  <div class="vdb-c-text-sm vdb-c-font-medium">
+                    Upload Videos
+                  </div>
+                </div>
+              </Button>
+              <Button
+                variant="secondary"
+                @click="$emit('view-all-videos-click')"
+                class="vdb-c-hidden !vdb-c-px-8 !vdb-c-py-10 md:vdb-c-block"
+              >
+                <div
+                  class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+                >
+                  <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
+                  <ChevronRightCircled />
+                </div>
+              </Button>
+            </div>
           </div>
           <div v-else>
             <div
@@ -278,6 +327,7 @@ import VideoCardLoader from "../../collection/VideoCardLoader.vue";
 import Button from "../../buttons/Button.vue";
 
 import QuestionMark from "../../icons/QuestionMark.vue";
+import UploadIcon from "../../icons/FileUpload.vue";
 import ChevronRightCircled from "../../icons/ChevronRightCircled.vue";
 import ExternalLinkIcon from "../../icons/ExternalLink.vue";
 import CrossIcon from "../../icons/Cross.vue";
@@ -335,6 +385,7 @@ defineEmits([
   "explore-agents-click",
   "video-click",
   "view-all-videos-click",
+  "upload-button-click",
 ]);
 </script>
 
