@@ -371,14 +371,6 @@ const isSetupComplete = computed(() => {
   );
 });
 
-watch(
-  isSetupComplete,
-  (val) => {
-    console.log("isSetupComplete", val);
-  },
-  { immediate: true },
-);
-
 const collectionName = computed(() => activeCollectionData.value?.name);
 const isFreshUser = computed(() => {
   if (collections.value && activeCollectionVideos.value) {
