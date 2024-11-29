@@ -134,6 +134,7 @@
                 class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
               />
             </section>
+            <UploadNotifications ref="uploadNotificationsRef" />
           </div>
 
           <!-- chat input -->
@@ -209,7 +210,7 @@
     <UploadModal
       :show-upload-dialog="showUploadDialog"
       :collections="collections"
-      :default-selected-collection-id="collectionId"  
+      :default-selected-collection-id="activeCollectionData?.id"
       @cancel-upload="showUploadDialog = false"
       @upload="handleUpload"
     />
@@ -229,6 +230,7 @@ import DefaultScreen from "./elements/DefaultScreen.vue";
 import SetupScreen from "./elements/SetupScreen.vue";
 import Sidebar from "./elements/Sidebar.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
+import UploadNotifications from "./elements/UploadNotifications.vue";
 
 import UploadModal from "../modals/UploadModal.vue";
 
@@ -329,6 +331,7 @@ const emit = defineEmits([]);
 
 const sidebarRef = ref(null);
 const chatInputRef = ref(null);
+const uploadNotificationsRef = ref(null);
 
 const showCollectionView = ref(false);
 const taggedAgent = ref([]);
@@ -350,6 +353,7 @@ const {
   conversations,
   loadSession,
   uploadMedia,
+  refetchCollectionVideos,
 } = useChatHook(props.chatHookConfig);
 
 const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
@@ -509,8 +513,24 @@ const confirmDeleteSession = () => {
 const showUploadDialog = ref(false);
 const handleUpload = async (uploadData) => {
   showUploadDialog.value = false;
-  const res = await uploadMedia(uploadData);
-  const data = await res.json();
+  let name = "Media";
+  if (uploadData.sourceType === "file") {
+    name = uploadData.source.name;
+  } else {
+    name = uploadData.source.url;
+  }
+  const uploadId = uploadNotificationsRef.value.addUpload(name);
+  try {
+    const res = await uploadMedia(uploadData);
+    if (res.ok) {
+      uploadNotificationsRef.value.updateUploadStatus(uploadId, "success");
+      refetchCollectionVideos();
+    } else {
+      uploadNotificationsRef.value.updateUploadStatus(uploadId, "error");
+    }
+  } catch (e) {
+    uploadNotificationsRef.value.updateUploadStatus(uploadId, "error");
+  }
 };
 
 // --- Handle Default Screen Click Handlers ---
