@@ -273,7 +273,6 @@ const handleDrop = (e) => {
 };
 
 const handleFileSelect = (e) => {
-  console.log("handleFile select", e);
   const files = e.target.files;
   if (files.length > 0) {
     hasUploadedFile.value = true;
@@ -295,7 +294,7 @@ const handleCancel = () => {
 const handleUpload = () => {
   if (hasUrl.value) {
     emit("upload", {
-      source: url.value,
+      source: { url: url.value },
       sourceType: "url",
       collectionId: selectedCollection.value,
     });
@@ -313,9 +312,19 @@ watch(
   () => props.collections,
   (newCollections) => {
     if (newCollections.length > 0 && !selectedCollection.value) {
-      selectedCollection.value = props.defaultSelectedCollectionId || newCollections[0].id;
+      selectedCollection.value =
+        props.defaultSelectedCollectionId || newCollections[0].id;
     }
   },
   { immediate: true },
+);
+
+watch(
+  () => props.defaultSelectedCollectionId,
+  (newDefaultId) => {
+    if (newDefaultId) {
+      selectedCollection.value = newDefaultId;
+    }
+  },
 );
 </script>

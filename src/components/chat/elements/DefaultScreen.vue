@@ -31,7 +31,7 @@
               class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium"
             >
               <UploadIcon class="vdb-c-h-20 vdb-c-w-20" />
-              <span>Upload Videos</span>
+              <span>Upload Video</span>
             </div>
           </Button>
         </div>
@@ -189,7 +189,7 @@
                 >
                   <UploadIcon class="vdb-c-h-20 vdb-c-w-20" fill="#000000" />
                   <div class="vdb-c-text-sm vdb-c-font-medium">
-                    Upload Videos
+                    Upload Video
                   </div>
                 </div>
               </Button>
@@ -229,7 +229,7 @@
                 >
                   <UploadIcon class="vdb-c-h-20 vdb-c-w-20" fill="#000000" />
                   <div class="vdb-c-text-sm vdb-c-font-medium">
-                    Upload Videos
+                    Upload Video
                   </div>
                 </div>
               </Button>

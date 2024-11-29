@@ -1,5 +1,11 @@
 # Changelog
 
+### [0.0.11]() - 2024-11-29
+
+### Added
+- Upload Notifications
+- Upload Button copy changes
+
 ### [0.0.10]() - 2024-11-28
 
 ### Added

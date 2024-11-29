@@ -75,9 +75,15 @@ export function useVideoDBAgent(config) {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ source: source, source_type: sourceType }),
+        body: JSON.stringify({ source: source.url, source_type: sourceType }),
       });
     }
+  };
+
+  const refetchCollectionVideos = async () => {
+    fetchCollectionVideos(session.collectionId).then((res) => {
+      activeCollectionVideos.value = res.data;
+    });
   };
 
   onBeforeMount(() => {
@@ -304,5 +310,6 @@ export function useVideoDBAgent(config) {
     loadSession,
     deleteSession,
     uploadMedia,
+    refetchCollectionVideos,
   };
 }
