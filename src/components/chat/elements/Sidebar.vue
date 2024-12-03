@@ -47,21 +47,17 @@
         'vdb-c-pointer-events-none vdb-c-opacity-20': status === 'inactive',
       }"
     >
-
       <!-- Collections -->
       <div
         class="vdb-c-flex vdb-c-max-h-[38%] vdb-c-flex-col vdb-c-overflow-hidden"
       >
         <button
           @click="toggleCollections()"
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-4 vdb-c-text-pam hover:vdb-c-bg-roy"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
             <MenuIcon class="vdb-c-mr-8" />
-            <span
-              class="vdb-c-text-xs vdb-c-font-bold vdb-c-uppercase vdb-c-leading-5"
-              >Collections</span
-            >
+            <span class="vdb-c-font-semibold vdb-c-leading-5">Collections</span>
           </div>
           <div class="vdb-c-p-4">
             <ChevronDown
@@ -100,8 +96,6 @@
           </template>
         </div>
       </div>
-      
-
 
       <!-- Explore Agents -->
       <div
@@ -111,20 +105,25 @@
         <button
           @click="toggleExploreAgents()"
           :class="[
-            'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-10 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-roy',
+            'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-font-medium vdb-c-text-pam vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-roy',
           ]"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
             <MenuIcon class="vdb-c-mr-8" />
-            <span>Explore Agents</span>
+            <span class="vdb-c-font-semibold vdb-c-leading-5"
+              >Explore Agents</span
+            >
           </div>
-          <ChevronDown
-            :class="[
-              'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform vdb-c-duration-300',
-              { 'vdb-c-rotate-180': showExploreAgents },
-            ]"
-            :stroke-width="1.2"
-          />
+          <div class="vdb-c-p-4">
+            <ChevronDown
+              :class="[
+                'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform vdb-c-duration-300',
+                { 'vdb-c-rotate-180': showExploreAgents },
+              ]"
+              stroke-color="#464646"
+              :stroke-width="2"
+            />
+          </div>
         </button>
         <div
           v-if="status !== 'inactive' && showExploreAgents"
@@ -154,14 +153,11 @@
       >
         <button
           @click="toggleSessions()"
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-12 vdb-c-py-4 vdb-c-text-pam hover:vdb-c-bg-roy"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
             <MenuIcon class="vdb-c-mr-8" />
-            <span
-              class="vdb-c-text-xs vdb-c-font-bold vdb-c-uppercase vdb-c-leading-5"
-              >Chats</span
-            >
+            <span class="vdb-c-font-semibold vdb-c-leading-5">Chats</span>
           </div>
           <div class="vdb-c-p-4">
             <ChevronDown
@@ -357,6 +353,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  initialExploreAgentsOpen: {
+    type: Boolean,
+    default: true,
+  },
   initialSessionsOpen: {
     type: Boolean,
     default: true,
@@ -373,6 +373,7 @@ const showCollections = ref(true);
 const isExploreAgentsFocused = ref(false);
 const exploreAgentsTimeout = ref(null);
 const userClickedSessions = ref(false);
+const userClickedExploreAgents = ref(false);
 const userClickedCollections = ref(false);
 const hoveredSession = ref(null);
 const isMobile = ref(window.innerWidth < 1024);
@@ -393,6 +394,7 @@ const closeSidebar = () => {
 };
 
 const toggleExploreAgents = (value) => {
+  userClickedExploreAgents.value = true;
   showExploreAgents.value =
     value !== undefined ? value : !showExploreAgents.value;
 };
@@ -436,6 +438,16 @@ watch(
   (newValue) => {
     if (!userClickedSessions.value) {
       showSessions.value = newValue;
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.initialExploreAgentsOpen,
+  (newValue) => {
+    if (!userClickedExploreAgents.value) {
+      showExploreAgents.value = newValue;
     }
   },
   { immediate: true },

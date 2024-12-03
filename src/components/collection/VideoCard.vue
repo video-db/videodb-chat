@@ -128,7 +128,7 @@ const secondsToHHMMSS = (val) => {
 }
 
 .vid-pb {
-  padding-bottom: 75%;
+  padding-bottom: 56.25%;
 }
 
 .text-elip {
