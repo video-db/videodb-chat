@@ -1,5 +1,10 @@
 # Changelog
 
+### [0.0.15]() - 2024-12-03
+
+### Fixed
+- Hotfix collection refresh error
+
 ### [0.0.14]() - 2024-12-03
 
 ### Added
