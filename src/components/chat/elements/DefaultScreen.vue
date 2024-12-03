@@ -40,73 +40,21 @@
           class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
         ></span>
       </h1>
-      <transition name="fade" mode="out-in">
-        <div
-          v-if="isOnboardingMessageVisible"
-          class="fade-in-anim vdb-c-relative vdb-c-rounded-lg vdb-c-bg-vdb-lightgrey vdb-c-p-20"
-        >
-          <div
-            class="vdb-c-absolute vdb-c-right-8 vdb-c-top-10 vdb-c-cursor-pointer vdb-c-p-10 hover:vdb-c-bg-roy"
-            @click="hideOnboardingMessage"
-          >
-            <CrossIcon />
-          </div>
-          <div
-            class="vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6 vdb-c-text-xs vdb-c-text-pam md:vdb-c-text-base"
-          >
-            <div class="vdb-c-font-semibold">🎉 Welcome to The Director!</div>
-            <div>
-              Your AI-powered agent framework, built on
-              <a
-                href="https://www.videodb.io"
-                target="_blank"
-                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
-              >
-                VideoDB,
-              </a>
-              is ready to revolutionize how you work with videos and audio.
-            </div>
-            <div>
-              Explore pre-built agents or
-              <a
-                href="https://github.com/video-db/Director?tab=readme-ov-file#-creating-a-new-agent"
-                target="_blank"
-                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
-              >
-                create custom ones
-              </a>
-              tailored to your workflows. From upload to publish, The Director
-              handles it all—quickly and effortlessly.
-            </div>
-            <div>
-              We'd love to hear your thoughts! Join our community and share your
-              experience on
-              <a
-                href="https://discord.com/invite/py9P639jGz"
-                target="_blank"
-                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
-              >
-                Discord </a
-              >.
-            </div>
-          </div>
-        </div>
-      </transition>
     </div>
     <!-- Action Cards -->
     <div
       class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
     >
       <div
-        class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-16 md:vdb-c-grid-cols-4 2xl:vdb-c-grid-cols-4"
+        class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-16 md:vdb-c-grid-cols-3 2xl:vdb-c-grid-cols-3"
       >
         <div
           v-for="(query, index) in actionCardQueries"
           :key="index"
           :class="[
-            'vdb-c-w-160 vdb-c-h-120 hover:vdb-c-shadow-md vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
+            'vdb-c-w-160 vdb-c-h-120 hover:vdb-c-shadow-md vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
             {
-              'vdb-c-bg-orange-50 hover:vdb-c-bg-orange-100':
+              'vdb-c-bg-orange-50 hover:vdb-c-border hover:vdb-c-border-[#FFCFA5] hover:vdb-c-bg-[#FFE9D3]':
                 query.type === 'primary',
               'vdb-c-border-roy vdb-c-bg-vdb-lightgrey hover:vdb-c-bg-roy':
                 query.type === 'muted',
@@ -133,7 +81,12 @@
               },
             ]"
           >
-            <component v-if="query.icon" :is="query.icon"> </component>
+            <div
+              v-if="query.icon"
+              class="vdb-c-flex vdb-c-h-30 vdb-c-w-30 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-[#C14103] vdb-c-p-4"
+            >
+              <component :is="query.icon"> </component>
+            </div>
             <QuestionMark
               v-else
               :fill="
