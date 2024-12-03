@@ -1,5 +1,10 @@
 # Changelog
 
+### [0.0.14]() - 2024-12-03
+
+### Added
+- Default Screen UX improvements
+
 ### [0.0.13]() - 2024-12-03
 
 ### Added
