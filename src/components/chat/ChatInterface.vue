@@ -248,6 +248,7 @@ import WarningExclamation from "../icons/WarningExclamation.vue";
 import ExternalLink from "../icons/ExternalLink.vue";
 import DirectorIcon from "../icons/Director.vue";
 import CrossIcon from "../icons/Cross.vue";
+import SearchIcon from "../icons/SearchIcon.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -401,23 +402,18 @@ const dynamicActionCards = computed(() => {
           isDemo: isFreshUser.value,
           content:
             "Upload [this video](https://www.youtube.com/watch?v=FgrO9ADPZSA) and generate a bullet point summary.",
-          type: "cta",
+          type: "primary",
           action: "chat",
           icon: FileUploadIcon,
         },
         {
-          content: "What are the pre-built agents I can use right now?",
-          type: "primary",
-          action: "chat",
-        },
-        {
           content:
-            "Can you break down the costs of using The Director with VideoDB's infrastructure?",
+            "What is this, and which pre-built agents can I use right now?",
           type: "primary",
           action: "chat",
         },
         {
-          content: "Categorize all the videos in this collection.",
+          content: "Categorize all videos in this collection",
           type: "primary",
           action: "chat",
         },
@@ -428,7 +424,7 @@ const dynamicActionCards = computed(() => {
           isDemo: isFreshUser.value,
           content:
             "Upload [this video](https://www.youtube.com/watch?v=FgrO9ADPZSA) and generate a bullet point summary.",
-          type: "cta",
+          type: "primary",
           action: "chat",
           icon: FileUploadIcon,
         },
@@ -438,15 +434,10 @@ const dynamicActionCards = computed(() => {
           action: "chat",
         },
         {
-          content:
-            "Can you break down the costs of using The Director with VideoDB's infrastructure?",
+          content: "Show me how search agent work? ",
           type: "primary",
           action: "chat",
-        },
-        {
-          content: "Show me how search agent work with VideoDB SDK?",
-          type: "primary",
-          action: "chat",
+          icon: SearchIcon,
         },
       ];
 });

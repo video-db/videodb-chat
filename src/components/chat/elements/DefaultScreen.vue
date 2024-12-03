@@ -46,15 +46,15 @@
       class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
     >
       <div
-        class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-16 md:vdb-c-grid-cols-4 2xl:vdb-c-grid-cols-4"
+        class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-16 md:vdb-c-grid-cols-3 2xl:vdb-c-grid-cols-3"
       >
         <div
           v-for="(query, index) in actionCardQueries"
           :key="index"
           :class="[
-            'vdb-c-w-160 vdb-c-h-120 hover:vdb-c-shadow-md vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
+            'vdb-c-w-160 vdb-c-h-120 hover:vdb-c-shadow-md vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
             {
-              'vdb-c-bg-orange-50 hover:vdb-c-bg-orange-100':
+              'vdb-c-bg-orange-50 hover:vdb-c-border hover:vdb-c-border-[#FFCFA5] hover:vdb-c-bg-[#FFE9D3]':
                 query.type === 'primary',
               'vdb-c-border-roy vdb-c-bg-vdb-lightgrey hover:vdb-c-bg-roy':
                 query.type === 'muted',
@@ -81,7 +81,12 @@
               },
             ]"
           >
-            <component v-if="query.icon" :is="query.icon"> </component>
+            <div
+              v-if="query.icon"
+              class="vdb-c-flex vdb-c-h-30 vdb-c-w-30 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-[#C14103] vdb-c-p-4"
+            >
+              <component :is="query.icon"> </component>
+            </div>
             <QuestionMark
               v-else
               :fill="
