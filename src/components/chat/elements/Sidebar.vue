@@ -12,7 +12,7 @@
   >
     <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
       <div class="vdb-c-text-2xl vdb-c-font-bold">
-        <component :is="config.icon" />
+        <component v-if="config.icon" :is="config.icon" />
       </div>
       <button
         v-if="isMobile"
@@ -37,7 +37,7 @@
       <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-6">
         <ComposeIcon />
         <span class="vdb-c-block vdb-c-text-sm vdb-c-font-medium"
-          >New Session</span
+          >New Chat</span
         >
       </div>
     </Button>
@@ -47,6 +47,62 @@
         'vdb-c-pointer-events-none vdb-c-opacity-20': status === 'inactive',
       }"
     >
+
+      <!-- Collections -->
+      <div
+        class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-overflow-hidden"
+      >
+        <button
+          @click="toggleCollections()"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-4 vdb-c-text-pam hover:vdb-c-bg-roy"
+        >
+          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
+            <MenuIcon class="vdb-c-mr-8" />
+            <span
+              class="vdb-c-text-xs vdb-c-font-bold vdb-c-uppercase vdb-c-leading-5"
+              >Collections</span
+            >
+          </div>
+          <div class="vdb-c-p-4">
+            <ChevronDown
+              :class="[
+                'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
+                { 'vdb-c-rotate-180': showCollections },
+              ]"
+              stroke-color="#464646"
+              :stroke-width="2"
+            />
+          </div>
+        </button>
+        <div
+          v-if="status !== 'inactive' && showCollections"
+          class="vdb-c-mt-4 vdb-c-overflow-y-auto"
+        >
+          <template v-for="collection in collections" :key="collection.id">
+            <div
+              @click="
+                $emit('collection-click', collection.id);
+                closeSidebar();
+              "
+              :class="[
+                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
+                {
+                  'vdb-c-bg-roy':
+                    showSelectedCollection &&
+                    collection.id === computedSelectedCollection,
+                  'hover:vdb-c-bg-gray-100':
+                    collection.id !== computedSelectedCollection,
+                },
+              ]"
+            >
+              {{ collection.name }}
+            </div>
+          </template>
+        </div>
+      </div>
+      
+
+
       <!-- Explore Agents -->
       <div
         class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
@@ -98,12 +154,15 @@
       >
         <button
           @click="toggleSessions()"
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4 vdb-c-text-pam"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-12 vdb-c-py-4 vdb-c-text-pam hover:vdb-c-bg-roy"
         >
-          <span
-            class="vdb-c-text-xs vdb-c-font-bold vdb-c-uppercase vdb-c-leading-5"
-            >Sessions</span
-          >
+          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
+            <MenuIcon class="vdb-c-mr-8" />
+            <span
+              class="vdb-c-text-xs vdb-c-font-bold vdb-c-uppercase vdb-c-leading-5"
+              >Chats</span
+            >
+          </div>
           <div class="vdb-c-p-4">
             <ChevronDown
               :class="[
@@ -124,7 +183,7 @@
               <div
                 class="vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-bg-roy vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey"
               >
-                (new session)
+                (new chat)
               </div>
             </div>
           </transition>
@@ -180,56 +239,6 @@
           </transition-group>
         </div>
       </div>
-
-      <!-- Collections -->
-      <div
-        class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-overflow-hidden"
-      >
-        <button
-          @click="toggleCollections()"
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-8 vdb-c-py-4 vdb-c-text-pam"
-        >
-          <span
-            class="vdb-c-text-xs vdb-c-font-bold vdb-c-uppercase vdb-c-leading-5"
-            >Collections</span
-          >
-          <div class="vdb-c-p-4">
-            <ChevronDown
-              :class="[
-                'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
-                { 'vdb-c-rotate-180': showCollections },
-              ]"
-              stroke-color="#464646"
-              :stroke-width="2"
-            />
-          </div>
-        </button>
-        <div
-          v-if="status !== 'inactive' && showCollections"
-          class="vdb-c-mt-4 vdb-c-overflow-y-auto"
-        >
-          <template v-for="collection in collections" :key="collection.id">
-            <div
-              @click="
-                $emit('collection-click', collection.id);
-                closeSidebar();
-              "
-              :class="[
-                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
-                {
-                  'vdb-c-bg-roy':
-                    showSelectedCollection &&
-                    collection.id === computedSelectedCollection,
-                  'hover:vdb-c-bg-gray-100':
-                    collection.id !== computedSelectedCollection,
-                },
-              ]"
-            >
-              {{ collection.name }}
-            </div>
-          </template>
-        </div>
-      </div>
     </div>
 
     <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col">
@@ -245,6 +254,7 @@
         <component v-if="link.icon" :is="link.icon" />
       </a>
       <Button
+        v-if="config.primaryLink"
         class="vdb-c-mt-16 vdb-c-w-full"
         variant="tertiary"
         :class="{

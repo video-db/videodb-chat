@@ -61,6 +61,7 @@
           />
           <div
             class="center-button transparent-button vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2 vdb-c-flex vdb-c-h-48 vdb-c-w-48 -vdb-c-translate-x-1/2 -vdb-c-translate-y-1/2 vdb-c-transform vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full lg:vdb-c-h-56 lg:vdb-c-w-56"
+            @click="$emit('video-click', item)"
           >
             <PlayIcon class="vdb-c-h-20 vdb-c-w-20" />
           </div>

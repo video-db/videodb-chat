@@ -40,58 +40,6 @@
           class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
         ></span>
       </h1>
-      <transition name="fade" mode="out-in">
-        <div
-          v-if="isOnboardingMessageVisible"
-          class="fade-in-anim vdb-c-relative vdb-c-rounded-lg vdb-c-bg-vdb-lightgrey vdb-c-p-20"
-        >
-          <div
-            class="vdb-c-absolute vdb-c-right-8 vdb-c-top-10 vdb-c-cursor-pointer vdb-c-p-10 hover:vdb-c-bg-roy"
-            @click="hideOnboardingMessage"
-          >
-            <CrossIcon />
-          </div>
-          <div
-            class="vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6 vdb-c-text-xs vdb-c-text-pam md:vdb-c-text-base"
-          >
-            <div class="vdb-c-font-semibold">🎉 Welcome to The Director!</div>
-            <div>
-              Your AI-powered agent framework, built on
-              <a
-                href="https://www.videodb.io"
-                target="_blank"
-                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
-              >
-                VideoDB,
-              </a>
-              is ready to revolutionize how you work with videos and audio.
-            </div>
-            <div>
-              Explore pre-built agents or
-              <a
-                href="https://github.com/video-db/Director?tab=readme-ov-file#-creating-a-new-agent"
-                target="_blank"
-                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
-              >
-                create custom ones
-              </a>
-              tailored to your workflows. From upload to publish, The Director
-              handles it all—quickly and effortlessly.
-            </div>
-            <div>
-              We'd love to hear your thoughts! Join our community and share your
-              experience on
-              <a
-                href="https://discord.com/invite/py9P639jGz"
-                target="_blank"
-                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
-              >
-                Discord </a
-              >.
-            </div>
-          </div>
-        </div>
-      </transition>
     </div>
     <!-- Action Cards -->
     <div

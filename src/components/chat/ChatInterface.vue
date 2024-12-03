@@ -32,7 +32,10 @@
         :collections="collections"
         @create-new-session="createNewSession"
         @delete-session="showDeleteSessionDialog"
-        @agent-click="handleTagAgent"
+        @agent-click="
+          handleTagAgent($event, false);
+          handleAddMessage(`@${$event.name} `);
+        "
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
       />
@@ -279,15 +282,10 @@ const props = defineProps({
           icon: ExternalLink,
         },
         {
-          href: "https://director.videodb.io",
-          text: "Documentation",
+          href: "https://console.videodb.io",
+          text: "VideoDB Console",
         },
       ],
-      primaryLink: {
-        href: "https://console.videodb.io",
-        text: "VideoDB Console",
-        icon: VideoDBLogo,
-      },
     }),
   },
   defaultScreenConfig: {
@@ -578,7 +576,7 @@ const handleVideoClick = (video) => {
     window.open(video.url, "_blank");
   } else {
     videoId.value = video.id;
-    handleAddMessage(`Play ${video.name}`);
+    handleAddMessage(`@stream_video ${video.name}`);
   }
 };
 
