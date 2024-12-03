@@ -1,5 +1,10 @@
 # Changelog
 
+### [0.0.12]() - 2024-12-03
+
+### Added
+- Query Card UX improvments
+
 ### [0.0.11]() - 2024-11-29
 
 ### Added
