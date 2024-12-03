@@ -397,7 +397,7 @@ const dynamicActionCards = computed(() => {
   return props.defaultScreenConfig.actionCardQueries ||
     (!isFreshUser.value &&
       activeCollectionData.value &&
-      activeCollectionVideos.value.length > 0)
+      activeCollectionVideos?.value?.length > 0)
     ? [
         {
           component: UploadVideoQueryCard,
