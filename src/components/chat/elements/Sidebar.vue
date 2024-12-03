@@ -50,7 +50,7 @@
 
       <!-- Collections -->
       <div
-        class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-overflow-hidden"
+        class="vdb-c-flex vdb-c-max-h-[38%] vdb-c-flex-col vdb-c-overflow-hidden"
       >
         <button
           @click="toggleCollections()"
@@ -105,7 +105,7 @@
 
       <!-- Explore Agents -->
       <div
-        class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
+        class="vdb-c-flex vdb-c-max-h-[25%] vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
         :class="{ 'vdb-c-explore-agents-animation': isExploreAgentsFocused }"
       >
         <button
@@ -150,7 +150,7 @@
 
       <!-- Sessions -->
       <div
-        class="vdb-c-flex vdb-c-max-h-[34%] vdb-c-flex-col vdb-c-overflow-hidden"
+        class="vdb-c-flex vdb-c-max-h-[38%] vdb-c-flex-col vdb-c-overflow-hidden"
       >
         <button
           @click="toggleSessions()"
