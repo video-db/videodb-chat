@@ -23,7 +23,8 @@
           Object.keys(conversations).length === 0 && !showCollectionView
         "
         :initial-sessions-open="!isFreshUser"
-        :initial-collections-open="true"
+        :initial-explore-agents-open="!isFreshUser"
+        :initial-collections-open="!isFreshUser"
         :selected-session="sessionId"
         :add-dummy-session="Object.keys(conversations).length === 0"
         :selected-collection="collectionId"
@@ -33,8 +34,10 @@
         @create-new-session="createNewSession"
         @delete-session="showDeleteSessionDialog"
         @agent-click="
-          handleTagAgent($event, false);
-          handleAddMessage(`@${$event.name} `);
+          if (!chatLoading) {
+            handleTagAgent($event, false);
+            handleAddMessage(`@${$event.name} `);
+          }
         "
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
@@ -232,8 +235,8 @@ import CollectionView from "./CollectionView.vue";
 import DefaultScreen from "./elements/DefaultScreen.vue";
 import SetupScreen from "./elements/SetupScreen.vue";
 import Sidebar from "./elements/Sidebar.vue";
-import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 import UploadNotifications from "./elements/UploadNotifications.vue";
+import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 
 import UploadModal from "../modals/UploadModal.vue";
 
@@ -242,13 +245,12 @@ import ChatVideo from "../message-handlers/ChatVideo.vue";
 import ImageHandler from "../message-handlers/ImageHandler.vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 
-import VideoDBLogo from "../icons/VideoDBLogo.vue";
-import FileUploadIcon from "../icons/FileUpload.vue";
-import WarningExclamation from "../icons/WarningExclamation.vue";
-import ExternalLink from "../icons/ExternalLink.vue";
+import CategorizeIcon from "../icons/Categorize.vue";
 import DirectorIcon from "../icons/Director.vue";
-import CrossIcon from "../icons/Cross.vue";
+import ExternalLink from "../icons/ExternalLink.vue";
+import FileUploadIcon from "../icons/FileUpload.vue";
 import SearchIcon from "../icons/SearchIcon.vue";
+import WarningExclamation from "../icons/WarningExclamation.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -399,31 +401,8 @@ const dynamicActionCards = computed(() => {
     ? [
         {
           component: UploadVideoQueryCard,
-          isDemo: isFreshUser.value,
           content:
             "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
-          type: "primary",
-          action: "chat",
-          icon: FileUploadIcon,
-        },
-        {
-          content:
-            "What is this, and which pre-built agents can I use right now?",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content: "Categorize all videos in this collection",
-          type: "primary",
-          action: "chat",
-        },
-      ]
-    : [
-        {
-          component: UploadVideoQueryCard,
-          isDemo: isFreshUser.value,
-          content:
-            "Upload [this video](https://www.youtube.com/watch?v=FgrO9ADPZSA) and generate a bullet point summary.",
           type: "primary",
           action: "chat",
           icon: FileUploadIcon,
@@ -434,7 +413,28 @@ const dynamicActionCards = computed(() => {
           action: "chat",
         },
         {
-          content: "Show me how search agent work? ",
+          content: "Categorize all videos in this collection",
+          type: "primary",
+          action: "chat",
+          icon: CategorizeIcon,
+        },
+      ]
+    : [
+        {
+          component: UploadVideoQueryCard,
+          content:
+            "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
+          type: "primary",
+          action: "chat",
+          icon: FileUploadIcon,
+        },
+        {
+          content: "What are the pre-built agents I can use right now?",
+          type: "primary",
+          action: "chat",
+        },
+        {
+          content: "Show me how the search agent works? ",
           type: "primary",
           action: "chat",
           icon: SearchIcon,

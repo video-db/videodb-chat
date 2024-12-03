@@ -30,8 +30,13 @@
             <div
               class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium"
             >
-              <UploadIcon class="vdb-c-h-20 vdb-c-w-20" />
-              <span>Upload Video</span>
+              <UploadIcon
+                class="vdb-c-hidden vdb-c-h-20 vdb-c-w-20 md:vdb-c-block"
+              />
+              <span class="vdb-c-flex vdb-c-flex-row vdb-c-gap-4"
+                ><span> Upload</span>
+                <span class="vdb-c-hidden md:vdb-c-block"> Video </span>
+              </span>
             </div>
           </Button>
         </div>
@@ -52,9 +57,9 @@
           v-for="(query, index) in actionCardQueries"
           :key="index"
           :class="[
-            'vdb-c-w-160 vdb-c-h-120 hover:vdb-c-shadow-md vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
+            'action-card-shadow vdb-c-w-160 vdb-c-h-120 vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
             {
-              'vdb-c-bg-orange-50 hover:vdb-c-border hover:vdb-c-border-[#FFCFA5] hover:vdb-c-bg-[#FFE9D3]':
+              'vdb-c-border-orange-100 vdb-c-bg-orange-50 hover:vdb-c-border hover:vdb-c-border-[#FFCFA5] hover:vdb-c-bg-[#FFE9D3]':
                 query.type === 'primary',
               'vdb-c-border-roy vdb-c-bg-vdb-lightgrey hover:vdb-c-bg-roy':
                 query.type === 'muted',
@@ -132,20 +137,6 @@
             </span>
 
             <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
-              <Button
-                variant="secondary"
-                @click="$emit('upload-button-click')"
-                class="vdb-c-hidden !vdb-c-px-8 !vdb-c-py-10 md:vdb-c-block"
-              >
-                <div
-                  class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
-                >
-                  <UploadIcon class="vdb-c-h-20 vdb-c-w-20" fill="#000000" />
-                  <div class="vdb-c-text-sm vdb-c-font-medium">
-                    Upload Video
-                  </div>
-                </div>
-              </Button>
               <Button variant="secondary" class="vdb-c-hidden md:vdb-c-block">
                 <div
                   class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
@@ -349,5 +340,8 @@ defineEmits([
   to {
     opacity: 1;
   }
+}
+.action-card-shadow {
+  box-shadow: 0px 2px 5px 0px #0000001a;
 }
 </style>
