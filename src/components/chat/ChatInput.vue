@@ -37,7 +37,7 @@
           <div>
             <div
               :class="[
-                'vdb-c-ml-6 vdb-c-hidden vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-orange-200 vdb-c-bg-orange-50 vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black md:vdb-c-flex',
+                'vdb-c-ml-6 vdb-c-hidden vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-[#BAE7BC] vdb-c-bg-[#E6F6E7] vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black md:vdb-c-flex',
 
                 { 'vdb-c-animate-pulse': !contextData?.name },
               ]"
@@ -273,7 +273,7 @@ defineExpose({
 }
 
 .context-icon {
-  background: radial-gradient(circle, #ff7f40 0%, #f55100 100%);
-  box-shadow: 0 0 6px 4px rgba(255, 90, 10, 0.6);
+  background: radial-gradient(circle, #5BC25F 0%, #0AA910 100%);
+  box-shadow: 0 0 6px 4px #0AA910;
 }
 </style>

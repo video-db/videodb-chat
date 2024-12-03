@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.0.13]() - 2024-12-03
+
+### Added
+- Chat Input UX improvements
+    - Context Icon
+    - Query card copy changes
+    - Sidebar design changes
+
 ### [0.0.12]() - 2024-12-03
 
 ### Added

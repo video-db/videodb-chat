@@ -393,7 +393,7 @@ const chatLoading = computed(() =>
 );
 const dynamicActionCards = computed(() => {
   return props.defaultScreenConfig.actionCardQueries ||
-    (!isFreshUser &&
+    (!isFreshUser.value &&
       activeCollectionData.value &&
       activeCollectionVideos.value.length > 0)
     ? [
@@ -401,7 +401,7 @@ const dynamicActionCards = computed(() => {
           component: UploadVideoQueryCard,
           isDemo: isFreshUser.value,
           content:
-            "Upload [this video](https://www.youtube.com/watch?v=FgrO9ADPZSA) and generate a bullet point summary.",
+            "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
           type: "primary",
           action: "chat",
           icon: FileUploadIcon,

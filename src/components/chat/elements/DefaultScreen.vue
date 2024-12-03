@@ -174,20 +174,6 @@
             <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
               <Button
                 variant="secondary"
-                @click="$emit('upload-button-click')"
-                class="vdb-c-hidden !vdb-c-px-8 !vdb-c-py-10 md:vdb-c-block"
-              >
-                <div
-                  class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
-                >
-                  <UploadIcon class="vdb-c-h-20 vdb-c-w-20" fill="#000000" />
-                  <div class="vdb-c-text-sm vdb-c-font-medium">
-                    Upload Video
-                  </div>
-                </div>
-              </Button>
-              <Button
-                variant="secondary"
                 @click="$emit('view-all-videos-click')"
                 class="vdb-c-hidden !vdb-c-px-8 !vdb-c-py-10 md:vdb-c-block"
               >
