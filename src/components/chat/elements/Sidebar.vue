@@ -108,7 +108,7 @@
           ]"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
-            <MenuIcon class="vdb-c-mr-8" />
+            <AgentIcon class="vdb-c-mr-8" />
             <span class="vdb-c-font-semibold vdb-c-leading-5"
               >Explore Agents</span
             >
@@ -309,7 +309,7 @@ import Button from "../../buttons/Button.vue";
 import DeleteIcon from "../../icons/Delete.vue";
 import ComposeIcon from "../../icons/Compose.vue";
 import ChevronDown from "../../icons/ChevronDown.vue";
-import MenuIcon from "../../icons/Menu.vue";
+import AgentIcon from "../../icons/Agent.vue";
 import ChatIcon from "../../icons/Chat.vue";
 import CollectionIcon from "../../icons/Collection.vue";
 
