@@ -1,7 +1,8 @@
 <template>
   <div
-    class="vdb-c-flex vdb-c-h-full vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-32 vdb-c-p-32"
+    class="vdb-c-flex vdb-c-h-full vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-32 vdb-c-p-16 md:vdb-c-p-32"
   >
+    <!-- Collection Header -->
     <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
       <h1
         class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-xl vdb-c-leading-tight sm:vdb-c-text-3xl md:vdb-c-text-5xl"
@@ -12,7 +13,7 @@
           class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between"
         >
           <span
-            class="vdb-c-inline-block vdb-c-max-w-[80%] vdb-c-truncate vdb-c-font-extrabold"
+            class="vdb-c-line-clamp-2 vdb-c-inline-block vdb-c-max-w-[60%] vdb-c-font-bold md:vdb-c-line-clamp-none md:vdb-c-max-w-[80%] md:vdb-c-font-extrabold"
             style="
               background-image: radial-gradient(circle, #ff7e32, #ff5b0a);
               -webkit-background-clip: text;
@@ -33,9 +34,8 @@
               <UploadIcon
                 class="vdb-c-hidden vdb-c-h-20 vdb-c-w-20 md:vdb-c-block"
               />
-              <span class="vdb-c-flex vdb-c-flex-row vdb-c-gap-4"
-                ><span> Upload</span>
-                <span class="vdb-c-hidden md:vdb-c-block"> Video </span>
+              <span class="vdb-c-flex vdb-c-flex-row vdb-c-gap-4">
+                Upload Video
               </span>
             </div>
           </Button>
@@ -46,18 +46,19 @@
         ></span>
       </h1>
     </div>
+
     <!-- Action Cards -->
     <div
       class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
     >
       <div
-        class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-16 md:vdb-c-grid-cols-3 2xl:vdb-c-grid-cols-3"
+        class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-12 md:vdb-c-grid-cols-3 md:vdb-c-gap-16 2xl:vdb-c-grid-cols-3"
       >
         <div
           v-for="(query, index) in actionCardQueries"
           :key="index"
           :class="[
-            'action-card-shadow vdb-c-w-160 vdb-c-h-120 vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
+            'action-card-shadow vdb-c-w-160 vdb-c-h-120 vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-12 vdb-c-py-12 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240 md:vdb-c-px-16 md:vdb-c-py-20',
             {
               'vdb-c-border-orange-100 vdb-c-bg-orange-50 hover:vdb-c-border hover:vdb-c-border-[#FFCFA5] hover:vdb-c-bg-[#FFE9D3]':
                 query.type === 'primary',
@@ -65,6 +66,10 @@
                 query.type === 'muted',
               'vdb-c-bg-vdb-orange hover:vdb-c-bg-[#D45214]':
                 query.type === 'cta',
+              'vdb-c-col-span-2 md:vdb-c-col-span-1':
+                actionCardQueries?.length % 2 === 1
+                  ? index === actionCardQueries.length - 1
+                  : index === actionCardQueries.length - 2,
             },
           ]"
           @click="$emit('query-card-click', query)"
@@ -104,7 +109,7 @@
             />
           </div>
           <p
-            class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-xs vdb-c-font-semibold md:vdb-c-text-sm lg:vdb-c-text-base"
+            class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-xs vdb-c-font-medium md:vdb-c-text-sm md:vdb-c-font-semibold lg:vdb-c-text-base"
             :class="[
               {
                 'vdb-c-text-pam': query.type === 'muted',
@@ -120,24 +125,28 @@
       </div>
     </div>
 
+    <!-- Demo/Preview Videos -->
     <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-12">
-      <div
-        class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"
-        v-if="!showDemoVideos"
-      ></div>
+      <!-- Divider -->
+      <div class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"></div>
+
+      <!-- Headers -->
       <div
         class="vdb-c-text-base vdb-c-font-normal vdb-c-text-vdb-darkishgrey md:vdb-c-text-xl"
       >
+        <!-- Demo Videos Header -->
         <div v-if="showDemoVideos">
           <div
-            class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
+            class="vdb-c-mb-12 vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4 md:vdb-c-mb-16"
           >
-            <span class="vdb-c-font-semibold">
-              Here's how you can use Director:
+            <span
+              class="vdb-c-w-1/2 vdb-c-text-sm vdb-c-font-semibold md:vdb-c-text-lg"
+            >
+              See agents in action:
             </span>
 
             <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
-              <Button variant="secondary" class="vdb-c-hidden md:vdb-c-block">
+              <Button variant="secondary">
                 <div
                   class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
                   @click="
@@ -147,8 +156,15 @@
                     )
                   "
                 >
-                  <div class="vdb-c-text-sm vdb-c-font-medium">
-                    Watch more demos
+                  <div
+                    class="vdb-c-text-sm vdb-c-font-medium"
+                  >
+                    <span class="vdb-c-hidden md:vdb-c-block">
+                      Watch more demos</span
+                    >
+                    <span class="vdb-c-block md:vdb-c-hidden">
+                      More Demos
+                    </span>
                   </div>
                   <ExternalLinkIcon />
                 </div>
@@ -156,23 +172,31 @@
             </div>
           </div>
         </div>
+
+        <!-- Preview Videos Header -->
         <div v-else>
           <div
             v-if="collectionName"
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
-            <span> <b> Videos </b> in {{ collectionName }} </span>
+            <span class="vdb-c-w-4/6 vdb-c-text-sm md:vdb-c-text-xl">
+              <b> Videos </b> in {{ collectionName }}
+            </span>
             <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
               <Button
                 variant="secondary"
                 @click="$emit('view-all-videos-click')"
-                class="vdb-c-hidden !vdb-c-px-8 !vdb-c-py-10 md:vdb-c-block"
+                class="!vdb-c-px-8 !vdb-c-py-10"
               >
                 <div
                   class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
                 >
-                  <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
-                  <ChevronRightCircled />
+                  <div
+                    class="vdb-c-text-sm vdb-c-font-medium"
+                  >
+                    View all
+                  </div>
+                  <ChevronRightCircled class="vdb-c-hidden md:vdb-c-block" />
                 </div>
               </Button>
             </div>
@@ -184,6 +208,8 @@
           </div>
         </div>
       </div>
+
+      <!-- Videos -->
       <div
         v-if="previewVideos"
         class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
@@ -202,36 +228,9 @@
             @video-click="$emit('video-click', item)"
           />
         </div>
-        <div
-          class="vdb-c-col-span-12 vdb-c-block sm:vdb-c-col-span-6 md:vdb-c-col-span-4 md:vdb-c-hidden lg:vdb-c-col-span-3"
-        >
-          <Button variant="secondary" class="vdb-c-block">
-            <div
-              v-if="showDemoVideos"
-              class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
-              @click="
-                $emit(
-                  'view-all-videos-click',
-                  'https://www.youtube.com/playlist?list=PLhxAMFLSSK039xl1UgcZmoFLnb-qNRYQw',
-                )
-              "
-            >
-              <div class="vdb-c-text-sm vdb-c-font-medium">
-                Watch more demos
-              </div>
-              <ExternalLinkIcon />
-            </div>
-            <div
-              v-else
-              class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
-              @click="$emit('view-all-videos-click')"
-            >
-              <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
-              <ChevronRightCircled />
-            </div>
-          </Button>
-        </div>
       </div>
+
+      <!-- Videos Loader -->
       <div
         v-else
         class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
@@ -260,7 +259,6 @@ import QuestionMark from "../../icons/QuestionMark.vue";
 import UploadIcon from "../../icons/FileUpload.vue";
 import ChevronRightCircled from "../../icons/ChevronRightCircled.vue";
 import ExternalLinkIcon from "../../icons/ExternalLink.vue";
-import CrossIcon from "../../icons/Cross.vue";
 import StarIcon from "../../icons/Star.vue";
 
 const props = defineProps({
@@ -305,10 +303,6 @@ watch(
   { immediate: true },
 );
 
-const hideOnboardingMessage = () => {
-  isOnboardingMessageVisible.value = false;
-};
-
 defineEmits([
   "query-card-click",
   "agent-click",
@@ -342,6 +336,6 @@ defineEmits([
   }
 }
 .action-card-shadow {
-  box-shadow: 0px 2px 5px 0px #0000001a;
+  box-shadow: 0px 15px 29px 0px #0000004d;
 }
 </style>

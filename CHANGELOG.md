@@ -1,5 +1,14 @@
 # Changelog
 
+### [0.0.16]() - 2024-12-04
+
+### Changed 
+- Director Icon Replaced with Beta
+- Delete Modal as seperate component
+- Default Screen Improvements for mobile
+- Sidebar Issues in mobile
+- Query card improvements
+
 ### [0.0.15]() - 2024-12-03
 
 ### Fixed

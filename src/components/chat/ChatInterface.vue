@@ -167,58 +167,22 @@
     </div>
 
     <!-- Delete Session Dialog -->
-    <div
-      v-if="showDeleteDialog"
-      class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-black vdb-c-bg-opacity-50"
-      @click="cancelDeleteSession"
-    >
-      <div
-        class="vdb-c-shadow-xl vdb-c-overflow-hidden vdb-c-rounded-lg vdb-c-bg-white"
-        @click.stop
-      >
-        <div
-          class="vdb-c-flex vdb-c-gap-16 vdb-c-px-24 vdb-c-py-16 vdb-c-pt-24"
-        >
-          <div
-            class="vdb-c-flex vdb-c-h-40 vdb-c-w-40 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-red-100"
-          >
-            <warning-exclamation />
-          </div>
-          <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
-            <h2 class="vdb-c-text-lg vdb-c-font-medium vdb-c-text-gray-950">
-              Delete Session
-            </h2>
-            <p class="vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#6B7280]">
-              Are you sure you want to delete this session?
-            </p>
-          </div>
-        </div>
-        <div
-          class="vdb-c-flex vdb-c-w-full vdb-c-justify-end vdb-c-gap-12 vdb-c-bg-gray-50 vdb-c-px-24 vdb-c-py-12"
-        >
-          <button
-            @click="cancelDeleteSession"
-            class="vdb-c-shadow-sm vdb-c-rounded-md vdb-c-border vdb-c-border-gray-300 vdb-c-bg-white vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-gray-700 hover:vdb-c-bg-gray-300"
-          >
-            Cancel
-          </button>
-          <button
-            @click="confirmDeleteSession"
-            class="vdb-c-shadow-sm vdb-c-rounded-md vdb-c-bg-[#DC2626] vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-white hover:vdb-c-bg-[#B91C1C]"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
+    <DeleteSessionDialog
+      :show-dialog="showDeleteDialog"
+      @cancel-delete="
+        showDeleteDialog = false;
+        sessionToDelete = null;
+      "
+      @confirm-delete="confirmDeleteSession"
+    ></DeleteSessionDialog>
 
     <!-- Upload Dialog -->
     <UploadModal
       :show-upload-dialog="showUploadDialog"
-      :collections="collections"
       :default-selected-collection-id="activeCollectionData?.id"
-      @cancel-upload="showUploadDialog = false"
+      :collections="collections"
       @upload="handleUpload"
+      @cancel-upload="showUploadDialog = false"
     />
   </section>
 </template>
@@ -239,7 +203,7 @@ import UploadNotifications from "./elements/UploadNotifications.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 
 import UploadModal from "../modals/UploadModal.vue";
-
+import DeleteSessionDialog from "../modals/DeleteSessionModal.vue";
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
 import ImageHandler from "../message-handlers/ImageHandler.vue";
@@ -250,7 +214,6 @@ import DirectorIcon from "../icons/Director.vue";
 import ExternalLink from "../icons/ExternalLink.vue";
 import FileUploadIcon from "../icons/FileUpload.vue";
 import SearchIcon from "../icons/SearchIcon.vue";
-import WarningExclamation from "../icons/WarningExclamation.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -482,11 +445,6 @@ const sessionToDelete = ref(null);
 const showDeleteSessionDialog = (_sessionId) => {
   sessionToDelete.value = _sessionId;
   showDeleteDialog.value = true;
-};
-
-const cancelDeleteSession = () => {
-  showDeleteDialog.value = false;
-  sessionToDelete.value = null;
 };
 
 const confirmDeleteSession = () => {

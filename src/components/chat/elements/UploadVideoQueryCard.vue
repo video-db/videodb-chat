@@ -1,8 +1,10 @@
 <template>
   <div
-    class="vdb-c-flex vdb-c-flex-col vdb-c-gap-4 vdb-c-break-words  vdb-c-text-kilvish-900"
+    class="vdb-c-flex vdb-c-flex-col vdb-c-gap-4 vdb-c-break-words vdb-c-text-kilvish-900"
   >
-    Click here to see an example query
+    <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-4">
+      Click here to see an example query &rarr;
+    </div>
   </div>
 </template>
 
