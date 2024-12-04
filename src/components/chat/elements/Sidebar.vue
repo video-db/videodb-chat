@@ -4,7 +4,7 @@
       'vdb-c-flex vdb-c-h-full vdb-c-flex-col vdb-c-gap-16 vdb-c-border-l vdb-c-bg-white vdb-c-p-16 vdb-c-pl-12 vdb-c-pr-20 vdb-c-text-black',
       {
         'vdb-c-w-1/5': !isMobile,
-        'vdb-c-fixed vdb-c-left-0 vdb-c-top-0 vdb-c-z-50 vdb-c-h-full vdb-c-w-4/5 vdb-c-transform vdb-c-shadow-lg vdb-c-transition-transform vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-2/5':
+        'vdb-c-fixed vdb-c-left-0 vdb-c-top-0 vdb-c-z-50 vdb-c-h-full vdb-c-w-4/5 vdb-c-transform vdb-c-transition-transform vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-2/5':
           isMobile,
         'vdb-c--translate-x-full': isMobile && !isOpen,
       },
@@ -49,7 +49,7 @@
     >
       <!-- Collections -->
       <div
-        class="vdb-c-flex vdb-c-max-h-[38%] vdb-c-flex-col vdb-c-overflow-hidden"
+        class="vdb-c-flex vdb-c-max-h-[160px] vdb-c-flex-col vdb-c-overflow-hidden"
       >
         <button
           @click="toggleCollections()"
@@ -99,7 +99,7 @@
 
       <!-- Explore Agents -->
       <div
-        class="vdb-c-flex vdb-c-max-h-[25%] vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
+        class="vdb-c-flex vdb-c-max-h-[160px] vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
         :class="{ 'vdb-c-explore-agents-animation': isExploreAgentsFocused }"
       >
         <button
