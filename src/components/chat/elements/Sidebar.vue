@@ -56,7 +56,7 @@
           class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
-            <MenuIcon class="vdb-c-mr-8" />
+            <CollectionIcon class="vdb-c-mr-8" fill="#464646" />
             <span class="vdb-c-font-semibold vdb-c-leading-5">Collections</span>
           </div>
           <div class="vdb-c-p-4">
@@ -81,12 +81,12 @@
                 closeSidebar();
               "
               :class="[
-                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
+                'vdb-c-ml-24 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
                 {
-                  'vdb-c-bg-roy':
+                  'vdb-c-bg-[#FFF5EC]':
                     showSelectedCollection &&
                     collection.id === computedSelectedCollection,
-                  'hover:vdb-c-bg-gray-100':
+                  'hover:vdb-c-bg-[#FFF5EC]':
                     collection.id !== computedSelectedCollection,
                 },
               ]"
@@ -100,7 +100,6 @@
       <!-- Explore Agents -->
       <div
         class="vdb-c-flex vdb-c-max-h-[160px] vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
-        :class="{ 'vdb-c-explore-agents-animation': isExploreAgentsFocused }"
       >
         <button
           @click="toggleExploreAgents()"
@@ -137,7 +136,7 @@
                 closeSidebar();
               "
               :class="[
-                'vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-black vdb-c-transition-all vdb-c-duration-75 hover:vdb-c-bg-[#FFF5EC]',
+                'vdb-c-ml-18 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-black vdb-c-transition-all vdb-c-duration-75 hover:vdb-c-bg-[#FFF5EC]',
               ]"
             >
               <span class="vdb-c-text-vdb-orange"> @ </span>
@@ -156,7 +155,7 @@
           class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
         >
           <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
-            <MenuIcon class="vdb-c-mr-8" />
+            <ChatIcon class="vdb-c-mr-8" fill="#464646" />
             <span class="vdb-c-font-semibold vdb-c-leading-5">Chats</span>
           </div>
           <div class="vdb-c-p-4">
@@ -177,7 +176,7 @@
           <transition name="fade" mode="out-in">
             <div v-if="addDummySession">
               <div
-                class="vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-bg-roy vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey"
+                class="vdb-c-ml-24 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-bg-[#FFF5EC] vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey"
               >
                 (new chat)
               </div>
@@ -194,10 +193,10 @@
               @mouseenter="hoveredSession = session.session_id"
               @mouseleave="hoveredSession = null"
               :class="[
-                'vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-between vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-px-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
+                'vdb-c-ml-24 vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-between vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-px-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
                 {
-                  'vdb-c-bg-roy': session.session_id === selectedSession,
-                  'hover:vdb-c-bg-gray-100':
+                  'vdb-c-bg-[#FFF5EC]': session.session_id === selectedSession,
+                  'hover:vdb-c-bg-[#FFF5EC]':
                     session.session_id !== selectedSession,
                 },
               ]"
@@ -311,6 +310,8 @@ import DeleteIcon from "../../icons/Delete.vue";
 import ComposeIcon from "../../icons/Compose.vue";
 import ChevronDown from "../../icons/ChevronDown.vue";
 import MenuIcon from "../../icons/Menu.vue";
+import ChatIcon from "../../icons/Chat.vue";
+import CollectionIcon from "../../icons/Collection.vue";
 
 const props = defineProps({
   sessions: {
@@ -465,7 +466,7 @@ watch(
 
 watch(showExploreAgents, (newValue) => {
   if (newValue) {
-    triggerExploreAgentsFocusAnimation();
+    // triggerExploreAgentsFocusAnimation();
   }
 });
 
