@@ -58,7 +58,7 @@
           v-for="(query, index) in actionCardQueries"
           :key="index"
           :class="[
-            'action-card-shadow vdb-c-w-160 vdb-c-h-120 vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-12 vdb-c-py-12 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240 md:vdb-c-px-16 md:vdb-c-py-20',
+            'action-card-shadow vdb-c-w-160 vdb-c-h-120 vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-12 vdb-c-py-12 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-220 md:vdb-c-px-16 md:vdb-c-py-20',
             {
               'vdb-c-border-orange-100 vdb-c-bg-orange-50 hover:vdb-c-border hover:vdb-c-border-[#FFCFA5] hover:vdb-c-bg-[#FFE9D3]':
                 query.type === 'primary',
@@ -212,7 +212,7 @@
       <!-- Videos -->
       <div
         v-if="previewVideos"
-        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
+        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-12 sm:vdb-c-mb-32 sm:vdb-c-gap-18"
       >
         <div
           v-for="(item, index) in previewVideos"

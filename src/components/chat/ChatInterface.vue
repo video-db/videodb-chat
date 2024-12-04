@@ -209,11 +209,12 @@ import ChatVideo from "../message-handlers/ChatVideo.vue";
 import ImageHandler from "../message-handlers/ImageHandler.vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 
-import CategorizeIcon from "../icons/Categorize.vue";
+import CollectionIcon from "../icons/Collection.vue";
 import DirectorIcon from "../icons/Director.vue";
 import ExternalLink from "../icons/ExternalLink.vue";
 import FileUploadIcon from "../icons/FileUpload.vue";
 import SearchIcon from "../icons/SearchIcon.vue";
+import QueryIcon from "../icons/Query.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -368,7 +369,7 @@ const dynamicActionCards = computed(() => {
             "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
           type: "primary",
           action: "chat",
-          icon: FileUploadIcon,
+          icon: QueryIcon,
         },
         {
           content: "What are the pre-built agents I can use right now?",
@@ -379,7 +380,7 @@ const dynamicActionCards = computed(() => {
           content: "Categorize all videos in this collection",
           type: "primary",
           action: "chat",
-          icon: CategorizeIcon,
+          icon: CollectionIcon,
         },
       ]
     : [
@@ -389,7 +390,7 @@ const dynamicActionCards = computed(() => {
             "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
           type: "primary",
           action: "chat",
-          icon: FileUploadIcon,
+          icon: QueryIcon,
         },
         {
           content: "What are the pre-built agents I can use right now?",

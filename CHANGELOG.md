@@ -1,5 +1,11 @@
 # Changelog
 
+### [0.0.17]() - 2024-12-04
+
+### Changed
+- Sidebar Alignement 
+- Update icons
+
 ### [0.0.16]() - 2024-12-04
 
 ### Changed 
