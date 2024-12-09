@@ -358,52 +358,54 @@ const chatLoading = computed(() =>
   ),
 );
 const dynamicActionCards = computed(() => {
-  return props.defaultScreenConfig.actionCardQueries ||
+  return (
+    props.defaultScreenConfig.actionCardQueries ||
     (!isFreshUser.value &&
-      activeCollectionData.value &&
-      activeCollectionVideos?.value?.length > 0)
-    ? [
-        {
-          component: UploadVideoQueryCard,
-          content:
-            "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
-          type: "primary",
-          action: "chat",
-          icon: QueryIcon,
-        },
-        {
-          content: "What are the pre-built agents I can use right now?",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content: "Categorize all videos in this collection",
-          type: "primary",
-          action: "chat",
-          icon: CollectionIcon,
-        },
-      ]
-    : [
-        {
-          component: UploadVideoQueryCard,
-          content:
-            "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
-          type: "primary",
-          action: "chat",
-          icon: QueryIcon,
-        },
-        {
-          content: "What are the pre-built agents I can use right now?",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content: "Show me how the search agent works? ",
-          type: "primary",
-          action: "chat",
-          icon: SearchIcon,
-        },
-      ];
+    activeCollectionData.value &&
+    activeCollectionVideos?.value?.length > 0
+      ? [
+          {
+            component: UploadVideoQueryCard,
+            content:
+              "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
+            type: "primary",
+            action: "chat",
+            icon: QueryIcon,
+          },
+          {
+            content: "What are the pre-built agents I can use right now?",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content: "Categorize all videos in this collection",
+            type: "primary",
+            action: "chat",
+            icon: CollectionIcon,
+          },
+        ]
+      : [
+          {
+            component: UploadVideoQueryCard,
+            content:
+              "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
+            type: "primary",
+            action: "chat",
+            icon: QueryIcon,
+          },
+          {
+            content: "What are the pre-built agents I can use right now?",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content: "Show me how the search agent works? ",
+            type: "primary",
+            action: "chat",
+            icon: SearchIcon,
+          },
+        ])
+  );
 });
 
 const scrollToBottom = () => {
