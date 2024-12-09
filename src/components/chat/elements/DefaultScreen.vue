@@ -24,6 +24,7 @@
             {{ collectionName }}
           </span>
           <Button
+            v-if="headerConfig.uploadButton"
             @click="$emit('upload-button-click')"
             variant="tertiary"
             class="!vdb-c-px-8 !vdb-c-py-10"
@@ -269,6 +270,10 @@ const props = defineProps({
   actionCardQueries: {
     type: Array,
     default: () => [],
+  },
+  headerConfig: {
+    type: Object,
+    default: () => ({}),
   },
   showOnboardingMessage: {
     type: Boolean,

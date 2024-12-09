@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.21]() - 2024-12-09
+
+### Added 
+- Config for Header
+
 ## [0.0.20]() - 2024-12-09
 
 ### Fixed - Config for Default Screen

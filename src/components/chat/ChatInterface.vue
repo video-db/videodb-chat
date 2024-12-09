@@ -109,6 +109,7 @@
                     (activeCollectionData &&
                       activeCollectionVideos?.length === 0)
                   "
+                  :header-config="headerConfig"
                   :collection-data="activeCollectionData"
                   :collection-videos="activeCollectionVideos"
                   :preview-videos="
@@ -237,6 +238,12 @@ const props = defineProps({
     type: String,
     default: "full",
     validator: (value) => ["full", "embedded"].includes(value),
+  },
+  headerConfig: {
+    type: Object,
+    default: () => ({
+      uploadButton: true,
+    }),
   },
   sidebarConfig: {
     type: Object,
