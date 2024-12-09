@@ -1,9 +1,12 @@
 # Changelog
 
-### [0.0.19]() - 2024-12-09
+## [0.0.20]() - 2024-12-09
 
-### Fixed 
-- Config for Default Screen
+### Fixed - Config for Default Screen
+
+## [0.0.19]() - 2024-12-09
+
+### Fixed - Config for Default Screen
 
 
 ### [0.0.18]() - 2024-12-04
