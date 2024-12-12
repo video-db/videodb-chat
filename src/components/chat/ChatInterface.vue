@@ -207,6 +207,7 @@ import UploadModal from "../modals/UploadModal.vue";
 import DeleteSessionDialog from "../modals/DeleteSessionModal.vue";
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
+import ChatVideos from "../message-handlers/ChatVideos.vue";
 import ImageHandler from "../message-handlers/ImageHandler.vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 
@@ -332,6 +333,7 @@ const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
   useChatInterface();
 
 registerMessageHandler("video", ChatVideo);
+registerMessageHandler("videos", ChatVideos);
 registerMessageHandler("text", TextResponse);
 registerMessageHandler("search_results", ChatSearchResults);
 registerMessageHandler("image", ImageHandler);
