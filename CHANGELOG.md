@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.22]() - 2024-12-12
+
+### Added 
+- New message handler support for Videos (multiple videos)
+    - Message handler key : "videos" 
+    - Message handler : `<ChatVideos/>`
+
 ## [0.0.21]() - 2024-12-09
 
 ### Added 
