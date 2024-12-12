@@ -11,17 +11,6 @@
       <div v-if="content.status === 'success' || content.status === 'progress'">
         <VideoList :video-results="content.videos" />
       </div>
-      <!-- <div v-if="content.status === 'progress'">
-        <div
-          class="vdb-c-full xl:vdb-c-1/2 vdb-c-animate-pulse vdb-c-overflow-hidden vdb-c-rounded-20 sm:vdb-c-w-3/4 lg:vdb-c-w-3/5 xl:vdb-c-w-1/2"
-        >
-          <div class="vdb-c-relative vdb-c-w-full" style="padding-top: 56.25%">
-            <div
-              class="vdb-c-absolute vdb-c-inset-0 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-gray-200"
-            ></div>
-          </div>
-        </div>
-      </div> -->
       <div
         v-else-if="content.status === 'not_generated'"
         class="vdb-c-flex vdb-c-flex-col"
