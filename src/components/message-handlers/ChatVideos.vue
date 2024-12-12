@@ -9,7 +9,10 @@
     />
     <transition name="fade" mode="out-in">
       <div v-if="content.status === 'success' || content.status === 'progress'">
-        <VideoList :video-results="content.videos" />
+        <VideoList
+          :video-results="content.videos"
+          @video-click="handleVideoClick"
+        />
       </div>
       <div
         v-else-if="content.status === 'not_generated'"
@@ -33,6 +36,9 @@ import {
 import "@videodb/player-vue/dist/style.css";
 import LoadingMessage from "./elements/LoadingMessage.vue";
 import VideoList from "../collection/VideoList.vue";
+import { useVideoDBChat } from "../../context.js";
+
+const { addMessage, loadSession } = useVideoDBChat();
 const props = defineProps({
   content: {
     type: Object,
@@ -53,6 +59,20 @@ const handleFullScreenChange = () => {
   } else {
     document.exitFullscreen();
   }
+};
+
+const handleVideoClick = (video) => {
+  if (video.externalUrl) {
+    window.open(video.url, "_blank");
+  } else {
+    handleAddMessage(`@stream_video ${video.name}`);
+  }
+};
+
+const handleAddMessage = (content) => {
+  addMessage({
+    content: [{ type: "text", text: content }],
+  });
 };
 </script>
 
