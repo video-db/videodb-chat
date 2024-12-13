@@ -10,6 +10,8 @@
     <transition name="fade" mode="out-in">
       <div v-if="content.status === 'success' || content.status === 'progress'">
         <VideoList
+          :columns="3"
+          :show-pagination="false"
           :video-results="content.videos"
           @video-click="handleVideoClick"
         />
@@ -65,7 +67,9 @@ const handleVideoClick = (video) => {
   if (video.externalUrl) {
     window.open(video.url, "_blank");
   } else {
-    handleAddMessage(`@stream_video ${video.name}`);
+    if (video.stream_url) {
+      handleAddMessage(`@stream_video ${video.name}`);
+    }
   }
 };
 
