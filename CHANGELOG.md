@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.23]() - 2024-12-13
+
+### Added 
+- Optional Pagination for VideoList
+- Configurable columns for VideoList
+
+### Fixed
+- videoClick handler in `<ChatVideos/>` message handler
+
 ## [0.0.22]() - 2024-12-12
 
 ### Added 
