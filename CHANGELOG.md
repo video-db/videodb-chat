@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.24]() - 2024-12-16
+
+### Added 
+- Change field name from `externalUrl` to `external_url` in `ChatInterface.vue`
+
 ## [0.0.23]() - 2024-12-13
 
 ### Added 
