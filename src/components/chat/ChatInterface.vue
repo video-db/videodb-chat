@@ -270,29 +270,25 @@ const props = defineProps({
       demoVideos: [
         {
           id: 1,
-          externalUrl: true,
-          url: "https://www.youtube.com/watch?v=Dncn_0RWrro",
+          external_url: "https://www.youtube.com/watch?v=Dncn_0RWrro",
           thumbnail_url:
             "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_automated.png",
         },
         {
           id: 2,
-          externalUrl: true,
-          url: "https://www.youtube.com/watch?v=bct8Vvl2acU",
+          external_url: "https://www.youtube.com/watch?v=bct8Vvl2acU",
           thumbnail_url:
             "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_gen_ai.png",
         },
         {
           id: 3,
-          externalUrl: true,
-          url: "https://www.youtube.com/watch?v=KcoA0eio1Zo",
+          external_url: "https://www.youtube.com/watch?v=KcoA0eio1Zo",
           thumbnail_url:
             "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_profanity.png",
         },
         {
           id: 4,
-          externalUrl: true,
-          url: "https://www.youtube.com/watch?v=7J7oBIv4eOY",
+          external_url: "https://www.youtube.com/watch?v=7J7oBIv4eOY",
           thumbnail_url:
             "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_keyword.png",
         },
@@ -533,8 +529,8 @@ const handleTagAgent = (agent, addToInput = true) => {
 
 // --- CollectionView/VideoView Click Handlers ---
 const handleVideoClick = (video) => {
-  if (video.externalUrl) {
-    window.open(video.url, "_blank");
+  if (video.external_url) {
+    window.open(video.external_url, "_blank");
   } else {
     videoId.value = video.id;
     handleAddMessage(`@stream_video ${video.name}`);

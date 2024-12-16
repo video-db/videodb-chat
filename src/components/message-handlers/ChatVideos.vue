@@ -64,8 +64,8 @@ const handleFullScreenChange = () => {
 };
 
 const handleVideoClick = (video) => {
-  if (video.externalUrl) {
-    window.open(video.url, "_blank");
+  if (video.external_url) {
+    window.open(video.external_url, "_blank");
   } else {
     if (video.stream_url) {
       handleAddMessage(`@stream_video ${video.name}`);
