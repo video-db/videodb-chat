@@ -7,7 +7,7 @@
           variant === 'primary',
         'vdb-c-border-pam hover:vdb-c-border-pam hover:vdb-c-bg-pam vdb-c-border vdb-c-bg-white vdb-c-text-black hover:vdb-c-text-white':
           variant === 'secondary',
-        'vdb-c-bg-vdb-orange vdb-c-text-white hover:vdb-c-bg-orange-400':
+        'vdb-c-bg-orange vdb-c-text-white hover:vdb-c-bg-orange-400':
           variant === 'tertiary',
       },
     ]"

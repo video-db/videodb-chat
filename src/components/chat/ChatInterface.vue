@@ -99,19 +99,15 @@
 
                 <default-screen
                   v-else
-                  :agents="agents.slice(0, 2)"
-                  :active-collection-data="activeCollectionData"
-                  :show-onboarding-message="isFreshUser"
-                  :is-fresh-user="isFreshUser"
+                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                  :header-config="headerConfig"
+                  :collection-data="activeCollectionData"
                   :action-card-queries="dynamicActionCards"
                   :show-demo-videos="
                     isFreshUser ||
                     (activeCollectionData &&
                       activeCollectionVideos?.length === 0)
                   "
-                  :header-config="headerConfig"
-                  :collection-data="activeCollectionData"
-                  :collection-videos="activeCollectionVideos"
                   :preview-videos="
                     isFreshUser ||
                     (activeCollectionData &&
@@ -120,12 +116,9 @@
                       : activeCollectionVideos?.slice(0, 4)
                   "
                   @query-card-click="handleQueryCardClick"
-                  @agent-click="handleTagAgent"
                   @video-click="handleVideoClick"
                   @upload-button-click="showUploadDialog = true"
-                  @explore-agents-click="handleExploreAgentsClick"
                   @view-all-videos-click="handleViewAllVideosClick"
-                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                 />
               </template>
 

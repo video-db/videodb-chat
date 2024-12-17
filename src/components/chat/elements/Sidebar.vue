@@ -139,7 +139,7 @@
                 'vdb-c-ml-18 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-black vdb-c-transition-all vdb-c-duration-75 hover:vdb-c-bg-[#FFF5EC]',
               ]"
             >
-              <span class="vdb-c-text-vdb-orange"> @ </span>
+              <span class="vdb-c-text-orange"> @ </span>
               <span> {{ agent.name }} </span>
             </div>
           </template>
@@ -377,7 +377,7 @@ const userClickedSessions = ref(false);
 const userClickedExploreAgents = ref(false);
 const userClickedCollections = ref(false);
 const hoveredSession = ref(null);
-const isMobile = ref(window.innerWidth < 1024);
+const isMobile = ref(window?.innerWidth < 1024);
 const isOpen = ref(false);
 
 const emit = defineEmits([
@@ -470,9 +470,6 @@ watch(showExploreAgents, (newValue) => {
   }
 });
 
-window.addEventListener("resize", () => {
-  isMobile.value = window.innerWidth < 1024;
-});
 
 defineExpose({
   toggleExploreAgents,
