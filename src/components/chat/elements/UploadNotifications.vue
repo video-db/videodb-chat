@@ -21,7 +21,7 @@
             }"
           >
             <div v-if="upload.status === 'loading'" class="vdb-c-p-12">
-              <FileUpload class="vdb-c-text-vdb-orange" fill="#EC5B16" />
+              <FileUpload class="vdb-c-text-orange" fill="#EC5B16" />
             </div>
             <svg
               v-else-if="upload.status === 'success'"
@@ -70,7 +70,7 @@
             <span
               class="vdb-c-line-clamp-2 vdb-c-text-xs vdb-c-font-normal sm:vdb-c-text-sm"
               :class="{
-                'vdb-c-text-vdb-orange': upload.status === 'loading',
+                'vdb-c-text-orange': upload.status === 'loading',
                 'vdb-c-text-success-700': upload.status === 'success',
                 'vdb-c-text-danger-700': upload.status === 'error',
               }"

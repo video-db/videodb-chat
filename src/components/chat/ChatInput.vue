@@ -16,7 +16,7 @@
           ]"
           @click="selectAgent(agent)"
         >
-          <span class="vdb-c-text-vdb-orange"> @ </span>
+          <span class="vdb-c-text-orange"> @ </span>
           <span> {{ agent.name }} </span>
         </div>
       </div>
@@ -70,7 +70,7 @@
           <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-end">
             <button
               :disabled="isInputDisabled"
-              class="vdb-c-font-sans vdb-c-mx-8 vdb-c-hidden vdb-c-h-40 vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-vdb-orange vdb-c-px-12 vdb-c-py-8 vdb-c-text-sm vdb-c-font-bold vdb-c-uppercase vdb-c-text-white vdb-c-transition hover:vdb-c-bg-orange-400 md:vdb-c-flex"
+              class="vdb-c-font-sans vdb-c-mx-8 vdb-c-hidden vdb-c-h-40 vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-orange vdb-c-px-12 vdb-c-py-8 vdb-c-text-sm vdb-c-font-bold vdb-c-uppercase vdb-c-text-white vdb-c-transition hover:vdb-c-bg-orange-400 md:vdb-c-flex"
               :class="{
                 'vdb-c-cursor-not-allowed vdb-c-bg-kilvish-400 hover:vdb-c-bg-kilvish-400':
                   charCount.value < 1,
@@ -114,14 +114,6 @@ const props = defineProps({
   placeholder: {
     type: String,
     default: "Ask a question",
-  },
-  isTablet: {
-    type: Boolean,
-    default: false,
-  },
-  isMobile: {
-    type: Boolean,
-    default: false,
   },
   agents: {
     type: Array,

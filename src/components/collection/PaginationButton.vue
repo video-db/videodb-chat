@@ -2,7 +2,7 @@
   <button
     class="vdb-c-w-[80px] vdb-c-border-[1px] vdb-c-border-[#DADADA] vdb-c-px-4 vdb-c-py-6 vdb-c-text-center vdb-c-text-sm vdb-c-font-normal vdb-c-text-black"
     :class="{
-      'vdb-c-text-vdb-orange vdb-c-bg-orange-50': state === 'active',
+      'vdb-c-text-orange vdb-c-bg-orange-50': state === 'active',
       'vdb-c-cursor-not-allowed': state === 'disabled',
       'vdb-c-border-l-0': !isFirst,
       'vdb-c-rounded-l-lg vdb-c-border-l': isFirst,

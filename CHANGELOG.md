@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.0.25]() - 2024-12-18
+
+### Added
+- Explore `DefaultScreen` & `Sidebar` component
+- Allow `DefultScreen` to accept header in slot
+
+### Fixed
+- remove unsued props from `<DefaultScreen/>` 
+- change `vdb-orange` to `orange` in tailwind config to avoid confusions while themeconfig 
+
+
 ## [0.0.24]() - 2024-12-16
 
 ### Added 

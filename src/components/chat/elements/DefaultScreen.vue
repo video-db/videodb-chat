@@ -3,50 +3,47 @@
     class="vdb-c-flex vdb-c-h-full vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-32 vdb-c-p-16 md:vdb-c-p-32"
   >
     <!-- Collection Header -->
-    <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
-      <h1
-        class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-xl vdb-c-leading-tight sm:vdb-c-text-3xl md:vdb-c-text-5xl"
-        :style="{ lineHeight: '1.2' }"
-      >
-        <div
-          v-if="collectionName"
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between"
+    <slot name="header">
+      <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
+        <h1
+          class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-xl vdb-c-leading-tight sm:vdb-c-text-3xl md:vdb-c-text-5xl"
+          :style="{ lineHeight: '1.2' }"
         >
-          <span
-            class="vdb-c-line-clamp-2 vdb-c-inline-block vdb-c-max-w-[60%] vdb-c-font-bold md:vdb-c-line-clamp-none md:vdb-c-max-w-[80%] md:vdb-c-font-extrabold"
-            style="
-              background-image: radial-gradient(circle, #ff7e32, #ff5b0a);
-              -webkit-background-clip: text;
-              -webkit-text-fill-color: transparent;
-            "
-            :title="collectionName"
+          <div
+            v-if="headerText"
+            class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between"
           >
-            {{ collectionName }}
-          </span>
-          <Button
-            v-if="headerConfig.uploadButton"
-            @click="$emit('upload-button-click')"
-            variant="tertiary"
-            class="!vdb-c-px-8 !vdb-c-py-10"
-          >
-            <div
-              class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium"
+            <span
+              class="vdb-c-line-clamp-2 vdb-c-inline-block vdb-c-max-w-[60%] vdb-c-font-bold md:vdb-c-line-clamp-none md:vdb-c-max-w-[80%] md:vdb-c-font-extrabold vdb-c-text-orange"
+              :title="headerText"
             >
-              <UploadIcon
-                class="vdb-c-hidden vdb-c-h-20 vdb-c-w-20 md:vdb-c-block"
-              />
-              <span class="vdb-c-flex vdb-c-flex-row vdb-c-gap-4">
-                Upload Video
-              </span>
-            </div>
-          </Button>
-        </div>
-        <span
-          v-else
-          class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
-        ></span>
-      </h1>
-    </div>
+              {{ headerText }}
+            </span>
+            <Button
+              v-if="headerConfig.uploadButton"
+              @click="$emit('upload-button-click')"
+              variant="tertiary"
+              class="!vdb-c-px-8 !vdb-c-py-10"
+            >
+              <div
+                class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium"
+              >
+                <UploadIcon
+                  class="vdb-c-hidden vdb-c-h-20 vdb-c-w-20 md:vdb-c-block"
+                />
+                <span class="vdb-c-flex vdb-c-flex-row vdb-c-gap-4">
+                  Upload Video
+                </span>
+              </div>
+            </Button>
+          </div>
+          <span
+            v-else
+            class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
+          ></span>
+        </h1>
+      </div>
+    </slot>
 
     <!-- Action Cards -->
     <div
@@ -65,7 +62,7 @@
                 query.type === 'primary',
               'vdb-c-border-roy vdb-c-bg-vdb-lightgrey hover:vdb-c-bg-roy':
                 query.type === 'muted',
-              'vdb-c-bg-vdb-orange hover:vdb-c-bg-[#D45214]':
+              'vdb-c-bg-orange hover:vdb-c-bg-orange-600':
                 query.type === 'cta',
               'vdb-c-col-span-2 md:vdb-c-col-span-1':
                 actionCardQueries?.length % 2 === 1
@@ -94,18 +91,19 @@
           >
             <div
               v-if="query.icon"
-              class="vdb-c-flex vdb-c-h-30 vdb-c-w-30 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-[#C14103] vdb-c-p-4"
+              class="vdb-c-flex vdb-c-h-30 vdb-c-w-30 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-orange vdb-c-p-4"
             >
               <component :is="query.icon"> </component>
             </div>
             <QuestionMark
               v-else
+              class="query-card-icon"
               :fill="
                 query.type === 'cta'
                   ? '#FFFFFF'
                   : query.type === 'muted'
                     ? '#2D2D2D'
-                    : '#C14103'
+                    : '#EC5B16'
               "
             />
           </div>
@@ -157,9 +155,7 @@
                     )
                   "
                 >
-                  <div
-                    class="vdb-c-text-sm vdb-c-font-medium"
-                  >
+                  <div class="vdb-c-text-sm vdb-c-font-medium">
                     <span class="vdb-c-hidden md:vdb-c-block">
                       Watch more demos</span
                     >
@@ -192,11 +188,7 @@
                 <div
                   class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
                 >
-                  <div
-                    class="vdb-c-text-sm vdb-c-font-medium"
-                  >
-                    View all
-                  </div>
+                  <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
                   <ChevronRightCircled class="vdb-c-hidden md:vdb-c-block" />
                 </div>
               </Button>
@@ -263,10 +255,6 @@ import ExternalLinkIcon from "../../icons/ExternalLink.vue";
 import StarIcon from "../../icons/Star.vue";
 
 const props = defineProps({
-  agents: {
-    type: Array,
-    default: () => [],
-  },
   actionCardQueries: {
     type: Array,
     default: () => [],
@@ -274,10 +262,6 @@ const props = defineProps({
   headerConfig: {
     type: Object,
     default: () => ({}),
-  },
-  showOnboardingMessage: {
-    type: Boolean,
-    default: true,
   },
   showDemoVideos: {
     type: Boolean,
@@ -291,27 +275,15 @@ const props = defineProps({
     type: Object,
     default: () => null,
   },
-  collectionVideos: {
-    type: Array,
-    default: null,
-  },
 });
 
 const collectionName = computed(() => props.collectionData?.name);
-const isOnboardingMessageVisible = ref(false);
-
-watch(
-  () => props.showOnboardingMessage,
-  (val) => {
-    isOnboardingMessageVisible.value = val;
-  },
-  { immediate: true },
+const headerText = computed(
+  () => props.headerConfig.headerText || props.collectionData?.name,
 );
 
 defineEmits([
   "query-card-click",
-  "agent-click",
-  "explore-agents-click",
   "video-click",
   "view-all-videos-click",
   "upload-button-click",
