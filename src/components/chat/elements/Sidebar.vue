@@ -47,193 +47,198 @@
         'vdb-c-pointer-events-none vdb-c-opacity-20': status === 'inactive',
       }"
     >
-      <!-- Collections -->
-      <div
-        class="vdb-c-flex vdb-c-max-h-[160px] vdb-c-flex-col vdb-c-overflow-hidden"
-      >
-        <button
-          @click="toggleCollections()"
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
-        >
-          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
-            <CollectionIcon class="vdb-c-mr-8" fill="#464646" />
-            <span class="vdb-c-font-semibold vdb-c-leading-5">Collections</span>
-          </div>
-          <div class="vdb-c-p-4">
-            <ChevronDown
-              :class="[
-                'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
-                { 'vdb-c-rotate-180': showCollections },
-              ]"
-              stroke-color="#464646"
-              :stroke-width="2"
-            />
-          </div>
-        </button>
+      <template v-for="section in visibleSections" :key="section">
+        <!-- Collections -->
         <div
-          v-if="status !== 'inactive' && showCollections"
-          class="vdb-c-mt-4 vdb-c-overflow-y-auto"
+          v-if="section === 'collections'"
+          class="vdb-c-flex vdb-c-max-h-[160px] vdb-c-flex-col vdb-c-overflow-hidden"
         >
-          <template v-for="collection in collections" :key="collection.id">
-            <div
-              @click="
-                $emit('collection-click', collection.id);
-                closeSidebar();
-              "
-              :class="[
-                'vdb-c-ml-24 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
-                {
-                  'vdb-c-bg-[#FFF5EC]':
-                    showSelectedCollection &&
-                    collection.id === computedSelectedCollection,
-                  'hover:vdb-c-bg-[#FFF5EC]':
-                    collection.id !== computedSelectedCollection,
-                },
-              ]"
-            >
-              {{ collection.name }}
+          <button
+            @click="toggleCollections()"
+            class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
+          >
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
+              <CollectionIcon class="vdb-c-mr-8" fill="#464646" />
+              <span class="vdb-c-font-semibold vdb-c-leading-5">Collections</span>
             </div>
-          </template>
-        </div>
-      </div>
-
-      <!-- Explore Agents -->
-      <div
-        class="vdb-c-flex vdb-c-max-h-[160px] vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
-      >
-        <button
-          @click="toggleExploreAgents()"
-          :class="[
-            'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-font-medium vdb-c-text-pam vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-roy',
-          ]"
-        >
-          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
-            <AgentIcon class="vdb-c-mr-8" />
-            <span class="vdb-c-font-semibold vdb-c-leading-5"
-              >Explore Agents</span
-            >
-          </div>
-          <div class="vdb-c-p-4">
-            <ChevronDown
-              :class="[
-                'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform vdb-c-duration-300',
-                { 'vdb-c-rotate-180': showExploreAgents },
-              ]"
-              stroke-color="#464646"
-              :stroke-width="2"
-            />
-          </div>
-        </button>
-        <div
-          v-if="status !== 'inactive' && showExploreAgents"
-          class="vdb-c-overflow-y-scroll vdb-c-rounded-lg vdb-c-px-8 vdb-c-py-4"
-          style="scrollbar-gutter: stable"
-        >
-          <template v-for="(agent, index) in agents" :key="index">
-            <div
-              @click="
-                $emit('agent-click', agent);
-                closeSidebar();
-              "
-              :class="[
-                'vdb-c-ml-18 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-black vdb-c-transition-all vdb-c-duration-75 hover:vdb-c-bg-[#FFF5EC]',
-              ]"
-            >
-              <span class="vdb-c-text-orange"> @ </span>
-              <span> {{ agent.name }} </span>
+            <div class="vdb-c-p-4">
+              <ChevronDown
+                :class="[
+                  'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
+                  { 'vdb-c-rotate-180': showCollections },
+                ]"
+                stroke-color="#464646"
+                :stroke-width="2"
+              />
             </div>
-          </template>
-        </div>
-      </div>
-
-      <!-- Sessions -->
-      <div
-        class="vdb-c-flex vdb-c-max-h-[38%] vdb-c-flex-col vdb-c-overflow-hidden"
-      >
-        <button
-          @click="toggleSessions()"
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
-        >
-          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
-            <ChatIcon class="vdb-c-mr-8" fill="#464646" />
-            <span class="vdb-c-font-semibold vdb-c-leading-5">Chats</span>
-          </div>
-          <div class="vdb-c-p-4">
-            <ChevronDown
-              :class="[
-                'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
-                { 'vdb-c-rotate-180': showSessions },
-              ]"
-              stroke-color="#464646"
-              :stroke-width="2"
-            />
-          </div>
-        </button>
-        <div
-          v-if="status !== 'inactive' && showSessions"
-          class="vdb-c-mt-4 vdb-c-overflow-y-auto"
-        >
-          <transition name="fade" mode="out-in">
-            <div v-if="addDummySession">
+          </button>
+          <div
+            v-if="status !== 'inactive' && showCollections"
+            class="vdb-c-mt-4 vdb-c-overflow-y-auto"
+          >
+            <template v-for="collection in collections" :key="collection.id">
               <div
-                class="vdb-c-ml-24 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-bg-[#FFF5EC] vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey"
-              >
-                (new chat)
-              </div>
-            </div>
-          </transition>
-          <transition-group name="fade" tag="div">
-            <div
-              v-for="session in sessions"
-              :key="session.session_id"
-              @click="
-                $emit('session-click', session.session_id);
-                closeSidebar();
-              "
-              @mouseenter="hoveredSession = session.session_id"
-              @mouseleave="hoveredSession = null"
-              :class="[
-                'vdb-c-ml-24 vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-between vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-px-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
-                {
-                  'vdb-c-bg-[#FFF5EC]': session.session_id === selectedSession,
-                  'hover:vdb-c-bg-[#FFF5EC]':
-                    session.session_id !== selectedSession,
-                },
-              ]"
-            >
-              <span>
-                {{
-                  new Date(session.created_at * 1000)
-                    .toLocaleString("en-US", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: false,
-                    })
-                    .replace(/\//g, ".")
-                    .replace(",", " -")
-                }}
-              </span>
-              <span
-                @click.stop="
-                  $emit('delete-session', session.session_id);
+                @click="
+                  $emit('collection-click', collection.id);
                   closeSidebar();
                 "
-                class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
+                :class="[
+                  'vdb-c-ml-24 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
+                  {
+                    'vdb-c-bg-[#FFF5EC]':
+                      showSelectedCollection &&
+                      collection.id === computedSelectedCollection,
+                    'hover:vdb-c-bg-[#FFF5EC]':
+                      collection.id !== computedSelectedCollection,
+                  },
+                ]"
               >
-                <DeleteIcon
-                  :fill="
-                    hoveredSession === session.session_id ? 'black' : '#CCCCCC'
-                  "
-                />
-              </span>
-            </div>
-          </transition-group>
+                {{ collection.name }}
+              </div>
+            </template>
+          </div>
         </div>
-      </div>
+
+        <!-- Explore Agents -->
+        <div
+          v-if="section === 'agents'"
+          class="vdb-c-flex vdb-c-max-h-[160px] vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
+        >
+          <button
+            @click="toggleExploreAgents()"
+            :class="[
+              'vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-font-medium vdb-c-text-pam vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-roy',
+            ]"
+          >
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
+              <AgentIcon class="vdb-c-mr-8" />
+              <span class="vdb-c-font-semibold vdb-c-leading-5"
+                >Explore Agents</span
+              >
+            </div>
+            <div class="vdb-c-p-4">
+              <ChevronDown
+                :class="[
+                  'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform vdb-c-duration-300',
+                  { 'vdb-c-rotate-180': showExploreAgents },
+                ]"
+                stroke-color="#464646"
+                :stroke-width="2"
+              />
+            </div>
+          </button>
+          <div
+            v-if="status !== 'inactive' && showExploreAgents"
+            class="vdb-c-overflow-y-scroll vdb-c-rounded-lg vdb-c-px-8 vdb-c-py-4"
+            style="scrollbar-gutter: stable"
+          >
+            <template v-for="(agent, index) in agents" :key="index">
+              <div
+                @click="
+                  $emit('agent-click', agent);
+                  closeSidebar();
+                "
+                :class="[
+                  'vdb-c-ml-18 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-black vdb-c-transition-all vdb-c-duration-75 hover:vdb-c-bg-[#FFF5EC]',
+                ]"
+              >
+                <span class="vdb-c-text-orange"> @ </span>
+                <span> {{ agent.name }} </span>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Sessions -->
+        <div
+          v-if="section === 'sessions'"
+          class="vdb-c-flex vdb-c-max-h-[38%] vdb-c-flex-col vdb-c-overflow-hidden"
+        >
+          <button
+            @click="toggleSessions()"
+            class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
+          >
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
+              <ChatIcon class="vdb-c-mr-8" fill="#464646" />
+              <span class="vdb-c-font-semibold vdb-c-leading-5">Chats</span>
+            </div>
+            <div class="vdb-c-p-4">
+              <ChevronDown
+                :class="[
+                  'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
+                  { 'vdb-c-rotate-180': showSessions },
+                ]"
+                stroke-color="#464646"
+                :stroke-width="2"
+              />
+            </div>
+          </button>
+          <div
+            v-if="status !== 'inactive' && showSessions"
+            class="vdb-c-mt-4 vdb-c-overflow-y-auto"
+          >
+            <transition name="fade" mode="out-in">
+              <div v-if="addDummySession">
+                <div
+                  class="vdb-c-ml-24 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-bg-[#FFF5EC] vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey"
+                >
+                  (new chat)
+                </div>
+              </div>
+            </transition>
+            <transition-group name="fade" tag="div">
+              <div
+                v-for="session in sessions"
+                :key="session.session_id"
+                @click="
+                  $emit('session-click', session.session_id);
+                  closeSidebar();
+                "
+                @mouseenter="hoveredSession = session.session_id"
+                @mouseleave="hoveredSession = null"
+                :class="[
+                  'vdb-c-ml-24 vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-between vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-px-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
+                  {
+                    'vdb-c-bg-[#FFF5EC]': session.session_id === selectedSession,
+                    'hover:vdb-c-bg-[#FFF5EC]':
+                      session.session_id !== selectedSession,
+                  },
+                ]"
+              >
+                <span>
+                  {{
+                    new Date(session.created_at * 1000)
+                      .toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false,
+                      })
+                      .replace(/\//g, ".")
+                      .replace(",", " -")
+                  }}
+                </span>
+                <span
+                  @click.stop="
+                    $emit('delete-session', session.session_id);
+                    closeSidebar();
+                  "
+                  class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
+                >
+                  <DeleteIcon
+                    :fill="
+                      hoveredSession === session.session_id ? 'black' : '#CCCCCC'
+                    "
+                  />
+                </span>
+              </div>
+            </transition-group>
+          </div>
+        </div>
+      </template>
     </div>
 
     <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col">
@@ -366,6 +371,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  sidebarSections: {
+    type: Array,
+    default: () => ['collections', 'agents', 'sessions'],
+    validator: (value) => {
+      return value.every(item => ['collections', 'agents', 'sessions'].includes(item));
+    }
+  }
 });
 
 const showExploreAgents = ref(true);
@@ -379,6 +391,10 @@ const userClickedCollections = ref(false);
 const hoveredSession = ref(null);
 const isMobile = ref(window?.innerWidth < 1024);
 const isOpen = ref(false);
+
+const visibleSections = computed(() => {
+  return props.sidebarSections;
+});
 
 const emit = defineEmits([
   "create-new-session",
@@ -469,7 +485,6 @@ watch(showExploreAgents, (newValue) => {
     // triggerExploreAgentsFocusAnimation();
   }
 });
-
 
 defineExpose({
   toggleExploreAgents,
