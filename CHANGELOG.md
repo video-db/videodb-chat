@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.26]() - 2024-12-18
+
+### Added 
+- Config to change order and visiblity of sidebar sections
+
+### Design Changes
+- improve Grid layout of QueryCards in DefaultScreen for mobile
+
 ## [0.0.25]() - 2024-12-18
 
 ### Added
