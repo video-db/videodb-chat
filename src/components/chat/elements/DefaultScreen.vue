@@ -50,7 +50,7 @@
       class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
     >
       <div
-        class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-12 md:vdb-c-grid-cols-3 md:vdb-c-gap-16 2xl:vdb-c-grid-cols-3"
+        class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-gap-12 md:vdb-c-grid-cols-3 md:vdb-c-gap-16 2xl:vdb-c-grid-cols-3"
       >
         <div
           v-for="(query, index) in actionCardQueries"
@@ -64,10 +64,6 @@
                 query.type === 'muted',
               'vdb-c-bg-orange hover:vdb-c-bg-orange-600':
                 query.type === 'cta',
-              'vdb-c-col-span-2 md:vdb-c-col-span-1':
-                actionCardQueries?.length % 2 === 1
-                  ? index === actionCardQueries.length - 1
-                  : index === actionCardQueries.length - 2,
             },
           ]"
           @click="$emit('query-card-click', query)"
