@@ -129,7 +129,8 @@ export function useVideoDBAgent(config) {
   watch(
     () => conversations,
     (val) => {
-      if (debug) console.log("debug :videodb-chat conversations updated:", val);
+      if (debug)
+        console.log("debug :videodb-chat conversations updated:", JSON.parse(JSON.stringify(val)));
     },
     { deep: true },
   );
