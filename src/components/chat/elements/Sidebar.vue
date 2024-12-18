@@ -51,7 +51,10 @@
         <!-- Collections -->
         <div
           v-if="section === 'collections'"
-          class="vdb-c-flex vdb-c-max-h-[160px] vdb-c-flex-col vdb-c-overflow-hidden"
+          class="sidebar-section vdb-c-flex vdb-c-flex-col vdb-c-overflow-hidden"
+          :style="{
+            'max-height': `calc(100% / ${visibleSections.length})`,
+          }"
         >
           <button
             @click="toggleCollections()"
@@ -59,7 +62,9 @@
           >
             <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
               <CollectionIcon class="vdb-c-mr-8" fill="#464646" />
-              <span class="vdb-c-font-semibold vdb-c-leading-5">Collections</span>
+              <span class="vdb-c-font-semibold vdb-c-leading-5"
+                >Collections</span
+              >
             </div>
             <div class="vdb-c-p-4">
               <ChevronDown
@@ -102,7 +107,10 @@
         <!-- Explore Agents -->
         <div
           v-if="section === 'agents'"
-          class="vdb-c-flex vdb-c-max-h-[160px] vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
+          class="sidebar-section vdb-c-flex vdb-c-flex-col vdb-c-gap-4 vdb-c-rounded-lg vdb-c-border vdb-c-border-transparent"
+          :style="{
+            'max-height': `calc(100% / ${visibleSections.length})`,
+          }"
         >
           <button
             @click="toggleExploreAgents()"
@@ -152,7 +160,10 @@
         <!-- Sessions -->
         <div
           v-if="section === 'sessions'"
-          class="vdb-c-flex vdb-c-max-h-[38%] vdb-c-flex-col vdb-c-overflow-hidden"
+          class="sidebar-section vdb-c-flex vdb-c-flex-col vdb-c-overflow-hidden"
+          :style="{
+            'max-height': `calc(100% / ${visibleSections.length})`,
+          }"
         >
           <button
             @click="toggleSessions()"
@@ -199,7 +210,8 @@
                 :class="[
                   'vdb-c-ml-24 vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-between vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-px-12 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
                   {
-                    'vdb-c-bg-[#FFF5EC]': session.session_id === selectedSession,
+                    'vdb-c-bg-[#FFF5EC]':
+                      session.session_id === selectedSession,
                     'hover:vdb-c-bg-[#FFF5EC]':
                       session.session_id !== selectedSession,
                   },
@@ -230,7 +242,9 @@
                 >
                   <DeleteIcon
                     :fill="
-                      hoveredSession === session.session_id ? 'black' : '#CCCCCC'
+                      hoveredSession === session.session_id
+                        ? 'black'
+                        : '#CCCCCC'
                     "
                   />
                 </span>
@@ -373,11 +387,13 @@ const props = defineProps({
   },
   sidebarSections: {
     type: Array,
-    default: () => ['collections', 'agents', 'sessions'],
+    default: () => ["collections", "agents", "sessions"],
     validator: (value) => {
-      return value.every(item => ['collections', 'agents', 'sessions'].includes(item));
-    }
-  }
+      return value.every((item) =>
+        ["collections", "agents", "sessions"].includes(item),
+      );
+    },
+  },
 });
 
 const showExploreAgents = ref(true);
@@ -533,4 +549,9 @@ defineExpose({
 .fade-leave-to {
   opacity: 0;
 }
+
+.sidebar-section {
+  overflow: auto;
+}
+
 </style>
