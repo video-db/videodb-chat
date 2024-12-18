@@ -1,5 +1,12 @@
 # Changelog
 
+
+## [0.0.27]() - 2024-12-19
+
+### Added 
+- Export `ChatMessageContainer` & Other message handler Components
+- Dynamic height for Sidebar Sections
+
 ## [0.0.26]() - 2024-12-18
 
 ### Added 
