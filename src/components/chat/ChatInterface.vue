@@ -23,7 +23,8 @@
           Object.keys(conversations).length === 0 && !showCollectionView
         "
         :initial-sessions-open="!isFreshUser"
-        :initial-collections-open="true"
+        :initial-explore-agents-open="!isFreshUser"
+        :initial-collections-open="!isFreshUser"
         :selected-session="sessionId"
         :add-dummy-session="Object.keys(conversations).length === 0"
         :selected-collection="collectionId"
@@ -32,7 +33,12 @@
         :collections="collections"
         @create-new-session="createNewSession"
         @delete-session="showDeleteSessionDialog"
-        @agent-click="handleTagAgent"
+        @agent-click="
+          if (!chatLoading) {
+            handleTagAgent($event, false);
+            handleAddMessage(`@${$event.name} `);
+          }
+        "
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
       />
@@ -93,18 +99,15 @@
 
                 <default-screen
                   v-else
-                  :agents="agents.slice(0, 2)"
-                  :active-collection-data="activeCollectionData"
-                  :show-onboarding-message="isFreshUser"
-                  :is-fresh-user="isFreshUser"
+                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                  :header-config="headerConfig"
+                  :collection-data="activeCollectionData"
                   :action-card-queries="dynamicActionCards"
                   :show-demo-videos="
                     isFreshUser ||
                     (activeCollectionData &&
                       activeCollectionVideos?.length === 0)
                   "
-                  :collection-data="activeCollectionData"
-                  :collection-videos="activeCollectionVideos"
                   :preview-videos="
                     isFreshUser ||
                     (activeCollectionData &&
@@ -113,11 +116,9 @@
                       : activeCollectionVideos?.slice(0, 4)
                   "
                   @query-card-click="handleQueryCardClick"
-                  @agent-click="handleTagAgent"
                   @video-click="handleVideoClick"
-                  @explore-agents-click="handleExploreAgentsClick"
+                  @upload-button-click="showUploadDialog = true"
                   @view-all-videos-click="handleViewAllVideosClick"
-                  class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                 />
               </template>
 
@@ -133,6 +134,7 @@
                 class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
               />
             </section>
+            <UploadNotifications ref="uploadNotificationsRef" />
           </div>
 
           <!-- chat input -->
@@ -159,63 +161,28 @@
     </div>
 
     <!-- Delete Session Dialog -->
-    <div
-      v-if="showDeleteDialog"
-      class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-black vdb-c-bg-opacity-50"
-      @click="cancelDeleteSession"
-    >
-      <div
-        class="vdb-c-shadow-xl vdb-c-overflow-hidden vdb-c-rounded-lg vdb-c-bg-white"
-        @click.stop
-      >
-        <div
-          class="vdb-c-flex vdb-c-gap-16 vdb-c-px-24 vdb-c-py-16 vdb-c-pt-24"
-        >
-          <div
-            class="vdb-c-flex vdb-c-h-40 vdb-c-w-40 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-red-100"
-          >
-            <warning-exclamation />
-          </div>
-          <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
-            <h2 class="vdb-c-text-lg vdb-c-font-medium vdb-c-text-gray-950">
-              Delete Session
-            </h2>
-            <p class="vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#6B7280]">
-              Are you sure you want to delete this session?
-            </p>
-          </div>
-        </div>
-        <div
-          class="vdb-c-flex vdb-c-w-full vdb-c-justify-end vdb-c-gap-12 vdb-c-bg-gray-50 vdb-c-px-24 vdb-c-py-12"
-        >
-          <button
-            @click="cancelDeleteSession"
-            class="vdb-c-shadow-sm vdb-c-rounded-md vdb-c-border vdb-c-border-gray-300 vdb-c-bg-white vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-gray-700 hover:vdb-c-bg-gray-300"
-          >
-            Cancel
-          </button>
-          <button
-            @click="confirmDeleteSession"
-            class="vdb-c-shadow-sm vdb-c-rounded-md vdb-c-bg-[#DC2626] vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-white hover:vdb-c-bg-[#B91C1C]"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
+    <DeleteSessionDialog
+      :show-dialog="showDeleteDialog"
+      @cancel-delete="
+        showDeleteDialog = false;
+        sessionToDelete = null;
+      "
+      @confirm-delete="confirmDeleteSession"
+    ></DeleteSessionDialog>
+
+    <!-- Upload Dialog -->
+    <UploadModal
+      :show-upload-dialog="showUploadDialog"
+      :default-selected-collection-id="activeCollectionData?.id"
+      :collections="collections"
+      @upload="handleUpload"
+      @cancel-upload="showUploadDialog = false"
+    />
   </section>
 </template>
 
 <script setup>
-import {
-  computed,
-  nextTick,
-  provide,
-  ref,
-  watch,
-  onMounted,
-  onUnmounted,
-} from "vue";
+import { computed, nextTick, provide, ref, watch } from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -226,19 +193,23 @@ import CollectionView from "./CollectionView.vue";
 import DefaultScreen from "./elements/DefaultScreen.vue";
 import SetupScreen from "./elements/SetupScreen.vue";
 import Sidebar from "./elements/Sidebar.vue";
+import UploadNotifications from "./elements/UploadNotifications.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 
+import UploadModal from "../modals/UploadModal.vue";
+import DeleteSessionDialog from "../modals/DeleteSessionModal.vue";
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
+import ChatVideos from "../message-handlers/ChatVideos.vue";
 import ImageHandler from "../message-handlers/ImageHandler.vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 
-import VideoDBLogo from "../icons/VideoDBLogo.vue";
-import FileUploadIcon from "../icons/FileUpload.vue";
-import WarningExclamation from "../icons/WarningExclamation.vue";
-import EyeIcon from "../icons/Eye.vue";
-import ExternalLink from "../icons/ExternalLink.vue";
+import CollectionIcon from "../icons/Collection.vue";
 import DirectorIcon from "../icons/Director.vue";
+import ExternalLink from "../icons/ExternalLink.vue";
+import FileUploadIcon from "../icons/FileUpload.vue";
+import SearchIcon from "../icons/SearchIcon.vue";
+import QueryIcon from "../icons/Query.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -262,6 +233,12 @@ const props = defineProps({
     default: "full",
     validator: (value) => ["full", "embedded"].includes(value),
   },
+  headerConfig: {
+    type: Object,
+    default: () => ({
+      uploadButton: true,
+    }),
+  },
   sidebarConfig: {
     type: Object,
     default: () => ({
@@ -273,15 +250,10 @@ const props = defineProps({
           icon: ExternalLink,
         },
         {
-          href: "https://director.videodb.io",
-          text: "Documentation",
+          href: "https://console.videodb.io",
+          text: "VideoDB Console",
         },
       ],
-      primaryLink: {
-        href: "https://console.videodb.io",
-        text: "VideoDB Console",
-        icon: VideoDBLogo,
-      },
     }),
   },
   defaultScreenConfig: {
@@ -291,29 +263,25 @@ const props = defineProps({
       demoVideos: [
         {
           id: 1,
-          externalUrl: true,
-          url: "https://www.youtube.com/watch?v=Dncn_0RWrro",
+          external_url: "https://www.youtube.com/watch?v=Dncn_0RWrro",
           thumbnail_url:
             "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_automated.png",
         },
         {
           id: 2,
-          externalUrl: true,
-          url: "https://www.youtube.com/watch?v=bct8Vvl2acU",
+          external_url: "https://www.youtube.com/watch?v=bct8Vvl2acU",
           thumbnail_url:
             "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_gen_ai.png",
         },
         {
           id: 3,
-          externalUrl: true,
-          url: "https://www.youtube.com/watch?v=KcoA0eio1Zo",
+          external_url: "https://www.youtube.com/watch?v=KcoA0eio1Zo",
           thumbnail_url:
             "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_profanity.png",
         },
         {
           id: 4,
-          externalUrl: true,
-          url: "https://www.youtube.com/watch?v=7J7oBIv4eOY",
+          external_url: "https://www.youtube.com/watch?v=7J7oBIv4eOY",
           thumbnail_url:
             "https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_keyword.png",
         },
@@ -325,6 +293,7 @@ const emit = defineEmits([]);
 
 const sidebarRef = ref(null);
 const chatInputRef = ref(null);
+const uploadNotificationsRef = ref(null);
 
 const showCollectionView = ref(false);
 const taggedAgent = ref([]);
@@ -345,12 +314,15 @@ const {
   deleteSession,
   conversations,
   loadSession,
+  uploadMedia,
+  refetchCollectionVideos,
 } = useChatHook(props.chatHookConfig);
 
 const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
   useChatInterface();
 
 registerMessageHandler("video", ChatVideo);
+registerMessageHandler("videos", ChatVideos);
 registerMessageHandler("text", TextResponse);
 registerMessageHandler("search_results", ChatSearchResults);
 registerMessageHandler("image", ImageHandler);
@@ -367,16 +339,14 @@ const isSetupComplete = computed(() => {
 });
 
 const collectionName = computed(() => activeCollectionData.value?.name);
-// const isFreshUser = computed(() => {
-//   if (collections.value && activeCollectionVideos.value) {
-//     return (
-//       collections.value.length < 2 && activeCollectionVideos.value.length < 1
-//     );
-//   }
-//   return false;
-// });
-
-const isFreshUser = ref(false);
+const isFreshUser = computed(() => {
+  if (collections.value && activeCollectionVideos.value) {
+    return (
+      collections.value.length < 2 && activeCollectionVideos.value.length < 1
+    );
+  }
+  return false;
+});
 
 const chatLoading = computed(() =>
   Object.values(conversations).some((conv) =>
@@ -386,64 +356,54 @@ const chatLoading = computed(() =>
   ),
 );
 const dynamicActionCards = computed(() => {
-  return props.defaultScreenConfig.actionCardQueries ||
-    (!isFreshUser &&
-      activeCollectionData.value &&
-      activeCollectionVideos.value.length > 0)
-    ? [
-        {
-          component: UploadVideoQueryCard,
-          isDemo: isFreshUser.value,
-          content:
-            "Upload [this video](https://www.youtube.com/watch?v=FgrO9ADPZSA) and generate a bullet point summary.",
-          type: "cta",
-          action: "chat",
-          icon: FileUploadIcon,
-        },
-        {
-          content: "What are the pre-built agents I can use right now?",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content:
-            "Can you break down the costs of using The Director with VideoDB’s infrastructure?",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content: "Categorize all the videos in this collection.",
-          type: "primary",
-          action: "chat",
-        },
-      ]
-    : [
-        {
-          component: UploadVideoQueryCard,
-          isDemo: isFreshUser.value,
-          content:
-            "Upload [this video](https://www.youtube.com/watch?v=FgrO9ADPZSA) and generate a bullet point summary.",
-          type: "cta",
-          action: "chat",
-          icon: FileUploadIcon,
-        },
-        {
-          content: "What are the pre-built agents I can use right now?",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content:
-            "Can you break down the costs of using The Director with VideoDB’s infrastructure?",
-          type: "primary",
-          action: "chat",
-        },
-        {
-          content: "Show me how search agent work with VideoDB SDK?",
-          type: "primary",
-          action: "chat",
-        },
-      ];
+  return (
+    props.defaultScreenConfig.actionCardQueries ||
+    (!isFreshUser.value &&
+    activeCollectionData.value &&
+    activeCollectionVideos?.value?.length > 0
+      ? [
+          {
+            component: UploadVideoQueryCard,
+            content:
+              "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
+            type: "primary",
+            action: "chat",
+            icon: QueryIcon,
+          },
+          {
+            content: "What are the pre-built agents I can use right now?",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content: "Categorize all videos in this collection",
+            type: "primary",
+            action: "chat",
+            icon: CollectionIcon,
+          },
+        ]
+      : [
+          {
+            component: UploadVideoQueryCard,
+            content:
+              "Upload <a href='https://www.youtube.com/watch?v=FgrO9ADPZSA' target='_blank'>https://youtu.be/FgrO9ADPZSA</a> and generate a bullet point summary.",
+            type: "primary",
+            action: "chat",
+            icon: QueryIcon,
+          },
+          {
+            content: "What are the pre-built agents I can use right now?",
+            type: "primary",
+            action: "chat",
+          },
+          {
+            content: "Show me how the search agent works? ",
+            type: "primary",
+            action: "chat",
+            icon: SearchIcon,
+          },
+        ])
+  );
 });
 
 const scrollToBottom = () => {
@@ -488,11 +448,6 @@ const showDeleteSessionDialog = (_sessionId) => {
   showDeleteDialog.value = true;
 };
 
-const cancelDeleteSession = () => {
-  showDeleteDialog.value = false;
-  sessionToDelete.value = null;
-};
-
 const confirmDeleteSession = () => {
   if (sessionToDelete.value === sessionId.value) {
     createNewSession();
@@ -500,6 +455,30 @@ const confirmDeleteSession = () => {
   deleteSession(sessionToDelete.value);
   showDeleteDialog.value = false;
   sessionToDelete.value = null;
+};
+
+// --- Upload Dialog Handlers ---
+const showUploadDialog = ref(false);
+const handleUpload = async (uploadData) => {
+  showUploadDialog.value = false;
+  let name = "Media";
+  if (uploadData.sourceType === "file") {
+    name = uploadData.source.name;
+  } else {
+    name = uploadData.source.url;
+  }
+  const uploadId = uploadNotificationsRef.value.addUpload(name);
+  try {
+    const res = await uploadMedia(uploadData);
+    if (res.ok) {
+      uploadNotificationsRef.value.updateUploadStatus(uploadId, "success");
+      refetchCollectionVideos();
+    } else {
+      uploadNotificationsRef.value.updateUploadStatus(uploadId, "error");
+    }
+  } catch (e) {
+    uploadNotificationsRef.value.updateUploadStatus(uploadId, "error");
+  }
 };
 
 // --- Handle Default Screen Click Handlers ---
@@ -543,11 +522,11 @@ const handleTagAgent = (agent, addToInput = true) => {
 
 // --- CollectionView/VideoView Click Handlers ---
 const handleVideoClick = (video) => {
-  if (video.externalUrl) {
-    window.open(video.url, "_blank");
+  if (video.external_url) {
+    window.open(video.external_url, "_blank");
   } else {
     videoId.value = video.id;
-    handleAddMessage(`Play ${video.name}`);
+    handleAddMessage(`@stream_video ${video.name}`);
   }
 };
 
@@ -569,9 +548,12 @@ defineExpose({
   messageHandlers,
   addMessage,
   loadSession,
+  activeCollectionData,
+  activeCollectionVideos,
   createNewSession,
   setChatInput,
   registerMessageHandler,
+  uploadMedia,
 });
 
 provide("videodb-chat", {
@@ -581,8 +563,11 @@ provide("videodb-chat", {
   messageHandlers,
   addMessage,
   loadSession,
+  activeCollectionData,
+  activeCollectionVideos,
   setChatInput,
   registerMessageHandler,
+  uploadMedia,
 });
 </script>
 

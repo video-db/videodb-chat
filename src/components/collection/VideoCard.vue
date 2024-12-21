@@ -56,11 +56,12 @@
           ></div>
           <default-thumbnail
             v-else
-            class="thumbnail vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0 vdb-c-top-0 vdb-c-h-106 vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1"
+            class="thumbnail vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0 vdb-c-top-0 vdb-c-h-106 vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1 vdb-c-animate-pulse"
             @click="$emit('video-click', item)"
           />
           <div
             class="center-button transparent-button vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2 vdb-c-flex vdb-c-h-48 vdb-c-w-48 -vdb-c-translate-x-1/2 -vdb-c-translate-y-1/2 vdb-c-transform vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full lg:vdb-c-h-56 lg:vdb-c-w-56"
+            @click="$emit('video-click', item)"
           >
             <PlayIcon class="vdb-c-h-20 vdb-c-w-20" />
           </div>
@@ -127,7 +128,7 @@ const secondsToHHMMSS = (val) => {
 }
 
 .vid-pb {
-  padding-bottom: 75%;
+  padding-bottom: 56.25%;
 }
 
 .text-elip {

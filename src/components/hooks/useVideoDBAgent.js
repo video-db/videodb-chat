@@ -58,6 +58,34 @@ export function useVideoDBAgent(config) {
   const fetchAllAgents = async () => fetchData(httpUrl, "/agent");
   const fetchConfigStatus = async () => fetchData(httpUrl, "/config/check");
 
+  const uploadMedia = async (uploadData) => {
+    const { source, sourceType, collectionId } = uploadData;
+    if (sourceType === "file") {
+      const formData = new FormData();
+      formData.append("file", source);
+
+      return fetch(`${httpUrl}/videodb/collection/${collectionId}/upload`, {
+        method: "POST",
+        body: formData,
+      });
+    } else if (sourceType === "url") {
+      return fetch(`${httpUrl}/videodb/collection/${collectionId}/upload`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ source: source.url, source_type: sourceType }),
+      });
+    }
+  };
+
+  const refetchCollectionVideos = async () => {
+    fetchCollectionVideos(session.collectionId).then((res) => {
+      activeCollectionVideos.value = res.data;
+    });
+  };
+
   onBeforeMount(() => {
     fetchConfigStatus().then((res) => {
       if (debug) console.log("debug :videodb-chat config status", res);
@@ -101,7 +129,8 @@ export function useVideoDBAgent(config) {
   watch(
     () => conversations,
     (val) => {
-      if (debug) console.log("debug :videodb-chat conversations updated:", val);
+      if (debug)
+        console.log("debug :videodb-chat conversations updated:", JSON.parse(JSON.stringify(val)));
     },
     { deep: true },
   );
@@ -281,5 +310,7 @@ export function useVideoDBAgent(config) {
     addMessage,
     loadSession,
     deleteSession,
+    uploadMedia,
+    refetchCollectionVideos,
   };
 }

@@ -6,7 +6,16 @@
       <div
         v-for="(item, index) in paginatedVideos"
         :key="`post-${item.id}`"
-        class="vdb-c-col-span-12 sm:vdb-c-col-span-6 md:vdb-c-col-span-4 lg:vdb-c-col-span-3"
+        class="vdb-c-col-span-12 sm:vdb-c-col-span-6"
+        :class="[
+          columns >= 4
+            ? 'md:vdb-c-col-span-4 lg:vdb-c-col-span-3'
+            : columns >= 3
+            ? 'md:vdb-c-col-span-4 lg:vdb-c-col-span-4'
+            : columns >= 2
+            ? 'md:vdb-c-col-span-6 lg:vdb-c-col-span-6'
+            : ''
+        ]"
       >
         <video-card
           :item="item"
@@ -17,7 +26,10 @@
         />
       </div>
     </div>
-    <div class="vdb-c-mt-24 vdb-c-flex vdb-c-justify-center">
+    <div
+      v-if="showPagination"
+      class="vdb-c-mt-24 vdb-c-flex vdb-c-justify-center"
+    >
       <PaginationButton
         :target-page="-1"
         :state="currentPage === 1 ? 'disabled' : 'default'"
@@ -60,6 +72,15 @@ const props = defineProps({
     type: Number,
     default: 8,
   },
+  showPagination: {
+    type: Boolean,
+    default: true,
+  },
+  columns: {
+    type: Number,
+    default: 4,
+    validator: (value) => value >= 1 && value <= 4,
+  },
 });
 
 const currentPage = ref(1);
@@ -69,6 +90,9 @@ const totalPages = computed(() =>
 );
 
 const paginatedVideos = computed(() => {
+  if (!props.showPagination) {
+    return props.videoResults;
+  }
   const start = (currentPage.value - 1) * props.itemsPerPage;
   const end = start + props.itemsPerPage;
   return props.videoResults.slice(start, end);

@@ -1,100 +1,68 @@
 <template>
   <div
-    class="vdb-c-flex vdb-c-h-full vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-32 vdb-c-p-32"
+    class="vdb-c-flex vdb-c-h-full vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-32 vdb-c-p-16 md:vdb-c-p-32"
   >
-    <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
-      <h1
-        class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-xl vdb-c-leading-tight sm:vdb-c-text-3xl md:vdb-c-text-5xl"
-        :style="{ lineHeight: '1.2' }"
-      >
-        <span
-          v-if="collectionName"
-          class="vdb-c-inline-block vdb-c-max-w-[80%] vdb-c-truncate vdb-c-font-extrabold"
-          style="
-            background-image: radial-gradient(circle, #ff7e32, #ff5b0a);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-          "
-          :title="collectionName"
-        >
-          {{ collectionName }}
-        </span>
-        <span
-          v-else
-          class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
-        ></span>
-      </h1>
-      <transition name="fade" mode="out-in">
-        <div
-          v-if="isOnboardingMessageVisible"
-          class="fade-in-anim vdb-c-relative vdb-c-rounded-lg vdb-c-bg-vdb-lightgrey vdb-c-p-20"
+    <!-- Collection Header -->
+    <slot name="header">
+      <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
+        <h1
+          class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-xl vdb-c-leading-tight sm:vdb-c-text-3xl md:vdb-c-text-5xl"
+          :style="{ lineHeight: '1.2' }"
         >
           <div
-            class="vdb-c-absolute vdb-c-right-8 vdb-c-top-10 vdb-c-cursor-pointer vdb-c-p-10 hover:vdb-c-bg-roy"
-            @click="hideOnboardingMessage"
+            v-if="headerText"
+            class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between"
           >
-            <CrossIcon />
+            <span
+              class="vdb-c-line-clamp-2 vdb-c-inline-block vdb-c-max-w-[60%] vdb-c-font-bold md:vdb-c-line-clamp-none md:vdb-c-max-w-[80%] md:vdb-c-font-extrabold vdb-c-text-orange"
+              :title="headerText"
+            >
+              {{ headerText }}
+            </span>
+            <Button
+              v-if="headerConfig.uploadButton"
+              @click="$emit('upload-button-click')"
+              variant="tertiary"
+              class="!vdb-c-px-8 !vdb-c-py-10"
+            >
+              <div
+                class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium"
+              >
+                <UploadIcon
+                  class="vdb-c-hidden vdb-c-h-20 vdb-c-w-20 md:vdb-c-block"
+                />
+                <span class="vdb-c-flex vdb-c-flex-row vdb-c-gap-4">
+                  Upload Video
+                </span>
+              </div>
+            </Button>
           </div>
-          <div
-            class="vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-6 vdb-c-text-xs vdb-c-text-pam md:vdb-c-text-base"
-          >
-            <div class="vdb-c-font-semibold">🎉 Welcome to The Director!</div>
-            <div>
-              Your AI-powered agent framework, built on
-              <a
-                href="https://www.videodb.io"
-                target="_blank"
-                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
-              >
-                VideoDB,
-              </a>
-              is ready to revolutionize how you work with videos and audio.
-            </div>
-            <div>
-              Explore pre-built agents or
-              <a
-                href="https://github.com/video-db/Director?tab=readme-ov-file#-creating-a-new-agent"
-                target="_blank"
-                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
-              >
-                create custom ones
-              </a>
-              tailored to your workflows. From upload to publish, The Director
-              handles it all—quickly and effortlessly.
-            </div>
-            <div>
-              We'd love to hear your thoughts! Join our community and share your
-              experience on
-              <a
-                href="https://discord.com/invite/py9P639jGz"
-                target="_blank"
-                class="vdb-c-font-semibold vdb-c-text-pam vdb-c-underline"
-              >
-                Discord </a
-              >.
-            </div>
-          </div>
-        </div>
-      </transition>
-    </div>
+          <span
+            v-else
+            class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
+          ></span>
+        </h1>
+      </div>
+    </slot>
+
     <!-- Action Cards -->
     <div
       class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
     >
       <div
-        class="vdb-c-grid vdb-c-grid-cols-2 vdb-c-gap-16 md:vdb-c-grid-cols-4 2xl:vdb-c-grid-cols-4"
+        class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-gap-12 md:vdb-c-grid-cols-3 md:vdb-c-gap-16 2xl:vdb-c-grid-cols-3"
       >
         <div
           v-for="(query, index) in actionCardQueries"
           :key="index"
           :class="[
-            'vdb-c-w-160 vdb-c-h-120 hover:vdb-c-shadow-md vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-16 vdb-c-py-20 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-240',
+            'action-card-shadow vdb-c-w-160 vdb-c-h-120 vdb-c-relative vdb-c-flex vdb-c-cursor-pointer vdb-c-flex-col vdb-c-gap-24 vdb-c-rounded-lg vdb-c-border vdb-c-px-12 vdb-c-py-12 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-h-220 md:vdb-c-px-16 md:vdb-c-py-20',
             {
-              'vdb-c-bg-orange-50 hover:vdb-c-bg-orange-100':
+              'vdb-c-border-orange-100 vdb-c-bg-orange-50 hover:vdb-c-border hover:vdb-c-border-[#FFCFA5] hover:vdb-c-bg-[#FFE9D3]':
                 query.type === 'primary',
               'vdb-c-border-roy vdb-c-bg-vdb-lightgrey hover:vdb-c-bg-roy':
                 query.type === 'muted',
-              'vdb-c-bg-vdb-orange hover:vdb-c-bg-[#D45214]':
+              'vdb-c-bg-orange hover:vdb-c-bg-orange-600':
                 query.type === 'cta',
             },
           ]"
@@ -117,20 +85,26 @@
               },
             ]"
           >
-            <component v-if="query.icon" :is="query.icon"> </component>
+            <div
+              v-if="query.icon"
+              class="vdb-c-flex vdb-c-h-30 vdb-c-w-30 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-orange vdb-c-p-4"
+            >
+              <component :is="query.icon"> </component>
+            </div>
             <QuestionMark
               v-else
+              class="query-card-icon"
               :fill="
                 query.type === 'cta'
                   ? '#FFFFFF'
                   : query.type === 'muted'
                     ? '#2D2D2D'
-                    : '#C14103'
+                    : '#EC5B16'
               "
             />
           </div>
           <p
-            class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-xs vdb-c-font-semibold md:vdb-c-text-sm lg:vdb-c-text-base"
+            class="vdb-c-flex-grow vdb-c-text-left vdb-c-text-xs vdb-c-font-medium md:vdb-c-text-sm md:vdb-c-font-semibold lg:vdb-c-text-base"
             :class="[
               {
                 'vdb-c-text-pam': query.type === 'muted',
@@ -146,57 +120,75 @@
       </div>
     </div>
 
+    <!-- Demo/Preview Videos -->
     <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-12">
-      <div
-        class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"
-        v-if="!showDemoVideos"
-      ></div>
+      <!-- Divider -->
+      <div class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"></div>
+
+      <!-- Headers -->
       <div
         class="vdb-c-text-base vdb-c-font-normal vdb-c-text-vdb-darkishgrey md:vdb-c-text-xl"
       >
+        <!-- Demo Videos Header -->
         <div v-if="showDemoVideos">
           <div
-            class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
+            class="vdb-c-mb-12 vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4 md:vdb-c-mb-16"
           >
-            <span class="vdb-c-font-semibold">
-              Here's how you can use Director:
+            <span
+              class="vdb-c-w-1/2 vdb-c-text-sm vdb-c-font-semibold md:vdb-c-text-lg"
+            >
+              See agents in action:
             </span>
-            <Button variant="secondary" class="vdb-c-hidden md:vdb-c-block">
-              <div
-                class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
-                @click="
-                  $emit(
-                    'view-all-videos-click',
-                    'https://www.youtube.com/playlist?list=PLhxAMFLSSK039xl1UgcZmoFLnb-qNRYQw',
-                  )
-                "
-              >
-                <div class="vdb-c-text-sm vdb-c-font-medium">
-                  Watch more demos
+
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
+              <Button variant="secondary">
+                <div
+                  class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+                  @click="
+                    $emit(
+                      'view-all-videos-click',
+                      'https://www.youtube.com/playlist?list=PLhxAMFLSSK039xl1UgcZmoFLnb-qNRYQw',
+                    )
+                  "
+                >
+                  <div class="vdb-c-text-sm vdb-c-font-medium">
+                    <span class="vdb-c-hidden md:vdb-c-block">
+                      Watch more demos</span
+                    >
+                    <span class="vdb-c-block md:vdb-c-hidden">
+                      More Demos
+                    </span>
+                  </div>
+                  <ExternalLinkIcon />
                 </div>
-                <ExternalLinkIcon />
-              </div>
-            </Button>
+              </Button>
+            </div>
           </div>
         </div>
+
+        <!-- Preview Videos Header -->
         <div v-else>
           <div
             v-if="collectionName"
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
-            <span> <b> Videos </b> in {{ collectionName }} </span>
-            <Button
-              variant="secondary"
-              @click="$emit('view-all-videos-click')"
-              class="vdb-c-hidden md:vdb-c-block"
-            >
-              <div
-                class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+            <span class="vdb-c-w-4/6 vdb-c-text-sm md:vdb-c-text-xl">
+              <b> Videos </b> in {{ collectionName }}
+            </span>
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
+              <Button
+                variant="secondary"
+                @click="$emit('view-all-videos-click')"
+                class="!vdb-c-px-8 !vdb-c-py-10"
               >
-                <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
-                <ChevronRightCircled />
-              </div>
-            </Button>
+                <div
+                  class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
+                >
+                  <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
+                  <ChevronRightCircled class="vdb-c-hidden md:vdb-c-block" />
+                </div>
+              </Button>
+            </div>
           </div>
           <div v-else>
             <div
@@ -205,9 +197,11 @@
           </div>
         </div>
       </div>
+
+      <!-- Videos -->
       <div
         v-if="previewVideos"
-        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
+        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-12 sm:vdb-c-mb-32 sm:vdb-c-gap-18"
       >
         <div
           v-for="(item, index) in previewVideos"
@@ -223,36 +217,9 @@
             @video-click="$emit('video-click', item)"
           />
         </div>
-        <div
-          class="vdb-c-col-span-12 vdb-c-block sm:vdb-c-col-span-6 md:vdb-c-col-span-4 md:vdb-c-hidden lg:vdb-c-col-span-3"
-        >
-          <Button variant="secondary" class="vdb-c-block">
-            <div
-              v-if="showDemoVideos"
-              class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
-              @click="
-                $emit(
-                  'view-all-videos-click',
-                  'https://www.youtube.com/playlist?list=PLhxAMFLSSK039xl1UgcZmoFLnb-qNRYQw',
-                )
-              "
-            >
-              <div class="vdb-c-text-sm vdb-c-font-medium">
-                Watch more demos
-              </div>
-              <ExternalLinkIcon />
-            </div>
-            <div
-              v-else
-              class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
-              @click="$emit('view-all-videos-click')"
-            >
-              <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
-              <ChevronRightCircled />
-            </div>
-          </Button>
-        </div>
       </div>
+
+      <!-- Videos Loader -->
       <div
         v-else
         class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
@@ -278,23 +245,19 @@ import VideoCardLoader from "../../collection/VideoCardLoader.vue";
 import Button from "../../buttons/Button.vue";
 
 import QuestionMark from "../../icons/QuestionMark.vue";
+import UploadIcon from "../../icons/FileUpload.vue";
 import ChevronRightCircled from "../../icons/ChevronRightCircled.vue";
 import ExternalLinkIcon from "../../icons/ExternalLink.vue";
-import CrossIcon from "../../icons/Cross.vue";
 import StarIcon from "../../icons/Star.vue";
 
 const props = defineProps({
-  agents: {
-    type: Array,
-    default: () => [],
-  },
   actionCardQueries: {
     type: Array,
     default: () => [],
   },
-  showOnboardingMessage: {
-    type: Boolean,
-    default: true,
+  headerConfig: {
+    type: Object,
+    default: () => ({}),
   },
   showDemoVideos: {
     type: Boolean,
@@ -308,33 +271,18 @@ const props = defineProps({
     type: Object,
     default: () => null,
   },
-  collectionVideos: {
-    type: Array,
-    default: null,
-  },
 });
 
 const collectionName = computed(() => props.collectionData?.name);
-const isOnboardingMessageVisible = ref(false);
-
-watch(
-  () => props.showOnboardingMessage,
-  (val) => {
-    isOnboardingMessageVisible.value = val;
-  },
-  { immediate: true },
+const headerText = computed(
+  () => props.headerConfig.headerText || props.collectionData?.name,
 );
-
-const hideOnboardingMessage = () => {
-  isOnboardingMessageVisible.value = false;
-};
 
 defineEmits([
   "query-card-click",
-  "agent-click",
-  "explore-agents-click",
   "video-click",
   "view-all-videos-click",
+  "upload-button-click",
 ]);
 </script>
 
@@ -359,5 +307,8 @@ defineEmits([
   to {
     opacity: 1;
   }
+}
+.action-card-shadow {
+  box-shadow: 0px 15px 29px 0px #0000004d;
 }
 </style>

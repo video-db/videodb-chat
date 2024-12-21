@@ -300,6 +300,9 @@ module.exports = {
           darkishgrey: "#1E1E1E",
           green: "#0AA910",
         },
+        orange:{
+          DEFAULT: "#EC5B16",
+        },
         black: {
           DEFAULT: "#000000",
           80: "rgba(0, 0, 0, 0.8)",

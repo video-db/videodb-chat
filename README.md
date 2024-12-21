@@ -289,12 +289,7 @@ The ChatInterface component accepts the following props:
               href: "https://docs.videodb.io",
               text: "Documentation",
             },
-          ],
-          primaryLink: {
-            href: "https://console.videodb.io",
-            text: "VideoDB Console",
-            icon: VideoDBLogo,
-          },
+          ]
     }
     ```
 
