@@ -23,6 +23,7 @@ module.exports = {
         "vdb-c-max-h-182",
         "vdb-c-bg-gradient-to-r",
         "vdb-c-from-sky-500",
+        "vdb-c-resize-none",
       ],
     },
   },

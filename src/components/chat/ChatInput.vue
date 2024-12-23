@@ -37,8 +37,7 @@
           <div>
             <div
               :class="[
-                'vdb-c-ml-6 vdb-c-hidden vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-[#BAE7BC] vdb-c-bg-[#E6F6E7] vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black md:vdb-c-flex',
-
+                'vdb-c-ml-6 vdb-c-hidden vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-orange-200 vdb-c-bg-orange-50 vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black md:vdb-c-flex',
                 { 'vdb-c-animate-pulse': !contextData?.name },
               ]"
             >
@@ -54,8 +53,9 @@
             </div>
           </div>
           <div class="vdb-c-relative vdb-c-h-full vdb-c-flex-grow">
-            <input
+            <textarea
               ref="inputRef"
+              type="text"
               class="vdb-c-chat-input vdb-c-h-full vdb-c-w-full vdb-c-bg-white vdb-c-pl-16 vdb-c-pr-8 vdb-c-font-medium vdb-c-text-[#1D2736] vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
               name="prompt"
               :placeholder="placeholder"
@@ -65,7 +65,14 @@
               @focus="inputFocused = true"
               @blur="handleBlur"
               @keydown="handleKeyDown"
-            />
+              style="
+                resize: none;
+                min-height: 40px;
+                max-height: 25vh;
+                box-sizing: border-box;
+                padding-top: 13px;
+              "
+            ></textarea>
           </div>
           <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-end">
             <button
@@ -73,7 +80,7 @@
               class="vdb-c-font-sans vdb-c-mx-8 vdb-c-hidden vdb-c-h-40 vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-orange vdb-c-px-12 vdb-c-py-8 vdb-c-text-sm vdb-c-font-bold vdb-c-uppercase vdb-c-text-white vdb-c-transition hover:vdb-c-bg-orange-400 md:vdb-c-flex"
               :class="{
                 'vdb-c-cursor-not-allowed vdb-c-bg-kilvish-400 hover:vdb-c-bg-kilvish-400':
-                  charCount.value < 1,
+                  charCount < 1,
               }"
               type="submit"
             >
@@ -103,9 +110,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
-
 import { useVideoDBChat } from "../../context";
-
 import ChatEnterIcon from "../icons/ChatEnter.vue";
 import SendIcon from "../icons/Send.vue";
 import EllipsesLoading from "./elements/EllipsesLoading.vue";
@@ -117,7 +122,7 @@ const props = defineProps({
   },
   agents: {
     type: Array,
-    default: [],
+    default: () => [],
   },
   contextData: {
     type: Object,
@@ -144,7 +149,7 @@ const focus = () => {
 const filteredAgents = computed(() => {
   if (!agentQuery.value) return props.agents;
   return props.agents.filter((agent) =>
-    agent.name.toLowerCase().includes(agentQuery.value.toLowerCase()),
+    agent.name.toLowerCase().includes(agentQuery.value.toLowerCase())
   );
 });
 
@@ -196,7 +201,7 @@ const handleKeyDown = (e) => {
       e.preventDefault();
       selectedAgentIndex.value = Math.min(
         filteredAgents.value.length - 1,
-        selectedAgentIndex.value + 1,
+        selectedAgentIndex.value + 1
       );
     } else if (e.key === "Enter") {
       e.preventDefault();
@@ -207,13 +212,21 @@ const handleKeyDown = (e) => {
   } else if (e.key === "@") {
     agentStartIndex.value = e.target.selectionStart;
     showAgentList.value = true;
+  } else if (e.key === "Enter" && !e.shiftKey) {
+    if (chatInput.value.trim() !== '') {
+      handleSubmit(e);
+    } else {
+      e.preventDefault();
+    }
+  } else if (e.shiftKey && e.key === "Enter") {
+    return;
   }
 };
 
 const selectAgent = (agent) => {
   const beforeAgent = chatInput.value.slice(0, agentStartIndex.value);
   const afterAgent = chatInput.value.slice(
-    agentStartIndex.value + agentQuery.value.length + 1,
+    agentStartIndex.value + agentQuery.value.length + 1
   );
   chatInput.value = `${beforeAgent}@${agent.name} ${afterAgent}`;
   inputRef.value.focus();
@@ -226,14 +239,13 @@ watch(
   (newValue) => {
     charCount.value = newValue.length;
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const handleSubmit = (e) => {
   e.preventDefault();
-  if (!showAgentList.value) {
+  if (!showAgentList.value && chatInput.value.trim() !== '') {
     emit("on-submit", chatInput.value);
-    e.target.reset();
     chatInput.value = "";
     charCount.value = 0;
     resetTag();
@@ -269,3 +281,4 @@ defineExpose({
   box-shadow: 0 0 6px 4px #0AA910;
 }
 </style>
+
