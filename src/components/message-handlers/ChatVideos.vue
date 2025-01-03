@@ -10,7 +10,7 @@
     <transition name="fade" mode="out-in">
       <div v-if="content.status === 'success' || content.status === 'progress'">
         <VideoList
-          :columns="3"
+          :columns="columns"
           :show-pagination="false"
           :video-results="content.videos"
           @video-click="handleVideoClick"
@@ -25,20 +25,11 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import {
-  VideoDBPlayer,
-  TimeCode,
-  BigCenterButton,
-  VolumeControlButton,
-  PlayPauseButton,
-  FullScreenButton,
-  ProgressBar,
-} from "@videodb/player-vue";
 import "@videodb/player-vue/dist/style.css";
-import LoadingMessage from "./elements/LoadingMessage.vue";
-import VideoList from "../collection/VideoList.vue";
+import { ref, computed } from "vue";
 import { useVideoDBChat } from "../../context.js";
+import VideoList from "../collection/VideoList.vue";
+import LoadingMessage from "./elements/LoadingMessage.vue";
 
 const { addMessage, loadSession } = useVideoDBChat();
 const props = defineProps({
@@ -51,6 +42,8 @@ const props = defineProps({
     default: false,
   },
 });
+
+const columns = computed(() => props.content?.ui_config?.columns || 4);
 
 const isFullScreen = ref(false);
 

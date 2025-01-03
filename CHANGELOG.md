@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.28]() - 2025-01-03
+
+### Added
+- Support for UI Config to change no of columns in `ChatVideos` 
+
 
 ## [0.0.27]() - 2024-12-19
 
