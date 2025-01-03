@@ -37,7 +37,7 @@
           <div>
             <div
               :class="[
-                'vdb-c-ml-6 vdb-c-hidden vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-orange-200 vdb-c-bg-orange-50 vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black md:vdb-c-flex',
+                'vdb-c-ml-6 vdb-c-hidden vdb-c-items-center vdb-c-gap-24 vdb-c-rounded-[42px] vdb-c-border vdb-c-border-[#BAE7BC] vdb-c-bg-[#E6F6E7] vdb-c-px-12 vdb-c-py-12 vdb-c-pr-16 vdb-c-text-black md:vdb-c-flex',
                 { 'vdb-c-animate-pulse': !contextData?.name },
               ]"
             >
@@ -56,7 +56,7 @@
             <textarea
               ref="inputRef"
               type="text"
-              class="vdb-c-chat-input vdb-c-h-full vdb-c-w-full vdb-c-bg-white vdb-c-pl-16 vdb-c-pr-8 vdb-c-font-medium vdb-c-text-[#1D2736] vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none"
+              class="vdb-c-chat-input vdb-c-h-full vdb-c-w-full vdb-c-bg-white vdb-c-pl-16 vdb-c-pr-8 vdb-c-pt-8 vdb-c-font-medium vdb-c-text-[#1D2736] vdb-c-placeholder-kilvish-500 focus:vdb-c-outline-none md:vdb-c-pt-[13px]"
               name="prompt"
               :placeholder="placeholder"
               autocomplete="off"
@@ -70,7 +70,6 @@
                 min-height: 40px;
                 max-height: 25vh;
                 box-sizing: border-box;
-                padding-top: 13px;
               "
             ></textarea>
           </div>
@@ -149,7 +148,7 @@ const focus = () => {
 const filteredAgents = computed(() => {
   if (!agentQuery.value) return props.agents;
   return props.agents.filter((agent) =>
-    agent.name.toLowerCase().includes(agentQuery.value.toLowerCase())
+    agent.name.toLowerCase().includes(agentQuery.value.toLowerCase()),
   );
 });
 
@@ -201,7 +200,7 @@ const handleKeyDown = (e) => {
       e.preventDefault();
       selectedAgentIndex.value = Math.min(
         filteredAgents.value.length - 1,
-        selectedAgentIndex.value + 1
+        selectedAgentIndex.value + 1,
       );
     } else if (e.key === "Enter") {
       e.preventDefault();
@@ -213,7 +212,7 @@ const handleKeyDown = (e) => {
     agentStartIndex.value = e.target.selectionStart;
     showAgentList.value = true;
   } else if (e.key === "Enter" && !e.shiftKey) {
-    if (chatInput.value.trim() !== '') {
+    if (chatInput.value.trim() !== "") {
       handleSubmit(e);
     } else {
       e.preventDefault();
@@ -226,7 +225,7 @@ const handleKeyDown = (e) => {
 const selectAgent = (agent) => {
   const beforeAgent = chatInput.value.slice(0, agentStartIndex.value);
   const afterAgent = chatInput.value.slice(
-    agentStartIndex.value + agentQuery.value.length + 1
+    agentStartIndex.value + agentQuery.value.length + 1,
   );
   chatInput.value = `${beforeAgent}@${agent.name} ${afterAgent}`;
   inputRef.value.focus();
@@ -239,12 +238,12 @@ watch(
   (newValue) => {
     charCount.value = newValue.length;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const handleSubmit = (e) => {
   e.preventDefault();
-  if (!showAgentList.value && chatInput.value.trim() !== '') {
+  if (!showAgentList.value && chatInput.value.trim() !== "") {
     emit("on-submit", chatInput.value);
     chatInput.value = "";
     charCount.value = 0;
@@ -277,8 +276,7 @@ defineExpose({
 }
 
 .context-icon {
-  background: radial-gradient(circle, #5BC25F 0%, #0AA910 100%);
-  box-shadow: 0 0 6px 4px #0AA910;
+  background: radial-gradient(circle, #5bc25f 0%, #0aa910 100%);
+  box-shadow: 0 0 6px 4px #0aa910;
 }
 </style>
-
