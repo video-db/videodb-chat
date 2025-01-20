@@ -33,6 +33,7 @@
         :collections="collections"
         @create-new-session="createNewSession"
         @delete-session="showDeleteSessionDialog"
+        @show-delete-collection="handleDeleteCollection"
         @agent-click="
           if (!chatLoading) {
             handleTagAgent($event, false);
@@ -170,6 +171,12 @@
       @confirm-delete="confirmDeleteSession"
     ></DeleteSessionDialog>
 
+    <DeleteCollectionErrorModal
+      :isVisible="showDeleteErrorModal"
+      :collection-name="selectedCollectionName"
+      @closeModal="showDeleteErrorModal = false"
+    />
+
     <!-- Upload Dialog -->
     <UploadModal
       :show-upload-dialog="showUploadDialog"
@@ -198,6 +205,7 @@ import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 
 import UploadModal from "../modals/UploadModal.vue";
 import DeleteSessionDialog from "../modals/DeleteSessionModal.vue";
+import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
 import ChatVideos from "../message-handlers/ChatVideos.vue";
@@ -312,6 +320,7 @@ const {
   activeVideoData,
   addMessage,
   deleteSession,
+  deleteCollection,
   conversations,
   loadSession,
   uploadMedia,
@@ -455,6 +464,19 @@ const confirmDeleteSession = () => {
   deleteSession(sessionToDelete.value);
   showDeleteDialog.value = false;
   sessionToDelete.value = null;
+};
+
+const showDeleteErrorModal = ref(false);
+const selectedCollectionName = ref("");
+
+const handleDeleteCollection = (collectionId) => {
+  const collection = collections.value.find((c) => c.id === collectionId);
+
+  if (!collection) return;
+
+  selectedCollectionName.value = collection.name;
+  console.log("triggered");
+  showDeleteErrorModal.value = true;
 };
 
 // --- Upload Dialog Handlers ---
