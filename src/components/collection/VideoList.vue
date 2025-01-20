@@ -23,6 +23,7 @@
           :index="index"
           border-class="sm:vdb-c-hidden"
           @video-click="$emit('video-click', $event)"
+          @delete-video="handleDeleteVideo"
         />
       </div>
     </div>
@@ -55,6 +56,13 @@
         @click="goToPage"
       />
     </div>
+
+    <!-- Delete Video Dialog -->
+    <DeleteVideoDialog
+      :show-dialog="showDeleteVideoDialog"
+      @cancel-delete="showDeleteVideoDialog = false"
+      @confirm-delete="confirmDeleteVideo"
+    />
   </div>
 </template>
 
@@ -62,6 +70,7 @@
 import { ref, computed } from "vue";
 import VideoCard from "./VideoCard.vue";
 import PaginationButton from "./PaginationButton.vue";
+import DeleteVideoDialog from "../modals/DeleteVideoModal.vue";
 
 const props = defineProps({
   videoResults: {
@@ -84,6 +93,8 @@ const props = defineProps({
 });
 
 const currentPage = ref(1);
+const showDeleteVideoDialog = ref(false);
+const videoToDelete = ref(null);
 
 const totalPages = computed(() =>
   Math.ceil(props.videoResults.length / props.itemsPerPage),
@@ -126,6 +137,20 @@ const goToPage = (page) => {
   } else {
     currentPage.value = page;
   }
+};
+
+const handleDeleteVideo = (video) => {
+  videoToDelete.value = video;
+  showDeleteVideoDialog.value = true;
+};
+
+const confirmDeleteVideo = () => {
+  props.videoResults.splice(
+    props.videoResults.findIndex((v) => v.id === videoToDelete.value.id),
+    1
+  );
+  showDeleteVideoDialog.value = false;
+  videoToDelete.value = null;
 };
 
 defineEmits(["video-click"]);
