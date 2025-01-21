@@ -66,7 +66,13 @@
                 >Collections</span
               >
             </div>
-            <div class="vdb-c-p-4">
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-4">
+              <button
+                class="vdb-c-flex vdb-c-items-center vdb-c-gap-4"
+                @click.stop="createNewCollection"
+              >
+                <PlusIcon class="vdb-c-h-16 vdb-c-w-16" stroke-color="#464646" />
+              </button>
               <ChevronDown
                 :class="[
                   'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
@@ -350,6 +356,7 @@ import { nextTick, ref, watch, computed } from "vue";
 import Button from "../../buttons/Button.vue";
 
 import DeleteIcon from "../../icons/Delete.vue";
+import PlusIcon from "../../icons/Plus.vue";
 import ComposeIcon from "../../icons/Compose.vue";
 import ChevronDown from "../../icons/ChevronDown.vue";
 import AgentIcon from "../../icons/Agent.vue";
