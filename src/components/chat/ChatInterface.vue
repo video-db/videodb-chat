@@ -53,40 +53,35 @@
           >
             <director-icon />
           </div>
-          <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
-            <div v-if="configStatus === null"></div>
-            <setup-screen
-              v-else-if="!isSetupComplete"
-              :config-status="configStatus"
-            />
-            <section
-              v-else-if="isSetupComplete"
-              ref="chatWindow"
-              class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
+
+          <!-- Main Layout with Static Header, Scrollable Content, and Static Footer -->
+          <div class="vdb-c-flex vdb-c-flex-col vdb-c-h-full">
+            <!-- Fixed Collection Header -->
+            <div
+              :class="`vdb-c-collection-header vdb-c-bg-white vdb-c-shadow vdb-c-sticky vdb-c-top-0 vdb-c-p-16 md:vdb-c-p-32 ${collectionHeaderClass}`"
             >
+              <template v-if="$slots.header">
+                <slot name="header" />
+              </template>
+              <template v-else>
+              <CollectionHeader
+                :collection-name="activeCollectionData?.name || 'Default Collection'"
+                :video-name="activeVideoData?.name || null"
+                :is-chat-screen="!isDefaultScreen"
+                :header-config="headerConfig"
+                @upload-button-click="showUploadDialog = true"
+              />
+              </template>
+            </div>
+
+            <!-- Scrollable Message Container -->
+            <div class="vdb-c-message-container vdb-c-flex-1 vdb-c-overflow-y-auto" ref="chatWindow">
               <template v-if="Object.keys(conversations).length === 0">
                 <!-- Empty Container -->
                 <div
                   v-if="showCollectionView"
                   class="vdb-c-w-full vdb-c-p-16 vdb-c-px-30"
                 >
-                  <div
-                    class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-border-b vdb-c-border-roy vdb-c-py-12 vdb-c-text-lg vdb-c-text-black"
-                  >
-                    <span class="vdb-c-flex vdb-c-font-bold">
-                      <span
-                        v-if="collectionName"
-                        class="vdb-c-cursor-pointer"
-                        @click="videoId = null"
-                      >
-                        {{ collectionName }}
-                      </span>
-                      <span
-                        v-else
-                        class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
-                      ></span>
-                    </span>
-                  </div>
                   <collection-view
                     v-if="showCollectionView"
                     :collection-id="collectionId"
@@ -133,28 +128,27 @@
                 :is-last-conv="i === Object.keys(conversations).length - 1"
                 class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
               />
-            </section>
-            <UploadNotifications ref="uploadNotificationsRef" />
-          </div>
+            </div>
 
-          <!-- chat input -->
-          <div
-            class="vdb-c-chat-input-container vdb-c-relative vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
-            :class="{
-              'vdb-c-pointer-events-none vdb-c-opacity-20': !(
-                configStatus !== null && isSetupComplete
-              ),
-            }"
-          >
-            <chat-input
-              ref="chatInputRef"
-              :agents="agents"
-              :input-disabled="chatLoading"
-              :placeholder="chatInputPlaceholder"
-              :context-data="activeVideoData || activeCollectionData"
-              @on-submit="handleAddMessage"
-              @tag-agent="handleTagAgent($event, false)"
-            />
+            <!-- Chat Input -->
+            <div
+              class="vdb-c-chat-input-container vdb-c-sticky vdb-c-bottom-0 vdb-c-bg-white"
+              :class="{
+                'vdb-c-pointer-events-none vdb-c-opacity-20': !(
+                  configStatus !== null && isSetupComplete
+                ),
+              }"
+            >
+              <chat-input
+                ref="chatInputRef"
+                :agents="agents"
+                :input-disabled="chatLoading"
+                :placeholder="chatInputPlaceholder"
+                :context-data="activeVideoData || activeCollectionData"
+                @on-submit="handleAddMessage"
+                @tag-agent="handleTagAgent($event, false)"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -163,10 +157,7 @@
     <!-- Delete Session Dialog -->
     <DeleteSessionDialog
       :show-dialog="showDeleteDialog"
-      @cancel-delete="
-        showDeleteDialog = false;
-        sessionToDelete = null;
-      "
+      @cancel-delete="showDeleteDialog = false; sessionToDelete = null;"
       @confirm-delete="confirmDeleteSession"
     ></DeleteSessionDialog>
 
@@ -181,7 +172,9 @@
   </section>
 </template>
 
+
 <script setup>
+
 import { computed, nextTick, provide, ref, watch } from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
@@ -196,6 +189,7 @@ import Sidebar from "./elements/Sidebar.vue";
 import UploadNotifications from "./elements/UploadNotifications.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 
+import CollectionHeader from "./elements/CollectionHeader.vue";
 import UploadModal from "../modals/UploadModal.vue";
 import DeleteSessionDialog from "../modals/DeleteSessionModal.vue";
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
@@ -348,6 +342,13 @@ const isFreshUser = computed(() => {
   return false;
 });
 
+const collectionHeaderClass = computed(() => {
+  if (Object.keys(conversations).length === 0) {
+    // Default screen: 5/6 width
+    return "vdb-c-w-5/6 vdb-c-mx-[8.5%] vdb-c-flex vdb-c-flex-col vdb-c-gap-32 vdb-c-p-16 md:vdb-c-p-32";
+  }
+});
+
 const chatLoading = computed(() =>
   Object.values(conversations).some((conv) =>
     Object.values(conv).some(
@@ -355,6 +356,7 @@ const chatLoading = computed(() =>
     ),
   ),
 );
+
 const dynamicActionCards = computed(() => {
   return (
     props.defaultScreenConfig.actionCardQueries ||
@@ -506,6 +508,16 @@ const handleExploreAgentsClick = () => {
   sidebarRef.value.toggleExploreAgents(true);
 };
 
+const isDefaultScreen = computed(() => Object.keys(conversations).length === 0);
+
+const dynamicHeaderText = computed(() => {
+  const collectionName = activeCollectionData.value?.name || "Default Collection";
+  const videoName = activeVideoData.value?.name || null;
+  return isDefaultScreen.value
+    ? collectionName
+    : `${collectionName} > ${videoName || ""}`;
+});
+
 const handleTagAgent = (agent, addToInput = true) => {
   const agentName = agent.name || agent;
   if (agentName) {
@@ -534,6 +546,7 @@ const handleAddMessage = (content) => {
   if (!sessionId.value) {
     loadSession();
   }
+
   addMessage({
     content: [{ type: "text", text: content }],
     agents: taggedAgent.value,
@@ -572,37 +585,71 @@ provide("videodb-chat", {
 </script>
 
 <style>
+/* General Layout Styling */
 .vdb-c-chat-input-container {
-  height: 94px;
+  flex-shrink: 0;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  background-color: white; /* Ensures the input container is clearly visible */
+}
+
+.vdb-c-message-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 94px;
+}
+
+/* Adjustments for Header and Parent Container */
+.vdb-c-collection-header {
+  background-color: white;
+  position: sticky;
+  top: 0;
 }
 
 .vdb-c-chat-parent {
-  height: calc(100% - 94px);
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensures it occupies the full height */
+  overflow: hidden; /* Prevents unwanted scrolling */
 }
 
-.vdb-c-chat-cont {
-  border: 10px solid white;
-}
-
+/* Media Queries for Responsiveness */
 @media (max-width: 1024px) {
-  .vdb-c-chat-parent {
-    height: calc(100% - 94px - 64px);
+  .vdb-c-chat-input-container {
+    height: 62px; /* Smaller height for tablets */
+  }
+
+  .vdb-c-message-container {
+    padding-bottom: 62px; /* Adjust padding for smaller screens */
   }
 }
 
 @media (max-width: 768px) {
   .vdb-c-chat-input-container {
-    height: 62px;
+    height: 48px; /* Even smaller height for mobile devices */
   }
-  .vdb-c-chat-parent {
-    height: calc(100% - 62px - 64px);
+
+  .vdb-c-message-container {
+    padding-bottom: 48px; /* Adjust padding for mobile */
   }
 }
 
-.vdb-c-rsb {
-  font-size: 12px !important;
+/* Scrollbar Styling */
+.vdb-c-message-container::-webkit-scrollbar {
+  width: 8px;
 }
 
+.vdb-c-message-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.vdb-c-message-container::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* Rotating Animation (Preserved) */
 @-webkit-keyframes rotating /* Safari and Chrome */ {
   from {
     -webkit-transform: rotate(0deg);
