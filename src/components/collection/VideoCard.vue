@@ -1,6 +1,8 @@
 <template>
   <div
     class="video-card vdb-c-flex vdb-c-h-full vdb-c-cursor-pointer vdb-c-flex-col vdb-c-rounded-lg vdb-c-bg-kilvish-200 vdb-c-p-6"
+    @mouseenter="hoveredVideo = item.id"
+    @mouseleave="hoveredVideo = null"
   >
     <div
       :class="[
@@ -69,26 +71,37 @@
       </div>
       <div
         v-if="variant === 'default'"
-        class="fade-on-hover vdb-c-flex vdb-c-flex-col vdb-c-justify-center vdb-c-text-kilvish-900"
+        class="fade-on-hover vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-mx-8 vdb-c-mb-8 vdb-c-text-kilvish-900"
         @click="$emit('video-click', item)"
       >
         <p
-          class="text-elip vdb-c-mb-8 vdb-c-line-clamp-2 vdb-c-h-[2.5em] vdb-c-whitespace-normal vdb-c-text-xs vdb-c-font-medium"
+          class="text-elip vdb-c-mb-0 vdb-c-line-clamp-2 vdb-c-whitespace-normal vdb-c-text-xs vdb-c-font-medium"
         >
           {{ item.name }}
         </p>
+        <!-- Delete Icon -->
+        <span
+          class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110 vdb-c-cursor-pointer vdb-c-ml-4"
+          @click.stop="$emit('delete-video', item)"
+        >
+          <DeleteIcon :fill="hoveredVideo === item.id ? 'black' : '#CCCCCC'" />
+        </span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from "vue";
 import PlayIcon from "../icons/play.vue";
 import DefaultThumbnail from "../assets/DefaultThumbnail.vue";
+import DeleteIcon from "../icons/Delete.vue";
 import { VideoDBPlayer, BigCenterButton } from "@videodb/player-vue";
 import "@videodb/player-vue/dist/style.css";
 
 import ExternalLinkIcon from "../icons/ExternalLink.vue";
+
+const hoveredVideo = ref(null);
 
 const props = defineProps({
   item: {
@@ -114,6 +127,8 @@ const secondsToHHMMSS = (val) => {
   }
   return time;
 };
+
+const emit = defineEmits(["delete-video"]);
 </script>
 
 <style scoped>

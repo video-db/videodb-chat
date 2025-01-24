@@ -254,6 +254,57 @@ export function useVideoDBAgent(config) {
     }
   };
 
+  const deleteVideo = async (collectionId, videoId) => {
+    console.log("deleteVideo called with:", { collectionId, videoId });
+  
+    try {
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}/video/${videoId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      const data = await response.json();
+      console.log("Response from backend:", data);
+  
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete the video.");
+      }
+  
+      return data;
+    } catch (error) {
+      console.error("Error in deleteVideo:", error);
+      throw error;
+    }
+  }; 
+  
+  const handleDeleteVideo = async (collectionId, videoId) => {
+    console.log("handleDeleteVideo called with:", { collectionId, videoId });
+  
+    try {
+      await deleteVideo(collectionId, videoId);
+      console.log("deleteVideo called successfully.");
+  
+      const collection = collections.value.find(
+        (collection) => collection.id === collectionId
+      );
+  
+      if (collection) {
+        console.log("Collection found:", collection);
+        collection.videos = collection.videos.filter(
+          (video) => video.id !== videoId
+        );
+        console.log("Updated videos in collection:", collection.videos);
+      }
+    } catch (error) {
+      console.error(`Failed to delete video ${videoId}:`, error);
+    }
+  };
+ 
   const addClientLoadingMessage = (convId) => {
     const messages = Object.values(conversations[convId]);
     const lastMessage = messages[messages.length - 1];
@@ -342,6 +393,9 @@ export function useVideoDBAgent(config) {
     loadSession,
     deleteSession,
     deleteCollection,
+    deleteVideo,
+    handleDeleteCollection,
+    handleDeleteVideo,
     uploadMedia,
     refetchCollectionVideos,
   };

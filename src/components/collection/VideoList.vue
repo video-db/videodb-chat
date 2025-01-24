@@ -23,6 +23,7 @@
           :index="index"
           border-class="sm:vdb-c-hidden"
           @video-click="$emit('video-click', $event)"
+          @delete-video="handleDeleteVideo"
         />
       </div>
     </div>
@@ -55,6 +56,13 @@
         @click="goToPage"
       />
     </div>
+
+    <!-- Delete Video Dialog -->
+    <DeleteVideoDialog
+      :show-dialog="showDeleteVideoDialog"
+      @cancel-delete="showDeleteVideoDialog = false"
+      @confirm-delete="confirmDeleteVideo"
+    />
   </div>
 </template>
 
@@ -62,6 +70,7 @@
 import { ref, computed } from "vue";
 import VideoCard from "./VideoCard.vue";
 import PaginationButton from "./PaginationButton.vue";
+import DeleteVideoDialog from "../modals/DeleteVideoModal.vue";
 
 const props = defineProps({
   videoResults: {
@@ -84,6 +93,8 @@ const props = defineProps({
 });
 
 const currentPage = ref(1);
+const showDeleteVideoDialog = ref(false);
+const videoToDelete = ref(null);
 
 const totalPages = computed(() =>
   Math.ceil(props.videoResults.length / props.itemsPerPage),
@@ -125,6 +136,32 @@ const goToPage = (page) => {
     currentPage.value++;
   } else {
     currentPage.value = page;
+  }
+};
+
+const handleDeleteVideo = (video) => {
+  videoToDelete.value = video;
+  showDeleteVideoDialog.value = true;
+};
+
+const confirmDeleteVideo = async () => {
+  if (!videoToDelete.value) {
+    console.error("No video to delete.");
+    return;
+  }
+
+  const videoId = videoToDelete.value.id;
+  const collectionId = videoToDelete.value.collection_id;
+
+  console.log("confirmDeleteVideo called with:", { collectionId, videoId });
+
+  try {
+    await handleDeleteVideo(collectionId, videoId);
+    showDeleteVideoDialog.value = false;
+    videoToDelete.value = null;
+    console.log("confirmDeleteVideo successfully completed.");
+  } catch (error) {
+    console.error(`Error confirming video deletion: ${error.message}`);
   }
 };
 
