@@ -92,6 +92,7 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
 import PlayIcon from "../icons/play.vue";
 import DefaultThumbnail from "../assets/DefaultThumbnail.vue";
 import DeleteIcon from "../icons/Delete.vue";
@@ -99,6 +100,8 @@ import { VideoDBPlayer, BigCenterButton } from "@videodb/player-vue";
 import "@videodb/player-vue/dist/style.css";
 
 import ExternalLinkIcon from "../icons/ExternalLink.vue";
+
+const hoveredVideo = ref(null);
 
 const props = defineProps({
   item: {
@@ -124,6 +127,8 @@ const secondsToHHMMSS = (val) => {
   }
   return time;
 };
+
+const emit = defineEmits(["delete-video"]);
 </script>
 
 <style scoped>

@@ -144,13 +144,25 @@ const handleDeleteVideo = (video) => {
   showDeleteVideoDialog.value = true;
 };
 
-const confirmDeleteVideo = () => {
-  props.videoResults.splice(
-    props.videoResults.findIndex((v) => v.id === videoToDelete.value.id),
-    1
-  );
-  showDeleteVideoDialog.value = false;
-  videoToDelete.value = null;
+const confirmDeleteVideo = async () => {
+  if (!videoToDelete.value) {
+    console.error("No video to delete.");
+    return;
+  }
+
+  const videoId = videoToDelete.value.id;
+  const collectionId = videoToDelete.value.collection_id;
+
+  console.log("confirmDeleteVideo called with:", { collectionId, videoId });
+
+  try {
+    await handleDeleteVideo(collectionId, videoId);
+    showDeleteVideoDialog.value = false;
+    videoToDelete.value = null;
+    console.log("confirmDeleteVideo successfully completed.");
+  } catch (error) {
+    console.error(`Error confirming video deletion: ${error.message}`);
+  }
 };
 
 defineEmits(["video-click"]);
