@@ -223,6 +223,37 @@ export function useVideoDBAgent(config) {
       });
   };
 
+  const deleteCollection = async (collectionId) => {
+    try {
+      const response = await fetch(`${httpUrl}/videodb/collection/${collectionId}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete the collection.");
+      }
+      return data;
+    } catch (error) {
+      console.error("Error deleting collection:", error);
+      throw error;
+    }
+  };
+  
+  const handleDeleteCollection = async (collectionId) => {
+    try {
+      await deleteCollection(collectionId);
+      collections.value = collections.value.filter(
+        (collection) => collection.id !== collectionId
+      );
+      if (session.collectionId === collectionId) {
+        session.collectionId = collections.value.length > 0 ? collections.value[0].id : null;
+      }
+      console.log(`Collection ${collectionId} deleted successfully.`);
+    } catch (error) {
+      console.error(`Failed to delete collection ${collectionId}:`, error);
+    }
+  };
+
   const addClientLoadingMessage = (convId) => {
     const messages = Object.values(conversations[convId]);
     const lastMessage = messages[messages.length - 1];
@@ -310,6 +341,7 @@ export function useVideoDBAgent(config) {
     addMessage,
     loadSession,
     deleteSession,
+    deleteCollection,
     uploadMedia,
     refetchCollectionVideos,
   };
