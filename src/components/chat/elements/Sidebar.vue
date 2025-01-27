@@ -71,16 +71,8 @@
                 class="vdb-c-flex vdb-c-items-center vdb-c-gap-4"
                 @click.stop="createNewCollection"
               >
-                <PlusIcon class="vdb-c-h-16 vdb-c-w-16" stroke-color="#464646" />
+                <PlusIcon stroke-color="#464646" />
               </button>
-              <ChevronDown
-                :class="[
-                  'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
-                  { 'vdb-c-rotate-180': showCollections },
-                ]"
-                stroke-color="#464646"
-                :stroke-width="2"
-              />
             </div>
           </button>
           <div
