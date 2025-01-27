@@ -24,7 +24,6 @@
         "
         :initial-sessions-open="!isFreshUser"
         :initial-explore-agents-open="!isFreshUser"
-        :initial-collections-open="!isFreshUser"
         :selected-session="sessionId"
         :add-dummy-session="Object.keys(conversations).length === 0"
         :selected-collection="collectionId"

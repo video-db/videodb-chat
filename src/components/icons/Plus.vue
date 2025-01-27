@@ -26,11 +26,11 @@
 defineProps({
   fillColor: {
     type: String,
-    default: "#12131A", // Default color
+    default: "#12131A",
   },
   customClass: {
     type: String,
-    default: "", // Allows custom class for styling
+    default: "",
   },
 });
 </script>

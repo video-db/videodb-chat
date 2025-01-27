@@ -10,6 +10,11 @@
       },
     ]"
   >
+    <SuccessBanner
+      v-if="showSuccessBanner"
+      :message="successMessage"
+      @hide="showSuccessBanner = false"
+    />
     <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
       <div class="vdb-c-text-2xl vdb-c-font-bold">
         <component v-if="config.icon" :is="config.icon" />
@@ -56,25 +61,23 @@
             'max-height': `calc(100% / ${visibleSections.length})`,
           }"
         >
-          <button
-            @click="toggleCollections()"
-            class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
-          >
-            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
-              <CollectionIcon class="vdb-c-mr-8" fill="#464646" />
-              <span class="vdb-c-font-semibold vdb-c-leading-5"
-                >Collections</span
-              >
-            </div>
-            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-4">
-              <button
-                class="vdb-c-flex vdb-c-items-center vdb-c-gap-4"
-                @click.stop="createNewCollection"
-              >
-                <PlusIcon stroke-color="#464646" />
-              </button>
-            </div>
-          </button>
+        <div
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
+        >
+          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
+            <CollectionIcon class="vdb-c-mr-8" fill="#464646" />
+            <span class="vdb-c-font-semibold vdb-c-leading-5">Collections</span>
+          </div>
+          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-4">
+            <button
+              class="vdb-c-flex vdb-c-items-center vdb-c-gap-4"
+              aria-label="Create Collection"
+              @click="toggleCreateCollectionModal"
+            >
+              <PlusIcon stroke-color="#464646" />
+            </button>
+          </div>
+        </div>
           <div
             v-if="status !== 'inactive' && showCollections"
             class="vdb-c-mt-4 vdb-c-overflow-y-auto"
@@ -272,7 +275,11 @@
         </div>
       </template>
     </div>
-
+      <CreateCollectionModal
+        :showDialog="showCreateCollectionModal"
+        @cancel="handleCancelCreateCollection"
+        @create="handleCreateCollection"
+      />
     <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col">
       <a
         v-for="(link, index) in config.links"
@@ -354,6 +361,9 @@ import ChevronDown from "../../icons/ChevronDown.vue";
 import AgentIcon from "../../icons/Agent.vue";
 import ChatIcon from "../../icons/Chat.vue";
 import CollectionIcon from "../../icons/Collection.vue";
+import CreateCollectionModal from "../../modals/CreateCollectionModal.vue";
+import SuccessBanner from "../../message-handlers/SuccessBanner.vue";
+import { useVideoDBAgent } from "/home/royalpinto007/videodb/videodb-chat/src/components/hooks/useVideoDBAgent.js";
 import DeleteCollectionErrorModal from "../../modals/DeleteCollectionErrorModal.vue";
 import { useVideoDBChat } from "../../../context";
 
@@ -406,9 +416,17 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  initialCollectionsOpen: {
-    type: Boolean,
-    default: false,
+  customVideoDBHook: {
+    type: Function,
+    default: null,
+  },
+  videoDBHookConfig: {
+    type: Object,
+    default: () => ({
+      debug: true,
+      socketUrl: "http://127.0.0.1:8000/chat",
+      httpUrl: "http://127.0.0.1:8000",
+    }),
   },
   sidebarSections: {
     type: Array,
@@ -433,6 +451,14 @@ const hoveredSession = ref(null);
 const isMobile = ref(window?.innerWidth < 1024);
 const isOpen = ref(false);
 const hoveredCollection = ref(null);
+const newCollection = ref({ name: "", description: "" });
+const showSuccessBanner = ref(false);
+const successMessage = ref("");
+const useDBHook = props.customVideoDBHook || useVideoDBAgent;
+
+const {
+  createCollection,
+} = useDBHook(props.videoDBHookConfig);
 const showDeleteErrorModal = ref(false);
 
 const { deleteCollection } = useVideoDBChat();
@@ -449,6 +475,16 @@ const emit = defineEmits([
   "agent-click",
 ]);
 
+const showCreateCollectionModal = ref(false);
+
+const toggleCreateCollectionModal = () => {
+  showCreateCollectionModal.value = !showCreateCollectionModal.value;
+};
+
+const handleCancelCreateCollection = () => {
+  showCreateCollectionModal.value = false;
+};
+
 const closeSidebar = () => {
   if (isMobile.value) {
     isOpen.value = false;
@@ -464,11 +500,6 @@ const toggleExploreAgents = (value) => {
 const toggleSessions = (value) => {
   userClickedSessions.value = true;
   showSessions.value = value !== undefined ? value : !showSessions.value;
-};
-
-const toggleCollections = (value) => {
-  userClickedCollections.value = true;
-  showCollections.value = value !== undefined ? value : !showCollections.value;
 };
 
 const toggleSidebar = () => {
@@ -494,6 +525,27 @@ const computedSelectedCollection = computed(() => {
   }
   return props.collections.length > 0 ? props.collections[0].id : null;
 });
+
+const handleCreateCollection = async () => {
+  if (!newCollection.value.name.trim()) {
+    alert("Collection name is required!");
+    return;
+  }
+
+  try {
+    const createdCollection = await createCollection(
+      newCollection.value.name,
+      newCollection.value.description
+    );
+    collections.value.push(createdCollection);
+    successMessage.value = `Collection "${createdCollection.name}" created successfully!`;
+    showSuccessBanner.value = true;
+    newCollection.value = { name: "", description: "" };
+  } catch (error) {
+    console.error("Error creating collection:", error.message);
+    alert(`Failed to create collection: ${error.message}`);
+  }
+};
 
 const promptDeleteCollection = async (collection) => {
   try {
@@ -527,16 +579,6 @@ watch(
   { immediate: true },
 );
 
-watch(
-  () => props.initialCollectionsOpen,
-  (newValue) => {
-    if (!userClickedCollections.value) {
-      showCollections.value = newValue;
-    }
-  },
-  { immediate: true },
-);
-
 watch(showExploreAgents, (newValue) => {
   if (newValue) {
     // triggerExploreAgentsFocusAnimation();
@@ -546,9 +588,9 @@ watch(showExploreAgents, (newValue) => {
 defineExpose({
   toggleExploreAgents,
   toggleSessions,
-  toggleCollections,
   triggerExploreAgentsFocusAnimation,
   toggleSidebar,
+  toggleCreateCollectionModal,
 });
 </script>
 
