@@ -3,13 +3,17 @@
     <div v-if="visible" class="success-banner" role="alert">
       <div class="icon-text">
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
+          width="24"
+          height="24"
           viewBox="0 0 24 24"
-          class="icon"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M9 3H15V4H20V6H4V4H9V3ZM6 8V19C6 19.55 6.45 20 7 20H17C17.55 20 18 19.55 18 19V8H6ZM10 10H11V17H10V10ZM13 10H14V17H13V10Z"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM15.7071 10.7071C16.0976 10.3166 16.0976 9.68342 15.7071 9.29289C15.3166 8.90237 14.6834 8.90237 14.2929 9.29289L11 12.5858L9.70711 11.2929C9.31658 10.9024 8.68342 10.9024 8.29289 11.2929C7.90237 11.6834 7.90237 12.3166 8.29289 12.7071L10.2929 14.7071C10.6834 15.0976 11.3166 15.0976 11.7071 14.7071L15.7071 10.7071Z"
+            fill="#0AA910"
           />
         </svg>
         <span>{{ message }}</span>
@@ -43,7 +47,7 @@ watch(
       }, props.duration);
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 
@@ -53,9 +57,9 @@ watch(
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #FBE5E5;
+  background-color: #e6f6e7;
   color: black;
-  border: 1px solid #E2462C;
+  border: 1px solid #0aa910;
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 16px;
@@ -74,12 +78,14 @@ watch(
 .icon {
   width: 20px;
   height: 20px;
-  color: #E2462C;
+  color: #0aa910;
 }
 /* Slide-down animation */
 .slide-down-enter-active,
 .slide-down-leave-active {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 .slide-down-enter-from,
 .slide-down-leave-to {

@@ -82,7 +82,7 @@
             v-if="status !== 'inactive' && showCollections"
             class="vdb-c-mt-4 vdb-c-overflow-y-auto"
           >
-            <template v-for="collection in collections" :key="collection.id">
+            <template v-for="collection in localCollections" :key="collection.id">
               <div
                 @mouseenter="hoveredCollection = collection.id"
                 @mouseleave="hoveredCollection = null"
@@ -362,7 +362,7 @@ import AgentIcon from "../../icons/Agent.vue";
 import ChatIcon from "../../icons/Chat.vue";
 import CollectionIcon from "../../icons/Collection.vue";
 import CreateCollectionModal from "../../modals/CreateCollectionModal.vue";
-import SuccessBanner from "../../message-handlers/SuccessBanner.vue";
+import SuccessBanner from "../../message-handlers/SuccessCollectionBanner.vue";
 import { useVideoDBAgent } from "/home/royalpinto007/videodb/videodb-chat/src/components/hooks/useVideoDBAgent.js";
 import DeleteCollectionErrorModal from "../../modals/DeleteCollectionErrorModal.vue";
 import { useVideoDBChat } from "../../../context";
@@ -454,6 +454,7 @@ const hoveredCollection = ref(null);
 const showSuccessBanner = ref(false);
 const successMessage = ref("");
 const useDBHook = props.customVideoDBHook || useVideoDBAgent;
+const localCollections = ref([...props.collections]);
 
 const {
   createCollection,
@@ -527,8 +528,6 @@ const computedSelectedCollection = computed(() => {
 
 const handleCreateCollection = async (newCollection) => {
   if (!newCollection.name.trim()) {
-    console.log("Collection Name:", newCollection.value.name); 
-    console.log("Collection Description:", newCollection.value.description);
     alert("Collection name is required!");
     return;
   }
@@ -538,8 +537,17 @@ const handleCreateCollection = async (newCollection) => {
       newCollection.name,
       newCollection.description
     );
-    collections.value.push(createdCollection);
-    successMessage.value = `Collection "${createdCollection.name}" created successfully!`;
+
+    const collectionIndex = localCollections.value.findIndex(
+      (collection) => collection.id === createdCollection.id
+    );
+
+    if (collectionIndex === -1) {
+      localCollections.value.push(createdCollection);
+    }
+
+    showCreateCollectionModal.value = false;
+    successMessage.value = `Collection has been created successfully!`;
     showSuccessBanner.value = true;
   } catch (error) {
     console.error("Error creating collection:", error.message);
@@ -558,6 +566,13 @@ const promptDeleteCollection = async (collection) => {
     console.error("Unexpected error deleting collection:", error);
   }
 };
+
+watch(
+  () => props.collections,
+  (newVal) => {
+    localCollections.value = [...newVal];
+  }
+);
 
 watch(
   () => props.initialSessionsOpen,
