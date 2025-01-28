@@ -70,6 +70,7 @@
                 :is-chat-screen="!isDefaultScreen"
                 :header-config="headerConfig"
                 @upload-button-click="showUploadDialog = true"
+                @collection-click="handleCollectionClick(collectionId)"
               />
               </template>
             </div>

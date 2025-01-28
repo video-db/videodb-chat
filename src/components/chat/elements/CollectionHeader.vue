@@ -13,13 +13,14 @@
           class="vdb-c-flex vdb-c-items-center"
           style="gap: 4px; flex-shrink: 1;"
         >
-          <span
-            class="vdb-c-inline-block vdb-c-max-w-[80%] md:vdb-c-max-w-[100%]"
+          <button
+            class="vdb-c-inline-block vdb-c-max-w-[80%] md:vdb-c-max-w-[100%] vdb-c-text-left"
             :class="[isChatScreen ? 'vdb-c-font-bold vdb-c-text-black vdb-c-text-[20px]' : 'vdb-c-font-extrabold vdb-c-text-orange']"
             :title="collectionName"
+            @click="openCollection"
           >
             {{ collectionName }}
-          </span>
+          </button>
           <span
             v-if="videoName"
             class="video-name"
@@ -74,7 +75,12 @@ const props = defineProps({
   },
 });
 
-defineEmits(["upload-button-click"]);
+const emit = defineEmits(["collection-click", "upload-button-click"]);
+
+const openCollection = () => {
+  const collectionName = props.collectionName;
+  emit("collection-click", collectionName);
+};
 </script>
 
 <style scoped>
