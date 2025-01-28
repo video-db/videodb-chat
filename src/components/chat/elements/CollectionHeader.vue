@@ -15,14 +15,16 @@
         >
           <span
             class="vdb-c-inline-block vdb-c-max-w-[80%] md:vdb-c-max-w-[100%]"
-            :class="[isChatScreen ? 'vdb-c-font-bold vdb-c-text-black' : 'vdb-c-font-extrabold vdb-c-text-orange']"
+            :class="[isChatScreen ? 'vdb-c-font-bold vdb-c-text-black vdb-c-text-[20px]' : 'vdb-c-font-extrabold vdb-c-text-orange']"
             :title="collectionName"
           >
             {{ collectionName }}
           </span>
           <span
             v-if="videoName"
-            class="video-name vdb-c-text-sm vdb-c-text-black md:vdb-c-text-base"
+            class="video-name"
+            :class="[isChatScreen ? 'vdb-c-text-black vdb-c-text-[20px]' : 'vdb-c-text-base']"
+            :title="videoName"
           >
             > {{ videoName }}
           </span>
@@ -95,9 +97,10 @@ defineEmits(["upload-button-click"]);
 }
 
 .video-name {
-  font-size: 40px;
   font-weight: normal;
-  margin-left: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .vdb-c-line-clamp-2 {

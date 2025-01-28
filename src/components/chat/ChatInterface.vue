@@ -58,7 +58,7 @@
           <div class="vdb-c-flex vdb-c-flex-col vdb-c-h-full">
             <!-- Fixed Collection Header -->
             <div
-              :class="`vdb-c-collection-header vdb-c-bg-white vdb-c-shadow vdb-c-sticky vdb-c-top-0 vdb-c-p-16 md:vdb-c-p-32 ${collectionHeaderClass}`"
+              :class="`vdb-c-collection-header vdb-c-bg-white vdb-c-shadow vdb-c-sticky vdb-c-top-0 vdb-c-p-16 ${collectionHeaderClass}`"
             >
               <template v-if="$slots.header">
                 <slot name="header" />
