@@ -20,7 +20,7 @@
       <div class="input-container">
         <input
           id="collectionName"
-          v-model="collectionName"
+          v-model="newCollection.name"
           type="text"
           class="input"
           placeholder="Collection name"
@@ -31,7 +31,7 @@
       <div class="input-container">
         <textarea
           id="collectionDescription"
-          v-model="collectionDescription"
+          v-model="newCollection.description"
           class="input"
           placeholder="Description"
         ></textarea>
@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from "vue";
+import { reactive, defineProps, defineEmits } from "vue";
 import CreateCollectionIcon from "../icons/CreateCollection.vue";
 
 defineProps({
@@ -69,23 +69,21 @@ defineProps({
 
 const emit = defineEmits(["cancel", "create"]);
 
-const collectionName = ref("");
-const collectionDescription = ref("");
+const newCollection = reactive({
+  name: "",
+  description: "",
+});
 
 const createCollection = () => {
-  if (!collectionName.value.trim()) {
+  if (!newCollection.name.trim()) {
     alert("Collection name cannot be empty.");
     return;
   }
 
-  const newCollection = {
-    name: collectionName.value,
-    description: collectionDescription.value,
-  };
-  emit("create", newCollection);
+  emit("create", { ...newCollection });
 
-  collectionName.value = "";
-  collectionDescription.value = "";
+  newCollection.name = "";
+  newCollection.description = "";
 };
 </script>
 

@@ -451,7 +451,6 @@ const hoveredSession = ref(null);
 const isMobile = ref(window?.innerWidth < 1024);
 const isOpen = ref(false);
 const hoveredCollection = ref(null);
-const newCollection = ref({ name: "", description: "" });
 const showSuccessBanner = ref(false);
 const successMessage = ref("");
 const useDBHook = props.customVideoDBHook || useVideoDBAgent;
@@ -526,21 +525,22 @@ const computedSelectedCollection = computed(() => {
   return props.collections.length > 0 ? props.collections[0].id : null;
 });
 
-const handleCreateCollection = async () => {
-  if (!newCollection.value.name.trim()) {
+const handleCreateCollection = async (newCollection) => {
+  if (!newCollection.name.trim()) {
+    console.log("Collection Name:", newCollection.value.name); 
+    console.log("Collection Description:", newCollection.value.description);
     alert("Collection name is required!");
     return;
   }
 
   try {
     const createdCollection = await createCollection(
-      newCollection.value.name,
-      newCollection.value.description
+      newCollection.name,
+      newCollection.description
     );
     collections.value.push(createdCollection);
     successMessage.value = `Collection "${createdCollection.name}" created successfully!`;
     showSuccessBanner.value = true;
-    newCollection.value = { name: "", description: "" };
   } catch (error) {
     console.error("Error creating collection:", error.message);
     alert(`Failed to create collection: ${error.message}`);
