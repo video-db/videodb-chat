@@ -1,60 +1,75 @@
 # Changelog
 
+## [0.0.29]() - 2025-01-30
+
+### Added
+
+- Add optional support for Session Name in Sidebar
+
 ## [0.0.28]() - 2025-01-03
 
 ### Added
-- Support for UI Config to change no of columns in `ChatVideos` 
 
+- Support for UI Config to change no of columns in `ChatVideos`
 
 ## [0.0.27]() - 2024-12-19
 
-### Added 
+### Added
+
 - Export `ChatMessageContainer` & Other message handler Components
 - Dynamic height for Sidebar Sections
 
 ## [0.0.26]() - 2024-12-18
 
-### Added 
+### Added
+
 - Config to change order and visiblity of sidebar sections
 
 ### Design Changes
+
 - improve Grid layout of QueryCards in DefaultScreen for mobile
 
 ## [0.0.25]() - 2024-12-18
 
 ### Added
+
 - Explore `DefaultScreen` & `Sidebar` component
 - Allow `DefultScreen` to accept header in slot
 
 ### Fixed
-- remove unsued props from `<DefaultScreen/>` 
-- change `vdb-orange` to `orange` in tailwind config to avoid confusions while themeconfig 
 
+- remove unsued props from `<DefaultScreen/>`
+- change `vdb-orange` to `orange` in tailwind config to avoid confusions while themeconfig
 
 ## [0.0.24]() - 2024-12-16
 
-### Added 
+### Added
+
 - Change field name from `externalUrl` to `external_url` in `ChatInterface.vue`
 
 ## [0.0.23]() - 2024-12-13
 
-### Added 
+### Added
+
 - Optional Pagination for VideoList
 - Configurable columns for VideoList
 
 ### Fixed
+
 - videoClick handler in `<ChatVideos/>` message handler
 
 ## [0.0.22]() - 2024-12-12
 
-### Added 
+### Added
+
 - New message handler support for Videos (multiple videos)
-    - Message handler key : "videos" 
-    - Message handler : `<ChatVideos/>`
+  - Message handler key : "videos"
+  - Message handler : `<ChatVideos/>`
 
 ## [0.0.21]() - 2024-12-09
 
-### Added 
+### Added
+
 - Config for Header
 
 ## [0.0.20]() - 2024-12-09
@@ -65,21 +80,23 @@
 
 ### Fixed - Config for Default Screen
 
-
 ### [0.0.18]() - 2024-12-04
 
 ### Added
+
 - Agent Icon
 
 ### [0.0.17]() - 2024-12-04
 
 ### Changed
-- Sidebar Alignement 
+
+- Sidebar Alignement
 - Update icons
 
 ### [0.0.16]() - 2024-12-04
 
-### Changed 
+### Changed
+
 - Director Icon Replaced with Beta
 - Delete Modal as seperate component
 - Default Screen Improvements for mobile
@@ -89,58 +106,64 @@
 ### [0.0.15]() - 2024-12-03
 
 ### Fixed
+
 - Hotfix collection refresh error
 
 ### [0.0.14]() - 2024-12-03
 
 ### Added
+
 - Default Screen UX improvements
 
 ### [0.0.13]() - 2024-12-03
 
 ### Added
+
 - Chat Input UX improvements
-    - Context Icon
-    - Query card copy changes
-    - Sidebar design changes
+  - Context Icon
+  - Query card copy changes
+  - Sidebar design changes
 
 ### [0.0.12]() - 2024-12-03
 
 ### Added
+
 - Query Card UX improvments
 
 ### [0.0.11]() - 2024-11-29
 
 ### Added
+
 - Upload Notifications
 - Upload Button copy changes
 
 ### [0.0.10]() - 2024-11-28
 
 ### Added
-- Upload Modal
 
+- Upload Modal
 
 ## [0.0.9]() - 2024-11-27
 
-### Updated 
+### Updated
+
 - Bump `@videodb/player-vue` to `~0.0.4`
 
 ### [0.0.8]() - 2024-11-22
 
 ### Changed
-- Update `@videodb/player-vue` to `~0.0.3`
-- Responsiveness improvments 
 
+- Update `@videodb/player-vue` to `~0.0.3`
+- Responsiveness improvments
 
 ### [0.0.7]() - 2024-11-21
 
-
 ### Added
+
 - `<DefaultScreen/>`
-    - UX improvements
-    - Collection Preview
-    - Query Card improvments
+  - UX improvements
+  - Collection Preview
+  - Query Card improvments
 - `<VideoCard/>` to support inline video players
 
 ### [0.0.6]()
@@ -157,7 +180,7 @@
 - Delete Session
 - Video View in session History
 - Expose ChatInputRef & createNewSession()
-- Highlight isFocused state in LoadingMessage 
+- Highlight isFocused state in LoadingMessage
 
 ### Fixes
 

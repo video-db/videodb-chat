@@ -217,8 +217,9 @@
                   },
                 ]"
               >
-                <span>
+                <span class="vdb-c-w-[90%] vdb-c-truncate">
                   {{
+                    session.name ||
                     new Date(session.created_at * 1000)
                       .toLocaleString("en-US", {
                         year: "numeric",
@@ -553,5 +554,4 @@ defineExpose({
 .sidebar-section {
   overflow: auto;
 }
-
 </style>
