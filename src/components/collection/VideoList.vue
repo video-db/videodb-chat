@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Videos Grid -->
     <div
       class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
     >
@@ -23,9 +24,12 @@
           :index="index"
           border-class="sm:vdb-c-hidden"
           @video-click="$emit('video-click', $event)"
+          @delete-video="$emit('delete-video', $event)"
         />
       </div>
     </div>
+
+    <!-- Pagination -->
     <div
       v-if="showPagination"
       class="vdb-c-mt-24 vdb-c-flex vdb-c-justify-center"
@@ -84,7 +88,6 @@ const props = defineProps({
 });
 
 const currentPage = ref(1);
-
 const totalPages = computed(() =>
   Math.ceil(props.videoResults.length / props.itemsPerPage),
 );
@@ -128,5 +131,5 @@ const goToPage = (page) => {
   }
 };
 
-defineEmits(["video-click"]);
+defineEmits(["video-click", "delete-video"]);
 </script>

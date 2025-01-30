@@ -93,6 +93,8 @@
                     :collection-data="activeCollectionData"
                     :collection-videos="activeCollectionVideos"
                     @video-click="handleVideoClick"
+                    @delete-video="promptDeleteVideo"
+
                     class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                   />
                 </div>
@@ -117,6 +119,7 @@
                   "
                   @query-card-click="handleQueryCardClick"
                   @video-click="handleVideoClick"
+                  @delete-video="promptDeleteVideo"
                   @upload-button-click="showUploadDialog = true"
                   @view-all-videos-click="handleViewAllVideosClick"
                 />
@@ -170,6 +173,23 @@
       @confirm-delete="confirmDeleteSession"
     ></DeleteSessionDialog>
 
+    <!-- Success Banner -->    
+    <SuccessBanner
+      v-if="showSuccessBanner"
+      :message="bannerMessage"
+      @hide="showSuccessBanner = false"
+    />
+
+    <!-- Delete Video Dialog -->
+    <DeleteVideoDialog
+      :show-dialog="showDeleteVideoDialog"
+      @cancel-delete="
+        showDeleteVideoDialog = false;
+        videoToDelete = null;
+      "
+      @confirm-delete="confirmDeleteVideo"
+    />
+
     <!-- Upload Dialog -->
     <UploadModal
       :show-upload-dialog="showUploadDialog"
@@ -210,6 +230,8 @@ import ExternalLink from "../icons/ExternalLink.vue";
 import FileUploadIcon from "../icons/FileUpload.vue";
 import SearchIcon from "../icons/SearchIcon.vue";
 import QueryIcon from "../icons/Query.vue";
+import DeleteVideoDialog from "../modals/DeleteVideoModal.vue";
+import SuccessBanner from "../atoms/SuccessBanner.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -315,7 +337,9 @@ const {
   conversations,
   loadSession,
   uploadMedia,
+  deleteCollection,
   refetchCollectionVideos,
+  deleteVideo,
 } = useChatHook(props.chatHookConfig);
 
 const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
@@ -329,6 +353,10 @@ registerMessageHandler("image", ImageHandler);
 
 const isStaticPage = ref(false);
 const chatWindow = ref(null);
+const showDeleteVideoDialog = ref(false);
+const videoToDelete = ref(null);
+const showSuccessBanner = ref(false);
+const bannerMessage = ref("");
 
 const isSetupComplete = computed(() => {
   return (
@@ -530,6 +558,33 @@ const handleVideoClick = (video) => {
   }
 };
 
+const promptDeleteVideo = (video) => {
+  videoToDelete.value = video;
+  showDeleteVideoDialog.value = true;
+};
+
+const confirmDeleteVideo = async () => {
+  if (!videoToDelete.value) {
+    console.error("No video to delete.");
+    return;
+  }
+
+  showDeleteVideoDialog.value = false;
+
+  const { collection_id, id } = videoToDelete.value;
+  videoToDelete.value = null;
+
+  try {
+    await deleteVideo(collection_id, id);
+    bannerMessage.value = "Video deleted successfully.";
+    showSuccessBanner.value = true;
+  } catch (error) {
+    console.error(`Error deleting video: ${error.message}`);
+    bannerMessage.value = "Error deleting video.";
+    showSuccessBanner.value = true;
+  }
+};
+
 const handleAddMessage = (content) => {
   if (!sessionId.value) {
     loadSession();
@@ -568,6 +623,7 @@ provide("videodb-chat", {
   setChatInput,
   registerMessageHandler,
   uploadMedia,
+  deleteCollection,
 });
 </script>
 

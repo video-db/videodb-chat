@@ -83,22 +83,41 @@
           >
             <template v-for="collection in collections" :key="collection.id">
               <div
-                @click="
-                  $emit('collection-click', collection.id);
-                  closeSidebar();
-                "
-                :class="[
-                  'vdb-c-ml-24 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
-                  {
-                    'vdb-c-bg-[#FFF5EC]':
-                      showSelectedCollection &&
-                      collection.id === computedSelectedCollection,
-                    'hover:vdb-c-bg-[#FFF5EC]':
-                      collection.id !== computedSelectedCollection,
-                  },
-                ]"
+                @mouseenter="hoveredCollection = collection.id"
+                @mouseleave="hoveredCollection = null"
               >
-                {{ collection.name }}
+                <!-- Collection Item -->
+                <div
+                  @click="
+                    $emit('collection-click', collection.id);
+                    closeSidebar();
+                  "
+                  :class="[
+                    'vdb-c-ml-24 vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-between vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
+                    {
+                      'vdb-c-bg-[#FFF5EC]':
+                        showSelectedCollection &&
+                        collection.id === computedSelectedCollection,
+                      'hover:vdb-c-bg-[#FFF5EC]':
+                        collection.id !== computedSelectedCollection,
+                    },
+                  ]"
+                >
+                  <span> {{ collection.name }} </span>
+                  <!-- Delete Button -->
+                  <span
+                    @click.stop="promptDeleteCollection(collection)"
+                    class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
+                  >
+                    <DeleteIcon
+                      :fill="
+                        hoveredCollection === collection.id
+                          ? 'black'
+                          : '#CCCCCC'
+                      "
+                    />
+                  </span>
+                </div>
               </div>
             </template>
           </div>
@@ -303,6 +322,10 @@
         </div>
       </Button>
     </div>
+    <DeleteCollectionErrorModal
+      :isVisible="showDeleteErrorModal"
+      @closeModal="showDeleteErrorModal = false"
+    />
   </div>
   <transition name="fade">
     <button
@@ -332,6 +355,8 @@ import ChevronDown from "../../icons/ChevronDown.vue";
 import AgentIcon from "../../icons/Agent.vue";
 import ChatIcon from "../../icons/Chat.vue";
 import CollectionIcon from "../../icons/Collection.vue";
+import DeleteCollectionErrorModal from "../../modals/DeleteCollectionErrorModal.vue";
+import { useVideoDBChat } from "../../../context";
 
 const props = defineProps({
   sessions: {
@@ -408,6 +433,10 @@ const userClickedCollections = ref(false);
 const hoveredSession = ref(null);
 const isMobile = ref(window?.innerWidth < 1024);
 const isOpen = ref(false);
+const hoveredCollection = ref(null);
+const showDeleteErrorModal = ref(false);
+
+const { deleteCollection } = useVideoDBChat();
 
 const visibleSections = computed(() => {
   return props.sidebarSections;
@@ -466,6 +495,18 @@ const computedSelectedCollection = computed(() => {
   }
   return props.collections.length > 0 ? props.collections[0].id : null;
 });
+
+const promptDeleteCollection = async (collection) => {
+  try {
+    await deleteCollection(collection?.id);
+  } catch (error) {
+    if (error.message.includes("Invalid request: Your collection has non-zero")) {
+      showDeleteErrorModal.value = true;
+      return;
+    }
+    console.error("Unexpected error deleting collection:", error);
+  }
+};
 
 watch(
   () => props.initialSessionsOpen,

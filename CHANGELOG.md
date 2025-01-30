@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.30]() - 2025-01-31
+
+### Added
+
+- Delete Collection feature  
+- Delete Video from Collection 
+
 ## [0.0.29]() - 2025-01-30
 
 ### Added

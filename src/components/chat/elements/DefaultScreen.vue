@@ -215,6 +215,7 @@
             :index="index"
             :variant="showDemoVideos ? 'hide-title' : 'default'"
             @video-click="$emit('video-click', item)"
+            @delete-video="$emit('delete-video', item)"
           />
         </div>
       </div>
@@ -283,6 +284,7 @@ defineEmits([
   "video-click",
   "view-all-videos-click",
   "upload-button-click",
+  "delete-video",
 ]);
 </script>
 
