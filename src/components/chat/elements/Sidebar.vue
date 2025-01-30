@@ -83,39 +83,22 @@
           >
             <template v-for="collection in collections" :key="collection.id">
               <div
-                @mouseenter="hoveredCollection = collection.id"
-                @mouseleave="hoveredCollection = null"
+                @click="
+                  $emit('collection-click', collection.id);
+                  closeSidebar();
+                "
+                :class="[
+                  'vdb-c-ml-24 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
+                  {
+                    'vdb-c-bg-[#FFF5EC]':
+                      showSelectedCollection &&
+                      collection.id === computedSelectedCollection,
+                    'hover:vdb-c-bg-[#FFF5EC]':
+                      collection.id !== computedSelectedCollection,
+                  },
+                ]"
               >
-                <!-- Collection Item -->
-                <div
-                  @click="
-                    $emit('collection-click', collection.id);
-                    closeSidebar();
-                  "
-                  :class="[ 
-                    'vdb-c-ml-24 vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
-                    {
-                      'vdb-c-bg-[#FFF5EC]':
-                        showSelectedCollection &&
-                        collection.id === computedSelectedCollection,
-                      'hover:vdb-c-bg-[#FFF5EC]':
-                        collection.id !== computedSelectedCollection,
-                    },
-                  ]"
-                >
-                  <span> {{ collection.name }} </span>
-                  <!-- Delete Button -->
-                  <span
-                    @click.stop="
-                      $emit('show-delete-collection', collection.id);
-                    "
-                    class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
-                  >
-                    <DeleteIcon
-                      :fill="hoveredCollection === collection.id ? 'black' : '#CCCCCC'"
-                    />
-                  </span>
-                </div>
+                {{ collection.name }}
               </div>
             </template>
           </div>
@@ -424,7 +407,6 @@ const userClickedCollections = ref(false);
 const hoveredSession = ref(null);
 const isMobile = ref(window?.innerWidth < 1024);
 const isOpen = ref(false);
-const hoveredCollection = ref(null);
 
 const visibleSections = computed(() => {
   return props.sidebarSections;
@@ -436,7 +418,6 @@ const emit = defineEmits([
   "delete-session",
   "collection-click",
   "agent-click",
-  'show-delete-collection',
 ]);
 
 const closeSidebar = () => {
