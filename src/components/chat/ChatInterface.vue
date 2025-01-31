@@ -24,7 +24,6 @@
         "
         :initial-sessions-open="!isFreshUser"
         :initial-explore-agents-open="!isFreshUser"
-        :initial-collections-open="!isFreshUser"
         :selected-session="sessionId"
         :add-dummy-session="Object.keys(conversations).length === 0"
         :selected-collection="collectionId"
@@ -337,6 +336,7 @@ const {
   conversations,
   loadSession,
   uploadMedia,
+  createCollection,
   deleteCollection,
   refetchCollectionVideos,
   deleteVideo,
@@ -623,6 +623,7 @@ provide("videodb-chat", {
   setChatInput,
   registerMessageHandler,
   uploadMedia,
+  createCollection,
   deleteCollection,
 });
 </script>
