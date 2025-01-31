@@ -1,56 +1,14 @@
 <template>
   <div
-    class="vdb-c-flex vdb-c-h-full vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-32 vdb-c-p-16 md:vdb-c-p-32"
+    class="vdb-c-flex vdb-c-flex-col vdb-c-items-center vdb-c-gap-32 vdb-c-p-16 md:vdb-c-p-32"
+    style="max-height: 80vh; overflow-y: auto;"
   >
-    <!-- Collection Header -->
-    <slot name="header">
-      <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
-        <h1
-          class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-xl vdb-c-leading-tight sm:vdb-c-text-3xl md:vdb-c-text-5xl"
-          :style="{ lineHeight: '1.2' }"
-        >
-          <div
-            v-if="headerText"
-            class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between"
-          >
-            <span
-              class="vdb-c-line-clamp-2 vdb-c-inline-block vdb-c-max-w-[60%] vdb-c-font-bold md:vdb-c-line-clamp-none md:vdb-c-max-w-[80%] md:vdb-c-font-extrabold vdb-c-text-orange"
-              :title="headerText"
-            >
-              {{ headerText }}
-            </span>
-            <Button
-              v-if="headerConfig.uploadButton"
-              @click="$emit('upload-button-click')"
-              variant="tertiary"
-              class="!vdb-c-px-8 !vdb-c-py-10"
-            >
-              <div
-                class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium"
-              >
-                <UploadIcon
-                  class="vdb-c-hidden vdb-c-h-20 vdb-c-w-20 md:vdb-c-block"
-                />
-                <span class="vdb-c-flex vdb-c-flex-row vdb-c-gap-4">
-                  Upload Video
-                </span>
-              </div>
-            </Button>
-          </div>
-          <span
-            v-else
-            class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
-          ></span>
-        </h1>
-      </div>
-    </slot>
-
     <!-- Action Cards -->
     <div
-      class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
+      class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-w-5/6 vdb-c-mx-[10%] vdb-c-flex-col vdb-c-gap-32 vdb-c-p-16 md:vdb-c-p-32"
     >
       <div
-        class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-gap-12 md:vdb-c-grid-cols-3 md:vdb-c-gap-16 2xl:vdb-c-grid-cols-3"
+          class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-gap-12 md:vdb-c-grid-cols-3 md:vdb-c-gap-16 2xl:vdb-c-grid-cols-3 vdb-c-justify-center"
       >
         <div
           v-for="(query, index) in actionCardQueries"
@@ -121,7 +79,7 @@
     </div>
 
     <!-- Demo/Preview Videos -->
-    <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-12">
+    <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-12 vdb-c-w-5/6 vdb-c-mx-[10%] px-10 pb-15">
       <!-- Divider -->
       <div class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"></div>
 
@@ -223,14 +181,17 @@
       <!-- Videos Loader -->
       <div
         v-else
-        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
+        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-12 sm:vdb-c-mb-32 sm:vdb-c-gap-18"
       >
         <div
           v-for="(item, index) in [1, 2, 3, 4]"
           :key="`post-loading-${index}`"
           class="vdb-c-col-span-12 sm:vdb-c-col-span-6 md:vdb-c-col-span-4 lg:vdb-c-col-span-3"
         >
-          <video-card-loader :index="index" />
+          <video-card-loader
+            :index="index"
+            class="vdb-c-w-full vdb-c-h-full vdb-c-rounded-lg vdb-c-bg-vdb-lightgrey vdb-c-animate-pulse"
+          />
         </div>
       </div>
     </div>
@@ -246,7 +207,6 @@ import VideoCardLoader from "../../collection/VideoCardLoader.vue";
 import Button from "../../buttons/Button.vue";
 
 import QuestionMark from "../../icons/QuestionMark.vue";
-import UploadIcon from "../../icons/FileUpload.vue";
 import ChevronRightCircled from "../../icons/ChevronRightCircled.vue";
 import ExternalLinkIcon from "../../icons/ExternalLink.vue";
 import StarIcon from "../../icons/Star.vue";
@@ -289,6 +249,14 @@ defineEmits([
 </script>
 
 <style scoped>
+.px-10 {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+.pb-15 {
+  padding-bottom: 60px;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
