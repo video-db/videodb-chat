@@ -1,6 +1,8 @@
 <template>
   <div
-    class="video-card vdb-c-flex vdb-c-h-full vdb-c-cursor-pointer vdb-c-flex-col vdb-c-rounded-lg vdb-c-bg-kilvish-200 vdb-c-p-6"
+    class="video-card vdb-c-flex vdb-c-h-full vdb-c-cursor-pointer vdb-c-flex-col vdb-c-rounded-lg vdb-c-bg-kilvish-200 vdb-c-p-6 vdb-c-transition-colors vdb-c-duration-300 hover:vdb-c-bg-white hover:vdb-c-shadow-lg"
+    @mouseenter="hoveredVideo = item.id"
+    @mouseleave="hoveredVideo = null"
   >
     <div
       :class="[
@@ -28,11 +30,12 @@
             >
               <template #overlay>
                 <BigCenterButton
-                  class="vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2"
-                  :style="{ height: '48px', width: '48px' }"
-                />
+                  class="vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-h-48 vdb-c-w-48 vdb-c-bg-black/40 hover:vdb-c-bg-white/40 vdb-c-transition-all vdb-c-duration-300"
+                >
+                </BigCenterButton>
+
                 <div
-                  class="vdb-c-absolute vdb-c-bottom-4 vdb-c-right-4 vdb-c-rounded-full vdb-c-border vdb-c-bg-black-45 vdb-c-p-6 vdb-c-backdrop-blur vdb-c-transition-transform vdb-c-duration-300 hover:vdb-c-scale-110 hover:vdb-c-bg-random-313131"
+                  class="vdb-c-absolute vdb-c-bottom-4 vdb-c-right-4 vdb-c-rounded-full vdb-c-border vdb-c-bg-black/40 vdb-c-p-6 vdb-c-backdrop-blur vdb-c-transition-transform vdb-c-duration-300 hover:vdb-c-scale-110 hover:vdb-c-bg-white/50"
                   @click="$emit('video-click', item)"
                 >
                   <ExternalLinkIcon v-if="item.stream_url" />
@@ -56,7 +59,7 @@
           ></div>
           <default-thumbnail
             v-else
-            class="thumbnail vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0 vdb-c-top-0 vdb-c-h-106 vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1 vdb-c-animate-pulse"
+            class="thumbnail vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0 vdb-c-top-0 vdb-c-h-106 vdb-c-animate-pulse vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1"
             @click="$emit('video-click', item)"
           />
           <div
@@ -69,26 +72,42 @@
       </div>
       <div
         v-if="variant === 'default'"
-        class="fade-on-hover vdb-c-flex vdb-c-flex-col vdb-c-justify-center vdb-c-text-kilvish-900"
+        class="vdb-c-mx-8 vdb-c-mb-8 vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-text-kilvish-900"
         @click="$emit('video-click', item)"
       >
         <p
-          class="text-elip vdb-c-mb-8 vdb-c-line-clamp-2 vdb-c-h-[2.5em] vdb-c-whitespace-normal vdb-c-text-xs vdb-c-font-medium"
+          class="text-elip vdb-c-mb-0 vdb-c-line-clamp-2 vdb-c-whitespace-normal vdb-c-text-xs vdb-c-font-medium"
         >
           {{ item.name }}
         </p>
+        <!-- Delete Icon -->
+        <span
+          class="vdb-c-ml-4 vdb-c-cursor-pointer vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
+          @mouseenter="hoveredDeleteIcon = item.id"
+          @mouseleave="hoveredDeleteIcon = null"
+          @click.stop="$emit('delete-video', item)"
+        >
+          <DeleteIcon
+            :fill="hoveredDeleteIcon === item.id ? '#EC5B16' : '#CCCCCC'"
+          />
+        </span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from "vue";
 import PlayIcon from "../icons/play.vue";
 import DefaultThumbnail from "../assets/DefaultThumbnail.vue";
+import DeleteIcon from "../icons/DeleteVideoCard.vue";
 import { VideoDBPlayer, BigCenterButton } from "@videodb/player-vue";
 import "@videodb/player-vue/dist/style.css";
 
 import ExternalLinkIcon from "../icons/ExternalLink.vue";
+
+const hoveredVideo = ref(null);
+const hoveredDeleteIcon = ref(null);
 
 const props = defineProps({
   item: {
@@ -114,6 +133,8 @@ const secondsToHHMMSS = (val) => {
   }
   return time;
 };
+
+const emit = defineEmits(["delete-video"]);
 </script>
 
 <style scoped>

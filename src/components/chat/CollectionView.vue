@@ -5,6 +5,7 @@
         v-if="videos.length > 0"
         :video-results="videos"
         @video-click="handleVideoClick"
+        @delete-video="emit('delete-video', $event)"
       />
       <div
         v-else
@@ -65,7 +66,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["video-click"]);
+const emit = defineEmits(["video-click", "delete-video"]);
 
 const videos = computed(() => {
   if (props.collectionVideos === null) {
