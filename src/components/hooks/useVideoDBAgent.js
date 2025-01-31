@@ -223,12 +223,16 @@ export function useVideoDBAgent(config) {
       });
   };
 
-  const createCollection = async (name, description = "") => {
+  const createCollection = async (name, description) => {
+    if (!name || name.trim() === "") {
+      throw new Error("Collection name is required.");
+    }
+  
+    if (!description || description.trim() === "") {
+      throw new Error("Collection description is required.");
+    }
+  
     try {
-      if (!name || name.trim() === "") {
-        throw new Error("Collection name is required");
-      }
-
       const response = await fetch(`${httpUrl}/videodb/collection`, {
         method: "POST",
         headers: {
@@ -237,19 +241,30 @@ export function useVideoDBAgent(config) {
         body: JSON.stringify({ name, description }),
       });
   
-      const data = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to create collection");
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        throw new Error("Failed to parse server response.");
       }
-
-      collections.value.push(data.collection);
+  
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || "Failed to create collection.");
+      }
+  
+      if (Array.isArray(collections.value)) {
+        collections.value.push(data.collection);
+      }
+  
+      if (!session.collectionId) {
+        session.collectionId = data.collection.id;
+      }
   
       console.log("Collection created successfully:", data.collection);
       return data.collection;
     } catch (error) {
       console.error("Error creating collection:", error);
-      throw error;
+      throw new Error("An unexpected error occurred while creating the collection.");
     }
   };
   

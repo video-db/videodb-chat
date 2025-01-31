@@ -80,6 +80,10 @@ const createCollection = () => {
     return;
   }
 
+  if (!newCollection.description.trim()) {
+    alert("Collection description cannot be empty.");
+    return;
+  }
   emit("create", { ...newCollection });
 
   newCollection.name = "";

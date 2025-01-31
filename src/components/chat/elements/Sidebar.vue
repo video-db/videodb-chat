@@ -82,7 +82,7 @@
             v-if="status !== 'inactive' && showCollections"
             class="vdb-c-mt-4 vdb-c-overflow-y-auto"
           >
-            <template v-for="collection in localCollections" :key="collection.id">
+            <template v-for="collection in collections" :key="collection.id">
               <div
                 @mouseenter="hoveredCollection = collection.id"
                 @mouseleave="hoveredCollection = null"
@@ -277,7 +277,7 @@
     </div>
       <CreateCollectionModal
         :showDialog="showCreateCollectionModal"
-        @cancel="handleCancelCreateCollection"
+        @cancel="cancelCreateCollection"
         @create="handleCreateCollection"
       />
     <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col">
@@ -363,7 +363,6 @@ import ChatIcon from "../../icons/Chat.vue";
 import CollectionIcon from "../../icons/Collection.vue";
 import CreateCollectionModal from "../../modals/CreateCollectionModal.vue";
 import SuccessBanner from "../../message-handlers/SuccessCollectionBanner.vue";
-import { useVideoDBAgent } from "/home/royalpinto007/videodb/videodb-chat/src/components/hooks/useVideoDBAgent.js";
 import DeleteCollectionErrorModal from "../../modals/DeleteCollectionErrorModal.vue";
 import { useVideoDBChat } from "../../../context";
 
@@ -416,18 +415,6 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  customVideoDBHook: {
-    type: Function,
-    default: null,
-  },
-  videoDBHookConfig: {
-    type: Object,
-    default: () => ({
-      debug: true,
-      socketUrl: "http://127.0.0.1:8000/chat",
-      httpUrl: "http://127.0.0.1:8000",
-    }),
-  },
   sidebarSections: {
     type: Array,
     default: () => ["collections", "agents", "sessions"],
@@ -453,15 +440,9 @@ const isOpen = ref(false);
 const hoveredCollection = ref(null);
 const showSuccessBanner = ref(false);
 const successMessage = ref("");
-const useDBHook = props.customVideoDBHook || useVideoDBAgent;
-const localCollections = ref([...props.collections]);
-
-const {
-  createCollection,
-} = useDBHook(props.videoDBHookConfig);
 const showDeleteErrorModal = ref(false);
 
-const { deleteCollection } = useVideoDBChat();
+const { deleteCollection, createCollection } = useVideoDBChat();
 
 const visibleSections = computed(() => {
   return props.sidebarSections;
@@ -481,7 +462,7 @@ const toggleCreateCollectionModal = () => {
   showCreateCollectionModal.value = !showCreateCollectionModal.value;
 };
 
-const handleCancelCreateCollection = () => {
+const cancelCreateCollection = () => {
   showCreateCollectionModal.value = false;
 };
 
@@ -538,14 +519,6 @@ const handleCreateCollection = async (newCollection) => {
       newCollection.description
     );
 
-    const collectionIndex = localCollections.value.findIndex(
-      (collection) => collection.id === createdCollection.id
-    );
-
-    if (collectionIndex === -1) {
-      localCollections.value.push(createdCollection);
-    }
-
     showCreateCollectionModal.value = false;
     successMessage.value = `Collection has been created successfully!`;
     showSuccessBanner.value = true;
@@ -566,13 +539,6 @@ const promptDeleteCollection = async (collection) => {
     console.error("Unexpected error deleting collection:", error);
   }
 };
-
-watch(
-  () => props.collections,
-  (newVal) => {
-    localCollections.value = [...newVal];
-  }
-);
 
 watch(
   () => props.initialSessionsOpen,
