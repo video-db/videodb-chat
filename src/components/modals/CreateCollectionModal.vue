@@ -1,56 +1,61 @@
 <template>
   <div
     v-if="showDialog"
-    class="modal-backdrop"
+    class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-50 vdb-c-bg-black/50 vdb-c-flex vdb-c-items-center vdb-c-justify-center"
     @click="$emit('cancel')"
   >
     <div
-      class="modal-container"
+      class="vdb-c-w-[512px] vdb-c-min-w-[512px] vdb-c-rounded-lg vdb-c-bg-white vdb-c-shadow-xl vdb-c-flex vdb-c-flex-col"
       @click.stop
     >
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <div class="icon-container">
-          <CreateCollectionIcon />
+      <!-- Modal Content -->
+      <div class="vdb-c-px-30 vdb-c-py-30 vdb-c-flex vdb-c-flex-col">
+        <!-- Modal Header -->
+        <div class="vdb-c-flex vdb-c-items-center vdb-c-pb-30">
+          <div
+            class="vdb-c-w-40 vdb-c-h-40 vdb-c-rounded-full vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-[#FFE9D3]"
+          >
+            <CreateCollectionIcon />
+          </div>
+          <h2 class="vdb-c-text-[18px] vdb-c-ml-[10px] vdb-c-font-medium vdb-c-text-gray-950">
+            New Collection
+          </h2>
         </div>
-        <h2 class="modal-title">New Collection</h2>
+
+        <!-- Input Fields -->
+        <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-[10px]">
+          <input
+            id="collectionName"
+            v-model="newCollection.name"
+            type="text"
+            class="vdb-c-w-full vdb-c-px-10 vdb-c-py-8 vdb-c-text-[18px] vdb-c-border vdb-c-border-gray-300 vdb-c-rounded-md vdb-c-box-border focus:vdb-c-border-orange-500 focus:vdb-c-outline-none"
+            placeholder="Collection Name"
+          />
+          <textarea
+            id="collectionDescription"
+            v-model="newCollection.description"
+            class="vdb-c-w-full vdb-c-px-10 vdb-c-py-8 vdb-c-text-[18px] vdb-c-border vdb-c-border-gray-300 vdb-c-rounded-md vdb-c-box-border focus:vdb-c-border-orange-500 focus:vdb-c-outline-none vdb-c-overflow-hidden vdb-c-resize-none vdb-c-whitespace-nowrap"
+            placeholder="Description"
+            rows="1"
+          ></textarea>
+        </div>
       </div>
 
-      <!-- Input for Collection Name -->
-      <div class="input-container">
-        <input
-          id="collectionName"
-          v-model="newCollection.name"
-          type="text"
-          class="input"
-          placeholder="Collection Name"
-        />
-      </div>
-
-      <!-- Input for Description -->
-      <div class="input-container">
-        <textarea
-          id="collectionDescription"
-          v-model="newCollection.description"
-          class="input"
-          placeholder="Description"
-        ></textarea>
-      </div>
-
-      <!-- Actions -->
-      <div class="actions">
-        <button
-          class="btn btn-cancel"
-          @click="$emit('cancel')"
-        >
-          Cancel
-        </button>
-        <button
-          class="btn btn-create"
-          @click="handleCreateCollection"
-        >
-          Create
-        </button>
+      <div class="vdb-c-w-full vdb-c-bg-gray-50 vdb-c-rounded-b-[8px]">
+        <div class="vdb-c-flex vdb-c-justify-end vdb-c-items-center vdb-c-gap-8 vdb-c-px-24 vdb-c-py-12">
+          <button
+            class="vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-gray-700 vdb-c-border vdb-c-border-gray-300 vdb-c-rounded-md vdb-c-bg-white hover:vdb-c-bg-gray-200 vdb-c-w-full sm:vdb-c-w-auto"
+            @click="$emit('cancel')"
+          >
+            Cancel
+          </button>
+          <button
+            class="vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-white vdb-c-bg-[#EC5B16] vdb-c-rounded-md hover:vdb-c-bg-[#D94E14] vdb-c-w-full sm:vdb-c-w-auto"
+            @click="handleCreateCollection"
+          >
+            Create
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -90,107 +95,3 @@ const handleCreateCollection = () => {
   newCollection.description = "";
 };
 </script>
-
-<style scoped>
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 50;
-}
-
-.modal-container {
-  display: flex;
-  flex-direction: column;
-  padding: 30px;
-  padding-bottom: 0;
-  gap: 30px;
-  width: 512px;
-  background: #ffffff;
-  box-shadow: 0px 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0px 10px 10px -5px rgba(0, 0, 0, 0.04);
-  border-radius: 8px;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.icon-container {
-  width: 40px;
-  height: 40px;
-  background: #ffe9d3;
-  border-radius: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 24px;
-  color: #111827;
-}
-
-.input-container {
-  width: 100%;
-}
-
-.input {
-  width: 100%;
-  padding: 10px;
-  font-family: 'Inter', sans-serif;
-  font-size: 18px;
-  line-height: 20px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding-bottom: 12px;
-  background: #f9fafb;
-}
-
-.btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 9px 17px;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.btn-cancel {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  color: #374151;
-}
-
-.btn-cancel:hover {
-  background: #f3f4f6;
-}
-
-.btn-create {
-  background: #ec5b16;
-  color: #ffffff;
-  border: none;
-}
-
-.btn-create:hover {
-  background: #d94e14;
-}
-</style>
