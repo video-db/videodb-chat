@@ -1,7 +1,7 @@
 <template>
   <div
-    class="vdb-c-relative vdb-c-h-auto vdb-c-w-full vdb-c-px-30"
-    :class="{ 'vdb-c-pt-16 vdb-c-min-h-full': isLastConv }"
+    class="vdb-c-relative vdb-c-h-auto vdb-c-w-full vdb-c-px-30 scrollable-container"
+    :class="{ 'vdb-c-min-h-full': isLastConv }"
   >
     <div
       v-for="(message, i) in messages"
@@ -57,6 +57,26 @@ const messageLoading = computed(() => {
 </script>
 
 <style>
+
+.scrollable-container {
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.scrollable-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .msg-width {
   width: calc(100% - 56px);
 }
