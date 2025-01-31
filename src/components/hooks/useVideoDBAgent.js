@@ -240,28 +240,23 @@ export function useVideoDBAgent(config) {
         },
         body: JSON.stringify({ name, description }),
       });
-  
-      let data;
+     
+      let res;
       try {
-        data = await response.json();
+        res = await response.json();
       } catch (jsonError) {
         throw new Error("Failed to parse server response.");
       }
   
-      if (!response.ok || !data?.success) {
-        throw new Error(data?.message || "Failed to create collection.");
-      }
-  
+      // if (!response.ok || !data?.success) {
+      //   throw new Error(data?.message || "Failed to create collection.");
+      // }
+      
       if (Array.isArray(collections.value)) {
-        collections.value.push(data.collection);
+        collections.value.push(res.data.collection);
       }
-  
-      if (!session.collectionId) {
-        session.collectionId = data.collection.id;
-      }
-  
-      console.log("Collection created successfully:", data.collection);
-      return data.collection;
+
+      return res.data.collection;
     } catch (error) {
       console.error("Error creating collection:", error);
       throw new Error("An unexpected error occurred while creating the collection.");

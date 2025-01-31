@@ -277,7 +277,7 @@
     </div>
       <CreateCollectionModal
         :showDialog="showCreateCollectionModal"
-        @cancel="cancelCreateCollection"
+        @cancel="showCreateCollectionModal = false"
         @create="promptCreateCollection"
       />
     <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col">
@@ -454,16 +454,14 @@ const emit = defineEmits([
   "delete-session",
   "collection-click",
   "agent-click",
+  "create",
+  "cancel",
 ]);
 
 const showCreateCollectionModal = ref(false);
 
 const toggleCreateCollectionModal = () => {
   showCreateCollectionModal.value = !showCreateCollectionModal.value;
-};
-
-const cancelCreateCollection = () => {
-  showCreateCollectionModal.value = false;
 };
 
 const closeSidebar = () => {
@@ -508,13 +506,13 @@ const computedSelectedCollection = computed(() => {
 });
 
 const promptCreateCollection = async (newCollection) => {
+  showCreateCollectionModal.value = false;
   try {
     const createdCollection = await createCollection(
       newCollection.name,
       newCollection.description
     );
 
-    showCreateCollectionModal.value = false;
     successMessage.value = `Collection has been created successfully!`;
     showSuccessBanner.value = true;
   } catch (error) {

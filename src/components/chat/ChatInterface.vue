@@ -336,6 +336,7 @@ const {
   conversations,
   loadSession,
   uploadMedia,
+  createCollection,
   deleteCollection,
   refetchCollectionVideos,
   deleteVideo,
@@ -622,6 +623,7 @@ provide("videodb-chat", {
   setChatInput,
   registerMessageHandler,
   uploadMedia,
+  createCollection,
   deleteCollection,
 });
 </script>

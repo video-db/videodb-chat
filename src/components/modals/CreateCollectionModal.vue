@@ -23,7 +23,7 @@
           v-model="newCollection.name"
           type="text"
           class="input"
-          placeholder="Collection name"
+          placeholder="Collection Name"
         />
       </div>
 
@@ -74,7 +74,7 @@ const newCollection = reactive({
   description: "",
 });
 
-const handlecreateCollection = () => {
+const handleCreateCollection = () => {
   if (!newCollection.name.trim()) {
     alert("Collection name cannot be empty.");
     return;
