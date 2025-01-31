@@ -47,7 +47,7 @@
         </button>
         <button
           class="btn btn-create"
-          @click="createCollection"
+          @click="handleCreateCollection"
         >
           Create
         </button>
@@ -74,7 +74,7 @@ const newCollection = reactive({
   description: "",
 });
 
-const createCollection = () => {
+const handlecreateCollection = () => {
   if (!newCollection.name.trim()) {
     alert("Collection name cannot be empty.");
     return;

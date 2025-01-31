@@ -278,7 +278,7 @@
       <CreateCollectionModal
         :showDialog="showCreateCollectionModal"
         @cancel="cancelCreateCollection"
-        @create="handleCreateCollection"
+        @create="promptCreateCollection"
       />
     <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col">
       <a
@@ -507,12 +507,7 @@ const computedSelectedCollection = computed(() => {
   return props.collections.length > 0 ? props.collections[0].id : null;
 });
 
-const handleCreateCollection = async (newCollection) => {
-  if (!newCollection.name.trim()) {
-    alert("Collection name is required!");
-    return;
-  }
-
+const promptCreateCollection = async (newCollection) => {
   try {
     const createdCollection = await createCollection(
       newCollection.name,
