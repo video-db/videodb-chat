@@ -1,6 +1,6 @@
 <template>
   <div
-    class="vdb-c-fixed vdb-c-inset-0 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-black/50"
+    class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-[60] vdb-c-p-24 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-black/50"
     v-if="showUploadDialog"
     @click="handleCancel"
   >

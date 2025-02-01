@@ -1,14 +1,11 @@
 <template>
-  <div
-    class="vdb-c-flex vdb-c-flex-col vdb-c-items-center vdb-c-gap-32 vdb-c-p-16 md:vdb-c-p-32"
-    style="max-height: 80vh; overflow-y: auto;"
-  >
+  <div class="vdb-c-flex vdb-c-flex-col vdb-c-items-center vdb-c-gap-32">
     <!-- Action Cards -->
     <div
-      class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-w-5/6 vdb-c-mx-[10%] vdb-c-flex-col vdb-c-gap-32 vdb-c-p-16 md:vdb-c-p-32"
+      class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
     >
       <div
-          class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-gap-12 md:vdb-c-grid-cols-3 md:vdb-c-gap-16 2xl:vdb-c-grid-cols-3 vdb-c-justify-center"
+        class="vdb-c-grid vdb-c-grid-cols-1 vdb-c-gap-12 md:vdb-c-grid-cols-3 md:vdb-c-gap-16 2xl:vdb-c-grid-cols-3"
       >
         <div
           v-for="(query, index) in actionCardQueries"
@@ -20,8 +17,7 @@
                 query.type === 'primary',
               'vdb-c-border-roy vdb-c-bg-vdb-lightgrey hover:vdb-c-bg-roy':
                 query.type === 'muted',
-              'vdb-c-bg-orange hover:vdb-c-bg-orange-600':
-                query.type === 'cta',
+              'vdb-c-bg-orange hover:vdb-c-bg-orange-600': query.type === 'cta',
             },
           ]"
           @click="$emit('query-card-click', query)"
@@ -79,7 +75,7 @@
     </div>
 
     <!-- Demo/Preview Videos -->
-    <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-12 vdb-c-w-5/6 vdb-c-mx-[10%] px-10 pb-15">
+    <div class="vdb-c-flex vdb-c-w-full vdb-c-flex-col vdb-c-gap-12">
       <!-- Divider -->
       <div class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"></div>
 
@@ -90,7 +86,7 @@
         <!-- Demo Videos Header -->
         <div v-if="showDemoVideos">
           <div
-            class="vdb-c-mb-12 vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4 md:vdb-c-mb-16"
+            class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
             <span
               class="vdb-c-w-1/2 vdb-c-text-sm vdb-c-font-semibold md:vdb-c-text-lg"
@@ -159,7 +155,7 @@
       <!-- Videos -->
       <div
         v-if="previewVideos"
-        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-12 sm:vdb-c-mb-32 sm:vdb-c-gap-18"
+        class="vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-12 sm:vdb-c-gap-18"
       >
         <div
           v-for="(item, index) in previewVideos"
@@ -181,17 +177,14 @@
       <!-- Videos Loader -->
       <div
         v-else
-        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-12 sm:vdb-c-mb-32 sm:vdb-c-gap-18"
+        class="vdb-c-grid vdb-c-w-full vdb-c-grid-cols-12 vdb-c-gap-24"
       >
         <div
           v-for="(item, index) in [1, 2, 3, 4]"
           :key="`post-loading-${index}`"
           class="vdb-c-col-span-12 sm:vdb-c-col-span-6 md:vdb-c-col-span-4 lg:vdb-c-col-span-3"
         >
-          <video-card-loader
-            :index="index"
-            class="vdb-c-w-full vdb-c-h-full vdb-c-rounded-lg vdb-c-bg-vdb-lightgrey vdb-c-animate-pulse"
-          />
+          <video-card-loader :index="index" />
         </div>
       </div>
     </div>
@@ -207,6 +200,7 @@ import VideoCardLoader from "../../collection/VideoCardLoader.vue";
 import Button from "../../buttons/Button.vue";
 
 import QuestionMark from "../../icons/QuestionMark.vue";
+import UploadIcon from "../../icons/FileUpload.vue";
 import ChevronRightCircled from "../../icons/ChevronRightCircled.vue";
 import ExternalLinkIcon from "../../icons/ExternalLink.vue";
 import StarIcon from "../../icons/Star.vue";
@@ -249,14 +243,6 @@ defineEmits([
 </script>
 
 <style scoped>
-.px-10 {
-  padding-left: 40px;
-  padding-right: 40px;
-}
-.pb-15 {
-  padding-bottom: 60px;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;

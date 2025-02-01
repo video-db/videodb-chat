@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="showDialog"
-    class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-50 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-black vdb-c-bg-opacity-50"
+    class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-[60] vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-black vdb-c-bg-opacity-50 vdb-c-p-24"
     @click="$emit('cancel-delete')"
   >
     <div

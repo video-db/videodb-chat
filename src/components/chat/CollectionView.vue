@@ -1,6 +1,6 @@
 <template>
   <div class="vdb-c-mx-auto vdb-c-w-11/12 vdb-c-py-28">
-    <div v-if="collectionVideos !== null" class="scrollable-container">
+    <div v-if="collectionVideos !== null">
       <VideoList
         v-if="videos.length > 0"
         :video-results="videos"
@@ -79,24 +79,3 @@ const handleVideoClick = (video) => {
   emit("video-click", video);
 };
 </script>
-
-<style scoped>
-.scrollable-container {
-  max-height: 70vh;
-  overflow-y: auto;
-  padding-right: 0.25rem;
-}
-
-.scrollable-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.scrollable-container::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 4px;
-}
-
-.scrollable-container::-webkit-scrollbar-track {
-  background-color: #f0f0f0;
-}
-</style>

@@ -103,7 +103,9 @@
                     },
                   ]"
                 >
-                  <span> {{ collection.name }} </span>
+                  <span class="vdb-c-w-[90%] vdb-c-truncate">
+                    {{ collection.name }}
+                  </span>
                   <!-- Delete Button -->
                   <span
                     @click.stop="promptDeleteCollection(collection)"
@@ -500,7 +502,9 @@ const promptDeleteCollection = async (collection) => {
   try {
     await deleteCollection(collection?.id);
   } catch (error) {
-    if (error.message.includes("Invalid request: Your collection has non-zero")) {
+    if (
+      error.message.includes("Invalid request: Your collection has non-zero")
+    ) {
       showDeleteErrorModal.value = true;
       return;
     }
