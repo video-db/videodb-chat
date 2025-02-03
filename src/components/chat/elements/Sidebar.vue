@@ -351,7 +351,6 @@ import ChevronDown from "../../icons/ChevronDown.vue";
 import AgentIcon from "../../icons/Agent.vue";
 import ChatIcon from "../../icons/Chat.vue";
 import CollectionIcon from "../../icons/Collection.vue";
-import { useVideoDBChat } from "../../../context";
 
 const props = defineProps({
   sessions: {
