@@ -32,6 +32,7 @@
         :collections="collections"
         @create-new-session="createNewSession"
         @delete-session="showDeleteSessionDialog"
+        @delete-collection="promptDeleteCollection"
         @agent-click="
           if (!chatLoading) {
             handleTagAgent($event, false);
@@ -179,6 +180,12 @@
       @hide="showSuccessBanner = false"
     />
 
+    <!-- Delete Collection Error Modal -->
+    <DeleteCollectionErrorModal
+      :isVisible="showDeleteErrorModal"
+      @closeModal="showDeleteErrorModal = false"
+    />
+
     <!-- Delete Video Dialog -->
     <DeleteVideoDialog
       :show-dialog="showDeleteVideoDialog"
@@ -231,6 +238,7 @@ import SearchIcon from "../icons/SearchIcon.vue";
 import QueryIcon from "../icons/Query.vue";
 import DeleteVideoDialog from "../modals/DeleteVideoModal.vue";
 import SuccessBanner from "../atoms/SuccessBanner.vue";
+import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -357,6 +365,7 @@ const showDeleteVideoDialog = ref(false);
 const videoToDelete = ref(null);
 const showSuccessBanner = ref(false);
 const bannerMessage = ref("");
+const showDeleteErrorModal = ref(false);
 
 const isSetupComplete = computed(() => {
   return (
@@ -582,6 +591,18 @@ const confirmDeleteVideo = async () => {
     console.error(`Error deleting video: ${error.message}`);
     bannerMessage.value = "Error deleting video.";
     showSuccessBanner.value = true;
+  }
+};
+
+const promptDeleteCollection = async (collection) => {
+  try {
+    await deleteCollection(collection?.id);
+  } catch (error) {
+    if (error.message.includes("Invalid request: Your collection has non-zero")) {
+      showDeleteErrorModal.value = true;
+      return;
+    }
+    console.error("Unexpected error deleting collection:", error);
   }
 };
 

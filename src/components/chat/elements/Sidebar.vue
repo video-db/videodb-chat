@@ -107,7 +107,7 @@
                   <span> {{ collection.name }} </span>
                   <!-- Delete Button -->
                   <span
-                    @click.stop="promptDeleteCollection(collection)"
+                    @click.stop="$emit('delete-collection', collection)"
                     class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
                   >
                     <DeleteIcon
@@ -327,10 +327,6 @@
         </div>
       </Button>
     </div>
-    <DeleteCollectionErrorModal
-      :isVisible="showDeleteErrorModal"
-      @closeModal="showDeleteErrorModal = false"
-    />
   </div>
   <transition name="fade">
     <button
@@ -363,7 +359,6 @@ import ChatIcon from "../../icons/Chat.vue";
 import CollectionIcon from "../../icons/Collection.vue";
 import CreateCollectionModal from "../../modals/CreateCollectionModal.vue";
 import SuccessBanner from "../../message-handlers/SuccessCollectionBanner.vue";
-import DeleteCollectionErrorModal from "../../modals/DeleteCollectionErrorModal.vue";
 import { useVideoDBChat } from "../../../context";
 
 const props = defineProps({
@@ -442,7 +437,7 @@ const showSuccessBanner = ref(false);
 const successMessage = ref("");
 const showDeleteErrorModal = ref(false);
 
-const { deleteCollection, createCollection } = useVideoDBChat();
+const { createCollection } = useVideoDBChat();
 
 const visibleSections = computed(() => {
   return props.sidebarSections;
@@ -456,6 +451,7 @@ const emit = defineEmits([
   "agent-click",
   "create",
   "cancel",
+  "delete-collection",
 ]);
 
 const showCreateCollectionModal = ref(false);
@@ -518,18 +514,6 @@ const promptCreateCollection = async (newCollection) => {
   } catch (error) {
     console.error("Error creating collection:", error.message);
     alert(`Failed to create collection: ${error.message}`);
-  }
-};
-
-const promptDeleteCollection = async (collection) => {
-  try {
-    await deleteCollection(collection?.id);
-  } catch (error) {
-    if (error.message.includes("Invalid request: Your collection has non-zero")) {
-      showDeleteErrorModal.value = true;
-      return;
-    }
-    console.error("Unexpected error deleting collection:", error);
   }
 };
 
