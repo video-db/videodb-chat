@@ -31,6 +31,7 @@
         :sessions="sessions"
         :collections="collections"
         @create-new-session="createNewSession"
+        @create-collection="toggleCreateCollectionModal"
         @delete-session="showDeleteSessionDialog"
         @delete-collection="promptDeleteCollection"
         @agent-click="
@@ -180,6 +181,20 @@
       @hide="showSuccessBanner = false"
     />
 
+    <!-- Success Collection Banner --> 
+    <SuccessCollectionBanner
+      v-if="showSuccessBannerCollection"
+      :message="successMessage"
+      @hide="showSuccessBannerCollection = false"
+    />
+
+    <!-- Create Collection Error Modal -->
+    <CreateCollectionModal
+      :showDialog="showCreateCollectionModal"
+      @cancel="showCreateCollectionModal = false"
+      @create="promptCreateCollection"
+    />
+
     <!-- Delete Collection Error Modal -->
     <DeleteCollectionErrorModal
       :isVisible="showDeleteErrorModal"
@@ -239,6 +254,8 @@ import QueryIcon from "../icons/Query.vue";
 import DeleteVideoDialog from "../modals/DeleteVideoModal.vue";
 import SuccessBanner from "../atoms/SuccessBanner.vue";
 import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
+import CreateCollectionModal from "../modals/CreateCollectionModal.vue";
+import SuccessCollectionBanner from "../message-handlers/SuccessCollectionBanner.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -366,6 +383,8 @@ const videoToDelete = ref(null);
 const showSuccessBanner = ref(false);
 const bannerMessage = ref("");
 const showDeleteErrorModal = ref(false);
+const showSuccessBannercollection = ref(false);
+const successMessage = ref("");
 
 const isSetupComplete = computed(() => {
   return (
@@ -591,6 +610,28 @@ const confirmDeleteVideo = async () => {
     console.error(`Error deleting video: ${error.message}`);
     bannerMessage.value = "Error deleting video.";
     showSuccessBanner.value = true;
+  }
+};
+
+const showCreateCollectionModal = ref(false);
+
+const toggleCreateCollectionModal = () => {
+  showCreateCollectionModal.value = !showCreateCollectionModal.value;
+};
+
+const promptCreateCollection = async (newCollection) => {
+  showCreateCollectionModal.value = false;
+  try {
+    const createdCollection = await createCollection(
+      newCollection.name,
+      newCollection.description || " "
+    );
+
+    successMessage.value = `Collection has been created successfully!`;
+    showSuccessBanner.value = true;
+  } catch (error) {
+    console.error("Error creating collection:", error.message);
+    alert(`Failed to create collection: ${error.message}`);
   }
 };
 

@@ -10,11 +10,6 @@
       },
     ]"
   >
-    <SuccessBanner
-      v-if="showSuccessBanner"
-      :message="successMessage"
-      @hide="showSuccessBanner = false"
-    />
     <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
       <div class="vdb-c-text-2xl vdb-c-font-bold">
         <component v-if="config.icon" :is="config.icon" />
@@ -72,7 +67,7 @@
             <button
               class="vdb-c-flex vdb-c-items-center vdb-c-gap-4"
               aria-label="Create Collection"
-              @click="toggleCreateCollectionModal"
+              @click="$emit('create-collection')"
             >
               <PlusIcon stroke-color="#464646" />
             </button>
@@ -275,11 +270,6 @@
         </div>
       </template>
     </div>
-      <CreateCollectionModal
-        :showDialog="showCreateCollectionModal"
-        @cancel="showCreateCollectionModal = false"
-        @create="promptCreateCollection"
-      />
     <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col">
       <a
         v-for="(link, index) in config.links"
@@ -357,8 +347,6 @@ import ChevronDown from "../../icons/ChevronDown.vue";
 import AgentIcon from "../../icons/Agent.vue";
 import ChatIcon from "../../icons/Chat.vue";
 import CollectionIcon from "../../icons/Collection.vue";
-import CreateCollectionModal from "../../modals/CreateCollectionModal.vue";
-import SuccessBanner from "../../message-handlers/SuccessCollectionBanner.vue";
 import { useVideoDBChat } from "../../../context";
 
 const props = defineProps({
@@ -433,11 +421,6 @@ const hoveredSession = ref(null);
 const isMobile = ref(window?.innerWidth < 1024);
 const isOpen = ref(false);
 const hoveredCollection = ref(null);
-const showSuccessBanner = ref(false);
-const successMessage = ref("");
-const showDeleteErrorModal = ref(false);
-
-const { createCollection } = useVideoDBChat();
 
 const visibleSections = computed(() => {
   return props.sidebarSections;
@@ -451,14 +434,10 @@ const emit = defineEmits([
   "agent-click",
   "create",
   "cancel",
+  "create-collection",
   "delete-collection",
 ]);
 
-const showCreateCollectionModal = ref(false);
-
-const toggleCreateCollectionModal = () => {
-  showCreateCollectionModal.value = !showCreateCollectionModal.value;
-};
 
 const closeSidebar = () => {
   if (isMobile.value) {
@@ -501,22 +480,6 @@ const computedSelectedCollection = computed(() => {
   return props.collections.length > 0 ? props.collections[0].id : null;
 });
 
-const promptCreateCollection = async (newCollection) => {
-  showCreateCollectionModal.value = false;
-  try {
-    const createdCollection = await createCollection(
-      newCollection.name,
-      newCollection.description || " "
-    );
-
-    successMessage.value = `Collection has been created successfully!`;
-    showSuccessBanner.value = true;
-  } catch (error) {
-    console.error("Error creating collection:", error.message);
-    alert(`Failed to create collection: ${error.message}`);
-  }
-};
-
 watch(
   () => props.initialSessionsOpen,
   (newValue) => {
@@ -548,7 +511,6 @@ defineExpose({
   toggleSessions,
   triggerExploreAgentsFocusAnimation,
   toggleSidebar,
-  toggleCreateCollectionModal,
 });
 </script>
 
