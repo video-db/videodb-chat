@@ -6,6 +6,7 @@
 
 - Delete Collection feature  
 - Delete Video from Collection 
+- Create a Collection
 
 ## [0.0.29]() - 2025-01-30
 
