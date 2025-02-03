@@ -24,7 +24,6 @@
         "
         :initial-sessions-open="!isFreshUser"
         :initial-explore-agents-open="!isFreshUser"
-        :initial-collections-open="!isFreshUser"
         :selected-session="sessionId"
         :add-dummy-session="Object.keys(conversations).length === 0"
         :selected-collection="collectionId"
@@ -32,7 +31,9 @@
         :sessions="sessions"
         :collections="collections"
         @create-new-session="createNewSession"
+        @create-collection="toggleCreateCollectionModal"
         @delete-session="showDeleteSessionDialog"
+        @delete-collection="promptDeleteCollection"
         @agent-click="
           if (!chatLoading) {
             handleTagAgent($event, false);
@@ -180,6 +181,26 @@
       @hide="showSuccessBanner = false"
     />
 
+    <!-- Success Collection Banner --> 
+    <SuccessCollectionBanner
+      v-if="showSuccessBannerCollection"
+      :message="successMessage"
+      @hide="showSuccessBannerCollection = false"
+    />
+
+    <!-- Create Collection Error Modal -->
+    <CreateCollectionModal
+      :showDialog="showCreateCollectionModal"
+      @cancel="showCreateCollectionModal = false"
+      @create="promptCreateCollection"
+    />
+
+    <!-- Delete Collection Error Modal -->
+    <DeleteCollectionErrorModal
+      :isVisible="showDeleteErrorModal"
+      @closeModal="showDeleteErrorModal = false"
+    />
+
     <!-- Delete Video Dialog -->
     <DeleteVideoDialog
       :show-dialog="showDeleteVideoDialog"
@@ -232,6 +253,9 @@ import SearchIcon from "../icons/SearchIcon.vue";
 import QueryIcon from "../icons/Query.vue";
 import DeleteVideoDialog from "../modals/DeleteVideoModal.vue";
 import SuccessBanner from "../atoms/SuccessBanner.vue";
+import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
+import CreateCollectionModal from "../modals/CreateCollectionModal.vue";
+import SuccessCollectionBanner from "../message-handlers/SuccessCollectionBanner.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -337,6 +361,7 @@ const {
   conversations,
   loadSession,
   uploadMedia,
+  createCollection,
   deleteCollection,
   refetchCollectionVideos,
   deleteVideo,
@@ -357,6 +382,9 @@ const showDeleteVideoDialog = ref(false);
 const videoToDelete = ref(null);
 const showSuccessBanner = ref(false);
 const bannerMessage = ref("");
+const showDeleteErrorModal = ref(false);
+const showSuccessBannercollection = ref(false);
+const successMessage = ref("");
 
 const isSetupComplete = computed(() => {
   return (
@@ -585,6 +613,40 @@ const confirmDeleteVideo = async () => {
   }
 };
 
+const showCreateCollectionModal = ref(false);
+
+const toggleCreateCollectionModal = () => {
+  showCreateCollectionModal.value = !showCreateCollectionModal.value;
+};
+
+const promptCreateCollection = async (newCollection) => {
+  showCreateCollectionModal.value = false;
+  try {
+    const createdCollection = await createCollection(
+      newCollection.name,
+      newCollection.description || " "
+    );
+
+    successMessage.value = `Collection has been created successfully!`;
+    showSuccessBanner.value = true;
+  } catch (error) {
+    console.error("Error creating collection:", error.message);
+    alert(`Failed to create collection: ${error.message}`);
+  }
+};
+
+const promptDeleteCollection = async (collection) => {
+  try {
+    await deleteCollection(collection?.id);
+  } catch (error) {
+    if (error.message.includes("Invalid request: Your collection has non-zero")) {
+      showDeleteErrorModal.value = true;
+      return;
+    }
+    console.error("Unexpected error deleting collection:", error);
+  }
+};
+
 const handleAddMessage = (content) => {
   if (!sessionId.value) {
     loadSession();
@@ -623,6 +685,7 @@ provide("videodb-chat", {
   setChatInput,
   registerMessageHandler,
   uploadMedia,
+  createCollection,
   deleteCollection,
 });
 </script>

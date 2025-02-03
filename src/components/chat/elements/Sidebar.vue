@@ -56,27 +56,23 @@
             'max-height': `calc(100% / ${visibleSections.length})`,
           }"
         >
-          <button
-            @click="toggleCollections()"
-            class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
-          >
-            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
-              <CollectionIcon class="vdb-c-mr-8" fill="#464646" />
-              <span class="vdb-c-font-semibold vdb-c-leading-5"
-                >Collections</span
-              >
-            </div>
-            <div class="vdb-c-p-4">
-              <ChevronDown
-                :class="[
-                  'vdb-c-h-16 vdb-c-w-16 vdb-c-transition-transform',
-                  { 'vdb-c-rotate-180': showCollections },
-                ]"
-                stroke-color="#464646"
-                :stroke-width="2"
-              />
-            </div>
-          </button>
+        <div
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
+        >
+          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
+            <CollectionIcon class="vdb-c-mr-8" fill="#464646" />
+            <span class="vdb-c-font-semibold vdb-c-leading-5">Collections</span>
+          </div>
+          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-4">
+            <button
+              class="vdb-c-flex vdb-c-items-center vdb-c-gap-4"
+              aria-label="Create Collection"
+              @click="$emit('create-collection')"
+            >
+              <PlusIcon stroke-color="#464646" />
+            </button>
+          </div>
+        </div>
           <div
             v-if="status !== 'inactive' && showCollections"
             class="vdb-c-mt-4 vdb-c-overflow-y-auto"
@@ -106,7 +102,7 @@
                   <span> {{ collection.name }} </span>
                   <!-- Delete Button -->
                   <span
-                    @click.stop="promptDeleteCollection(collection)"
+                    @click.stop="$emit('delete-collection', collection)"
                     class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
                   >
                     <DeleteIcon
@@ -274,7 +270,6 @@
         </div>
       </template>
     </div>
-
     <div class="vdb-c-mt-auto vdb-c-flex vdb-c-flex-col">
       <a
         v-for="(link, index) in config.links"
@@ -322,10 +317,6 @@
         </div>
       </Button>
     </div>
-    <DeleteCollectionErrorModal
-      :isVisible="showDeleteErrorModal"
-      @closeModal="showDeleteErrorModal = false"
-    />
   </div>
   <transition name="fade">
     <button
@@ -350,12 +341,12 @@ import { nextTick, ref, watch, computed } from "vue";
 import Button from "../../buttons/Button.vue";
 
 import DeleteIcon from "../../icons/Delete.vue";
+import PlusIcon from "../../icons/Plus.vue";
 import ComposeIcon from "../../icons/Compose.vue";
 import ChevronDown from "../../icons/ChevronDown.vue";
 import AgentIcon from "../../icons/Agent.vue";
 import ChatIcon from "../../icons/Chat.vue";
 import CollectionIcon from "../../icons/Collection.vue";
-import DeleteCollectionErrorModal from "../../modals/DeleteCollectionErrorModal.vue";
 import { useVideoDBChat } from "../../../context";
 
 const props = defineProps({
@@ -407,10 +398,6 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  initialCollectionsOpen: {
-    type: Boolean,
-    default: false,
-  },
   sidebarSections: {
     type: Array,
     default: () => ["collections", "agents", "sessions"],
@@ -434,9 +421,6 @@ const hoveredSession = ref(null);
 const isMobile = ref(window?.innerWidth < 1024);
 const isOpen = ref(false);
 const hoveredCollection = ref(null);
-const showDeleteErrorModal = ref(false);
-
-const { deleteCollection } = useVideoDBChat();
 
 const visibleSections = computed(() => {
   return props.sidebarSections;
@@ -448,7 +432,12 @@ const emit = defineEmits([
   "delete-session",
   "collection-click",
   "agent-click",
+  "create",
+  "cancel",
+  "create-collection",
+  "delete-collection",
 ]);
+
 
 const closeSidebar = () => {
   if (isMobile.value) {
@@ -465,11 +454,6 @@ const toggleExploreAgents = (value) => {
 const toggleSessions = (value) => {
   userClickedSessions.value = true;
   showSessions.value = value !== undefined ? value : !showSessions.value;
-};
-
-const toggleCollections = (value) => {
-  userClickedCollections.value = true;
-  showCollections.value = value !== undefined ? value : !showCollections.value;
 };
 
 const toggleSidebar = () => {
@@ -496,18 +480,6 @@ const computedSelectedCollection = computed(() => {
   return props.collections.length > 0 ? props.collections[0].id : null;
 });
 
-const promptDeleteCollection = async (collection) => {
-  try {
-    await deleteCollection(collection?.id);
-  } catch (error) {
-    if (error.message.includes("Invalid request: Your collection has non-zero")) {
-      showDeleteErrorModal.value = true;
-      return;
-    }
-    console.error("Unexpected error deleting collection:", error);
-  }
-};
-
 watch(
   () => props.initialSessionsOpen,
   (newValue) => {
@@ -528,16 +500,6 @@ watch(
   { immediate: true },
 );
 
-watch(
-  () => props.initialCollectionsOpen,
-  (newValue) => {
-    if (!userClickedCollections.value) {
-      showCollections.value = newValue;
-    }
-  },
-  { immediate: true },
-);
-
 watch(showExploreAgents, (newValue) => {
   if (newValue) {
     // triggerExploreAgentsFocusAnimation();
@@ -547,7 +509,6 @@ watch(showExploreAgents, (newValue) => {
 defineExpose({
   toggleExploreAgents,
   toggleSessions,
-  toggleCollections,
   triggerExploreAgentsFocusAnimation,
   toggleSidebar,
 });
