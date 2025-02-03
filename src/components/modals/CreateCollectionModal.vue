@@ -28,15 +28,14 @@
             id="collectionName"
             v-model="newCollection.name"
             type="text"
-            class="vdb-c-w-full vdb-c-px-10 vdb-c-py-8 vdb-c-text-[18px] vdb-c-border vdb-c-border-gray-300 vdb-c-rounded-md vdb-c-box-border focus:vdb-c-border-orange-500 focus:vdb-c-outline-none"
-            placeholder="Collection Name"
+            class="vdb-c-w-full vdb-c-px-10 vdb-c-py-8 vdb-c-text-[14px] vdb-c-border vdb-c-border-gray-300 vdb-c-rounded-md vdb-c-box-border focus:vdb-c-border-orange-500 focus:vdb-c-outline-none"
+            placeholder="Collection Name (required)"
           />
           <textarea
             id="collectionDescription"
             v-model="newCollection.description"
-            class="vdb-c-w-full vdb-c-px-10 vdb-c-py-8 vdb-c-text-[18px] vdb-c-border vdb-c-border-gray-300 vdb-c-rounded-md vdb-c-box-border focus:vdb-c-border-orange-500 focus:vdb-c-outline-none vdb-c-overflow-hidden vdb-c-resize-none vdb-c-whitespace-nowrap"
+            class="vdb-c-w-full vdb-c-px-10 vdb-c-py-8 vdb-c-text-[14px] vdb-c-border vdb-c-border-gray-300 vdb-c-rounded-md vdb-c-box-border focus:vdb-c-border-orange-500 focus:vdb-c-outline-none"
             placeholder="Description"
-            rows="1"
           ></textarea>
         </div>
       </div>
@@ -50,7 +49,13 @@
             Cancel
           </button>
           <button
-            class="vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-white vdb-c-bg-[#EC5B16] vdb-c-rounded-md hover:vdb-c-bg-[#D94E14] vdb-c-w-full sm:vdb-c-w-auto"
+            :disabled="!newCollection.name.trim()"
+            :class="[
+              'vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-px-16 vdb-c-py-8 vdb-c-text-sm vdb-c-font-medium vdb-c-rounded-md vdb-c-w-full sm:vdb-c-w-auto',
+              newCollection.name.trim()
+                    ? 'vdb-c-text-white vdb-c-bg-[#EC5B16] hover:vdb-c-bg-[#D94E14]'
+                    : 'vdb-c-text-white vdb-c-bg-[#969696] cursor-not-allowed'
+            ]"
             @click="handleCreateCollection"
           >
             Create
@@ -82,11 +87,6 @@ const newCollection = reactive({
 const handleCreateCollection = () => {
   if (!newCollection.name.trim()) {
     alert("Collection name cannot be empty.");
-    return;
-  }
-
-  if (!newCollection.description.trim()) {
-    alert("Collection description cannot be empty.");
     return;
   }
   emit("create", { ...newCollection });

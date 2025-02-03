@@ -510,7 +510,7 @@ const promptCreateCollection = async (newCollection) => {
   try {
     const createdCollection = await createCollection(
       newCollection.name,
-      newCollection.description
+      newCollection.description || " "
     );
 
     successMessage.value = `Collection has been created successfully!`;

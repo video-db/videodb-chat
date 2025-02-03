@@ -228,10 +228,6 @@ export function useVideoDBAgent(config) {
       throw new Error("Collection name is required.");
     }
   
-    if (!description || description.trim() === "") {
-      throw new Error("Collection description is required.");
-    }
-  
     try {
       const response = await fetch(`${httpUrl}/videodb/collection`, {
         method: "POST",
@@ -247,10 +243,6 @@ export function useVideoDBAgent(config) {
       } catch (jsonError) {
         throw new Error("Failed to parse server response.");
       }
-  
-      // if (!response.ok || !data?.success) {
-      //   throw new Error(data?.message || "Failed to create collection.");
-      // }
       
       if (Array.isArray(collections.value)) {
         collections.value.push(res.data.collection);
