@@ -5,7 +5,7 @@
     @click="handleCancel"
   >
     <div
-      class="vdb-c-shadow-xl vdb-c-w-[480px] vdb-c-rounded-lg vdb-c-bg-[#1F1F1F]"
+      class="vdb-c-shadow-xl vdb-c-m-10 vdb-c-w-[480px] vdb-c-rounded-lg vdb-c-bg-[#1F1F1F]"
       @click.stop
     >
       <!-- Header -->

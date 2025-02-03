@@ -5,7 +5,7 @@
     @click="closeModal"
   >
     <div
-      class="vdb-c-shadow-xl vdb-c-w-[500px] vdb-c-overflow-hidden vdb-c-rounded-lg vdb-c-bg-white vdb-c-px-24 vdb-c-py-16"
+      class="vdb-c-shadow-xl vdb-c-m-10 vdb-c-w-[500px] vdb-c-overflow-hidden vdb-c-rounded-lg vdb-c-bg-white vdb-c-px-24 vdb-c-py-16"
       @click.stop
     >
       <!-- Header with icon and title -->

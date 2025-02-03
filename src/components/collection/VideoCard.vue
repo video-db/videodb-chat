@@ -100,7 +100,7 @@
 import { ref } from "vue";
 import PlayIcon from "../icons/play.vue";
 import DefaultThumbnail from "../assets/DefaultThumbnail.vue";
-import DeleteIcon from "../icons/DeleteVideoCard.vue";
+import DeleteIcon from "../icons/Delete2.vue";
 import { VideoDBPlayer, BigCenterButton } from "@videodb/player-vue";
 import "@videodb/player-vue/dist/style.css";
 

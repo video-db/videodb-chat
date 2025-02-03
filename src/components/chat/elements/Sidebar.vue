@@ -56,23 +56,25 @@
             'max-height': `calc(100% / ${visibleSections.length})`,
           }"
         >
-        <div
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
-        >
-          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
-            <CollectionIcon class="vdb-c-mr-8" fill="#464646" />
-            <span class="vdb-c-font-semibold vdb-c-leading-5">Collections</span>
+          <div
+            class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-6 vdb-c-text-pam hover:vdb-c-bg-roy"
+          >
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-8">
+              <CollectionIcon class="vdb-c-mr-8" fill="#464646" />
+              <span class="vdb-c-font-semibold vdb-c-leading-5"
+                >Collections</span
+              >
+            </div>
+            <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-4">
+              <button
+                class="vdb-c-flex vdb-c-items-center vdb-c-gap-4"
+                aria-label="Create Collection"
+                @click="$emit('create-collection')"
+              >
+                <PlusIcon stroke-color="#464646" />
+              </button>
+            </div>
           </div>
-          <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-4">
-            <button
-              class="vdb-c-flex vdb-c-items-center vdb-c-gap-4"
-              aria-label="Create Collection"
-              @click="$emit('create-collection')"
-            >
-              <PlusIcon stroke-color="#464646" />
-            </button>
-          </div>
-        </div>
           <div
             v-if="status !== 'inactive' && showCollections"
             class="vdb-c-mt-4 vdb-c-overflow-y-auto"
@@ -99,7 +101,9 @@
                     },
                   ]"
                 >
-                  <span> {{ collection.name }} </span>
+                  <span class="vdb-c-w-[90%] vdb-c-truncate">
+                    {{ collection.name }}
+                  </span>
                   <!-- Delete Button -->
                   <span
                     @click.stop="$emit('delete-collection', collection)"
@@ -432,12 +436,9 @@ const emit = defineEmits([
   "delete-session",
   "collection-click",
   "agent-click",
-  "create",
-  "cancel",
   "create-collection",
   "delete-collection",
 ]);
-
 
 const closeSidebar = () => {
   if (isMobile.value) {

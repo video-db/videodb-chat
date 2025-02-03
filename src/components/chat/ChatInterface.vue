@@ -31,7 +31,7 @@
         :sessions="sessions"
         :collections="collections"
         @create-new-session="createNewSession"
-        @create-collection="toggleCreateCollectionModal"
+        @create-collection="showCreateCollectionModal = true"
         @delete-session="showDeleteSessionDialog"
         @delete-collection="promptDeleteCollection"
         @agent-click="
@@ -95,7 +95,6 @@
                     :collection-videos="activeCollectionVideos"
                     @video-click="handleVideoClick"
                     @delete-video="promptDeleteVideo"
-
                     class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                   />
                 </div>
@@ -164,31 +163,37 @@
       </div>
     </div>
 
+    <NotificationCenter ref="notificationCenterRef" />
+
     <!-- Delete Session Dialog -->
-    <DeleteSessionDialog
+    <ConfirmModal
+      heading-text="Delete Session"
+      description-text="Are you sure you want to delete this session?"
+      action-button-text="Delete"
+      cancel-button-text="Cancel"
       :show-dialog="showDeleteDialog"
       @cancel-delete="
         showDeleteDialog = false;
         sessionToDelete = null;
       "
       @confirm-delete="confirmDeleteSession"
-    ></DeleteSessionDialog>
-
-    <!-- Success Banner -->    
-    <SuccessBanner
-      v-if="showSuccessBanner"
-      :message="bannerMessage"
-      @hide="showSuccessBanner = false"
     />
 
-    <!-- Success Collection Banner --> 
-    <SuccessCollectionBanner
-      v-if="showSuccessBannerCollection"
-      :message="successMessage"
-      @hide="showSuccessBannerCollection = false"
+    <!-- Delete Video Dialog -->
+    <ConfirmModal
+      heading-text="Delete Video"
+      description-text="Are you sure you want to delete this video? This action cannot be undone."
+      action-button-text="Delete"
+      cancel-button-text="Cancel"
+      :show-dialog="showDeleteVideoDialog"
+      @cancel-delete="
+        showDeleteVideoDialog = false;
+        videoToDelete = null;
+      "
+      @confirm-delete="confirmDeleteVideo"
     />
 
-    <!-- Create Collection Error Modal -->
+    <!-- Create Collection Modal-->
     <CreateCollectionModal
       :showDialog="showCreateCollectionModal"
       @cancel="showCreateCollectionModal = false"
@@ -199,16 +204,6 @@
     <DeleteCollectionErrorModal
       :isVisible="showDeleteErrorModal"
       @closeModal="showDeleteErrorModal = false"
-    />
-
-    <!-- Delete Video Dialog -->
-    <DeleteVideoDialog
-      :show-dialog="showDeleteVideoDialog"
-      @cancel-delete="
-        showDeleteVideoDialog = false;
-        videoToDelete = null;
-      "
-      @confirm-delete="confirmDeleteVideo"
     />
 
     <!-- Upload Dialog -->
@@ -236,9 +231,13 @@ import SetupScreen from "./elements/SetupScreen.vue";
 import Sidebar from "./elements/Sidebar.vue";
 import UploadNotifications from "./elements/UploadNotifications.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
+import NotificationCenter from "./elements/NotificationCenter.vue";
 
+import ConfirmModal from "../modals/ConfirmModal.vue";
 import UploadModal from "../modals/UploadModal.vue";
-import DeleteSessionDialog from "../modals/DeleteSessionModal.vue";
+import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
+import CreateCollectionModal from "../modals/CreateCollectionModal.vue";
+
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
 import ChatVideos from "../message-handlers/ChatVideos.vue";
@@ -248,14 +247,10 @@ import TextResponse from "../message-handlers/TextResponse.vue";
 import CollectionIcon from "../icons/Collection.vue";
 import DirectorIcon from "../icons/Director.vue";
 import ExternalLink from "../icons/ExternalLink.vue";
-import FileUploadIcon from "../icons/FileUpload.vue";
 import SearchIcon from "../icons/SearchIcon.vue";
 import QueryIcon from "../icons/Query.vue";
-import DeleteVideoDialog from "../modals/DeleteVideoModal.vue";
-import SuccessBanner from "../atoms/SuccessBanner.vue";
-import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
-import CreateCollectionModal from "../modals/CreateCollectionModal.vue";
-import SuccessCollectionBanner from "../message-handlers/SuccessCollectionBanner.vue";
+import DeleteIcon from "../icons/Delete3.vue";
+import CheckIcon from "../icons/Check.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -340,6 +335,7 @@ const emit = defineEmits([]);
 const sidebarRef = ref(null);
 const chatInputRef = ref(null);
 const uploadNotificationsRef = ref(null);
+const notificationCenterRef = ref(null);
 
 const showCollectionView = ref(false);
 const taggedAgent = ref([]);
@@ -380,11 +376,7 @@ const isStaticPage = ref(false);
 const chatWindow = ref(null);
 const showDeleteVideoDialog = ref(false);
 const videoToDelete = ref(null);
-const showSuccessBanner = ref(false);
-const bannerMessage = ref("");
 const showDeleteErrorModal = ref(false);
-const showSuccessBannercollection = ref(false);
-const successMessage = ref("");
 
 const isSetupComplete = computed(() => {
   return (
@@ -604,42 +596,57 @@ const confirmDeleteVideo = async () => {
 
   try {
     await deleteVideo(collection_id, id);
-    bannerMessage.value = "Video deleted successfully.";
-    showSuccessBanner.value = true;
+    notificationCenterRef.value.addNotification("Video deleted successfully.", {
+      type: "error",
+      icon: DeleteIcon,
+    });
   } catch (error) {
     console.error(`Error deleting video: ${error.message}`);
-    bannerMessage.value = "Error deleting video.";
-    showSuccessBanner.value = true;
+    notificationCenterRef.value.addNotification("Error deleting video", {
+      type: "error",
+      icon: DeleteIcon,
+    });
   }
 };
 
 const showCreateCollectionModal = ref(false);
-
-const toggleCreateCollectionModal = () => {
-  showCreateCollectionModal.value = !showCreateCollectionModal.value;
-};
 
 const promptCreateCollection = async (newCollection) => {
   showCreateCollectionModal.value = false;
   try {
     const createdCollection = await createCollection(
       newCollection.name,
-      newCollection.description || " "
+      newCollection.description || " ",
     );
-
-    successMessage.value = `Collection has been created successfully!`;
-    showSuccessBanner.value = true;
+    notificationCenterRef.value.addNotification(
+      "Collection has been created successfully!",
+      {
+        type: "success",
+        icon: CheckIcon,
+      },
+    );
   } catch (error) {
     console.error("Error creating collection:", error.message);
-    alert(`Failed to create collection: ${error.message}`);
+    notificationCenterRef.value.addNotification("Failed to create collection", {
+      type: "error",
+    });
   }
 };
 
 const promptDeleteCollection = async (collection) => {
   try {
     await deleteCollection(collection?.id);
+    notificationCenterRef.value.addNotification(
+      "Collection deleted successfully.",
+      {
+        type: "error",
+        icon: DeleteIcon,
+      },
+    );
   } catch (error) {
-    if (error.message.includes("Invalid request: Your collection has non-zero")) {
+    if (
+      error.message.includes("Invalid request: Your collection has non-zero")
+    ) {
       showDeleteErrorModal.value = true;
       return;
     }
@@ -685,8 +692,6 @@ provide("videodb-chat", {
   setChatInput,
   registerMessageHandler,
   uploadMedia,
-  createCollection,
-  deleteCollection,
 });
 </script>
 
