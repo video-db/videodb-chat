@@ -1,11 +1,16 @@
 # Changelog
 
-## [0.0.30]() - 2025-01-31
+## [0.0.30]() - 2025-02-03
 
 ### Added
 
-- Delete Collection feature  
-- Delete Video from Collection 
+- Delete Collection feature
+- Delete Video from Collection
+- Create a new Collection
+
+### Fixed
+
+- Minor UI fixes
 
 ## [0.0.29]() - 2025-01-30
 

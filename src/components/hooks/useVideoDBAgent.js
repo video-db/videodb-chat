@@ -223,6 +223,38 @@ export function useVideoDBAgent(config) {
       });
   };
 
+  const createCollection = async (name, description) => {
+    if (!name || name.trim() === "") {
+      throw new Error("Collection name is required.");
+    }
+  
+    try {
+      const response = await fetch(`${httpUrl}/videodb/collection`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, description }),
+      });
+     
+      let res;
+      try {
+        res = await response.json();
+      } catch (jsonError) {
+        throw new Error("Failed to parse server response.");
+      }
+      
+      if (Array.isArray(collections.value)) {
+        collections.value.push(res.data.collection);
+      }
+
+      return res.data.collection;
+    } catch (error) {
+      console.error("Error creating collection:", error);
+      throw new Error("An unexpected error occurred while creating the collection.");
+    }
+  };
+  
   const deleteCollection = async (collectionId) => {
     if (!collectionId) {
       throw new Error("Collection ID is required.");
@@ -382,6 +414,7 @@ export function useVideoDBAgent(config) {
     addMessage,
     loadSession,
     deleteSession,
+    createCollection,
     deleteCollection,
     deleteVideo,
     uploadMedia,
