@@ -42,6 +42,9 @@
               :conv-id="message.conv_id"
               :msg-id="message.msg_id"
             />
+            <div v-else-if="content.type === 'image'" class="vdb-c-w-full vdb-c-py-14">
+              <img :src="content.url" alt="User Image" class="vdb-c-max-w-xs vdb-c-rounded-lg" />
+            </div>
           </div>
         </div>
       </div>

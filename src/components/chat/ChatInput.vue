@@ -265,14 +265,26 @@ const handleFileUpload = (event) => {
 };
 
 const handleSubmit = (e) => {
+  console.log("handleSubmit triggered", { event: e });
+
   e.preventDefault();
+
   if (!showAgentList.value && (chatInput.value.trim() !== "" || pastedImage.value)) {
-    emit("on-submit", chatInput.value);
+    console.log("Submitting message:", {
+      text: chatInput.value,
+      image: pastedImage.value
+    });
+
+    emit("on-submit", chatInput.value, pastedImage.value);
+
+    console.log("Resetting input fields...");
     chatInput.value = "";
     pastedImage.value = null;
     showPreview.value = false;
     charCount.value = 0;
     resetTag();
+  } else {
+    console.log("Empty message, nothing to submit.");
   }
 };
 

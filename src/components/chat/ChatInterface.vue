@@ -632,13 +632,30 @@ const confirmDeleteVideo = async () => {
   }
 };
 
-const handleAddMessage = (content) => {
+const handleAddMessage = async (content, image = null) => { 
   if (!sessionId.value) {
     loadSession();
   }
 
+  const messageContent = [{ type: "text", text: content }];
+
+  if (image) {
+    console.log("Skipping upload, using hardcoded image URL...");
+    
+    const hardcodedImageUrl = "https://fastly.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U";
+    
+    messageContent.push({
+      type: "image_url",
+      url: hardcodedImageUrl,
+    });
+
+    console.log("Hardcoded Image URL added:", hardcodedImageUrl);
+  }
+
+  console.log("Final message to be sent:", messageContent);
+
   addMessage({
-    content: [{ type: "text", text: content }],
+    content: messageContent,
     agents: taggedAgent.value,
   });
   taggedAgent.value = [];
