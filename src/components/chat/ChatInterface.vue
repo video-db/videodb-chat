@@ -62,13 +62,12 @@
             >
               <!-- Header -->
               <div
-                class="vdb-c-collection-header vdb-c-shadow vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-bg-white vdb-c-py-24"
+                class="vdb-c-collection-header vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-bg-white vdb-c-py-24"
                 ref="headerRef"
                 :class="{
-                  'vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-px-24':
-                    Object.keys(conversations).length === 0,
-                  'vdb-c-w-full vdb-c-px-30':
-                    Object.keys(conversations).length > 0,
+                  'vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-px-24': isDefaultScreen,
+                  'vdb-c-w-full vdb-c-px-30': !isDefaultScreen,
+                  'custom-shadow': isScrolled && !isDefaultScreen,
                 }"
               >
                 <template v-if="$slots.header">
@@ -203,7 +202,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, provide, ref, watch } from "vue";
+import { computed, nextTick, provide, ref, watch, onMounted, onUnmounted } from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -442,13 +441,18 @@ const scrollToBottom = () => {
   const chatWindow = chatWindowRef.value;
   const header = headerRef.value;
   if (!chatWindow) return;
+
+  isUserScrolling = false;
   nextTick(() => {
     const scroll =
       chatWindow.scrollHeight - chatWindow.clientHeight - header.clientHeight;
-    chatWindow.scroll({
+    chatWindow.scrollTo({
       top: scroll,
       behavior: "smooth",
     });
+    setTimeout(() => {
+      isUserScrolling = true;
+    }, 500);
   });
 };
 
@@ -540,6 +544,42 @@ const handleViewAllVideosClick = (redirectTo = "") => {
 };
 
 const isDefaultScreen = computed(() => Object.keys(conversations).length === 0);
+const isScrolled = ref(false);
+let isUserScrolling = false;
+
+const handleScroll = () => {
+  if (chatWindowRef.value) {
+    if (!isUserScrolling) return;
+
+    isScrolled.value = chatWindowRef.value.scrollTop > 10;
+  }
+};
+
+const startUserScroll = () => {
+  isUserScrolling = true;
+};
+
+const stopUserScroll = () => {
+  isUserScrolling = false;
+};
+
+onMounted(() => {
+  if (chatWindowRef.value) {
+    chatWindowRef.value.addEventListener("scroll", handleScroll);
+    chatWindowRef.value.addEventListener("mousedown", startUserScroll);
+    chatWindowRef.value.addEventListener("wheel", startUserScroll);
+    chatWindowRef.value.addEventListener("touchstart", startUserScroll);
+  }
+});
+
+onUnmounted(() => {
+  if (chatWindowRef.value) {
+    chatWindowRef.value.removeEventListener("scroll", handleScroll);
+    chatWindowRef.value.removeEventListener("mousedown", startUserScroll);
+    chatWindowRef.value.removeEventListener("wheel", startUserScroll);
+    chatWindowRef.value.removeEventListener("touchstart", startUserScroll);
+  }
+});
 
 const handleTagAgent = (agent, addToInput = true) => {
   const agentName = agent.name || agent;
@@ -646,6 +686,14 @@ provide("videodb-chat", {
 }
 .vdb-c-message-container::-webkit-scrollbar-thumb:hover {
   background: #aaa;
+}
+
+.custom-shadow {
+  box-shadow: 
+    0px 186px 75px rgba(0, 0, 0, 0.01),
+    0px 105px 63px rgba(0, 0, 0, 0.03),
+    0px 47px 47px rgba(0, 0, 0, 0.05),
+    0px 12px 26px rgba(0, 0, 0, 0.06);
 }
 
 @-webkit-keyframes rotating /* Safari and Chrome */ {
