@@ -202,9 +202,35 @@
 
     <!-- Delete Collection Error Modal -->
     <DeleteCollectionErrorModal
-      :isVisible="showDeleteErrorModal"
-      @closeModal="showDeleteErrorModal = false"
-    />
+      :isVisible="showDeleteCollectionErrorModal"
+      @closeModal="showDeleteCollectionErrorModal = false"
+    >
+      <template #description>
+        <div>
+          This collection contains
+          <span
+            v-if="
+              ['audios', 'images', 'videos'].includes(deleteCollectionErrorCode)
+            "
+            >{{ deleteCollectionErrorCode }}
+          </span>
+          <span v-else> media </span>. If you wish to delete this collection,
+          kindly
+          <span v-if="deleteCollectionErrorCode === 'videos'">
+            remove all the media individually or</span
+          >
+          use this
+          <a
+            class="vdb-c-underline"
+            href="https://colab.research.google.com/github/video-db/videodb-cookbook/blob/main/guides/Cleanup.ipynb"
+            target="_blank"
+          >
+            notebook</a
+          >
+          to cleanup the media first.
+        </div>
+      </template>
+    </DeleteCollectionErrorModal>
 
     <!-- Upload Dialog -->
     <UploadModal
@@ -376,7 +402,8 @@ const isStaticPage = ref(false);
 const chatWindow = ref(null);
 const showDeleteVideoDialog = ref(false);
 const videoToDelete = ref(null);
-const showDeleteErrorModal = ref(false);
+const showDeleteCollectionErrorModal = ref(false);
+const deleteCollectionErrorCode = ref(null);
 
 const isSetupComplete = computed(() => {
   return (
@@ -647,7 +674,14 @@ const promptDeleteCollection = async (collection) => {
     if (
       error.message.includes("Invalid request: Your collection has non-zero")
     ) {
-      showDeleteErrorModal.value = true;
+      if (error.message.includes("non-zero videos")) {
+        deleteCollectionErrorCode.value = "videos";
+      } else if (error.message.includes("non-zero audios")) {
+        deleteCollectionErrorCode.value = "audios";
+      } else if (error.message.includes("non-zero images")) {
+        deleteCollectionErrorCode.value = "images";
+      }
+      showDeleteCollectionErrorModal.value = true;
       return;
     }
     console.error("Unexpected error deleting collection:", error);
