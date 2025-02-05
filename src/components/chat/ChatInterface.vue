@@ -37,7 +37,7 @@
         @agent-click="
           if (!chatLoading) {
             handleTagAgent($event, false);
-            handleAddMessage(`@${$event.name} `);
+            handleAddMessage({ text: `@${$event.name} ` });
           }
         "
         @session-click="handleSessionClick"
@@ -359,6 +359,7 @@ const {
   deleteSession,
   conversations,
   loadSession,
+  generateImageUrl,
   uploadMedia,
   createCollection,
   deleteCollection,
@@ -366,8 +367,48 @@ const {
   deleteVideo,
 } = useChatHook(props.chatHookConfig);
 
-const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
-  useChatInterface();
+const {
+  chatInput,
+  chatAttachements,
+  setChatInput,
+  messageHandlers,
+  registerMessageHandler,
+} = useChatInterface();
+
+// Watch chatAttachements for new uploads
+watch(chatAttachements, async (newAttachements) => {
+  for (const attachment of newAttachements) {
+    if (attachment.upload && attachment.upload_status === "in_queue") {
+      attachment.upload_status = "uploading";
+
+      try {
+        const uploadData = {
+          source: attachment.image_data,
+          sourceType: "file",
+          collectionId: activeCollectionData.value?.id,
+        };
+
+        const res = await uploadMedia(uploadData);
+        if (res.ok) {
+          const uploadResData = await res.json();
+          const generateUrlData = await generateImageUrl(
+            uploadResData.collection_id,
+            uploadResData.id,
+          );
+
+          // Update attachment with image data
+          attachment.image_id = uploadResData.id;
+          attachment.image_url = generateUrlData.data.url;
+          attachment.upload_status = "complete";
+        } else {
+          attachment.upload_status = "error";
+        }
+      } catch (e) {
+        attachment.upload_status = "error";
+      }
+    }
+  }
+});
 
 registerMessageHandler("video", ChatVideo);
 registerMessageHandler("videos", ChatVideos);
@@ -547,7 +588,7 @@ const handleQueryCardClick = (query) => {
     chatInput.value = "";
   } else if (query.action === "chat") {
     chatInput.value = "";
-    handleAddMessage(query.content);
+    handleAddMessage({ text: query.content });
   }
 };
 
@@ -582,7 +623,7 @@ const handleVideoClick = (video) => {
     window.open(video.external_url, "_blank");
   } else {
     videoId.value = video.id;
-    handleAddMessage(`@stream_video ${video.name}`);
+    handleAddMessage({ text: `@stream_video ${video.name}` });
   }
 };
 
@@ -662,13 +703,42 @@ const promptDeleteCollection = async (collection) => {
   }
 };
 
-const handleAddMessage = (content) => {
+const handleAddMessage = async ({ text = "", images = [] }) => {
   if (!sessionId.value) {
     loadSession();
   }
 
+  const content = [];
+  if (text) {
+    content.push({ type: "text", text: text });
+  }
+  if (images?.length > 0) {
+    for (const image of images) {
+      console.log("processing image", image);
+      // const data = image.image_data;
+      // const uploadData = {
+      //   source: data,
+      //   sourceType: "file",
+      //   collectionId: activeCollectionData.value?.id,
+      // };
+      // let uploadResData = await uploadMedia(uploadData);
+      // uploadResData = await uploadResData.json();
+      // console.log("this is uploadResData", uploadResData);
+      // let generateUrlData = await generateImageUrl(
+      //   uploadResData.collection_id,
+      //   uploadResData.id,
+      // );
+      // console.log("this is generateUrldata", generateUrlData);
+      // content.push({
+      //   type: "image",
+      //   image_id: uploadResData.id,
+      //   image_url: generateUrlData.data.url,
+      // });
+    }
+  }
+
   addMessage({
-    content: [{ type: "text", text: content }],
+    content: content,
     agents: taggedAgent.value,
   });
   taggedAgent.value = [];
@@ -676,6 +746,7 @@ const handleAddMessage = (content) => {
 
 defineExpose({
   chatInput,
+  chatAttachements,
   chatInputRef,
   conversations,
   messageHandlers,
@@ -691,6 +762,7 @@ defineExpose({
 
 provide("videodb-chat", {
   chatInput,
+  chatAttachements,
   chatLoading,
   conversations,
   messageHandlers,

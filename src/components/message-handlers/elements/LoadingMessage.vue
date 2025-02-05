@@ -82,22 +82,6 @@ watch(
     }
   },
 );
-
-watch(
-  () => props.status,
-  (newStatus) => {
-    console.log("Status changed:", newStatus, "Message:", props.message);
-  },
-  { immediate: true },
-);
-
-watch(
-  () => props.isFocused,
-  (newFocused) => {
-    console.log("Focus changed:", newFocused, "Message:", props.message);
-  },
-  { immediate: true },
-);
 </script>
 
 <style scoped>
