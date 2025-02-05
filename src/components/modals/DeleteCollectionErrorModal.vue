@@ -26,8 +26,10 @@
       <p
         class="vdb-c-mb-16 vdb-c-ml-[55px] vdb-c-text-sm vdb-c-font-normal vdb-c-text-[#6B7280]"
       >
-        This collection contains media. If you wish to delete this collection,
-        kindly remove all the media individually first.
+        <slot name="description">
+          This collection contains media. If you wish to delete this collection,
+          kindly remove all the media individually first.
+        </slot>
       </p>
 
       <!-- Footer -->
