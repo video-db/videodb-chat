@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.31]() - 2025-02-05
+
+### Added
+- Improved Error message on Delete Collection Error Modal 
+
 ## [0.0.30]() - 2025-02-03
 
 ### Added
