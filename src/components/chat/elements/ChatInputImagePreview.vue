@@ -54,7 +54,7 @@ const getImageSrc = computed(() => {
   } else if (props.attachment.image_data?.startsWith("data:")) {
     return props.attachment.image_data; // Base64 URL
   }
-  return props.attachment.image_url; // Regular URL
+  return props.attachment.url; // Regular URL
 });
 
 const loading = computed(

@@ -29,6 +29,7 @@
           <input
             id="collectionName"
             v-model="newCollection.name"
+            autocomplete="off"
             type="text"
             class="vdb-c-box-border vdb-c-w-full vdb-c-rounded-md vdb-c-border vdb-c-border-gray-300 vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-kilvish-900 focus:vdb-c-border-orange-500 focus:vdb-c-outline-none"
             placeholder="Collection Name (required)"
@@ -38,6 +39,7 @@
             v-model="newCollection.description"
             class="vdb-c-box-border vdb-c-w-full vdb-c-rounded-md vdb-c-border vdb-c-border-gray-300 vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-kilvish-900 focus:vdb-c-border-orange-500 focus:vdb-c-outline-none"
             placeholder="Description"
+            autocomplete="off"
           ></textarea>
         </div>
       </div>

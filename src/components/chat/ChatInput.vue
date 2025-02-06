@@ -30,13 +30,13 @@
     >
       <div
         class="vdb-c-m-8 vdb-c-mb-14 vdb-c-flex vdb-c-flex-col vdb-c-gap-8"
-        v-if="chatAttachements.length > 0"
+        v-if="imageAttachments.length > 0"
       >
         <ChatInputImagePreview
-          v-for="attachment in chatAttachements"
+          v-for="attachment in imageAttachments"
           :key="attachment.key"
           :attachment="attachment"
-          @remove="removeAttachement(attachment)"
+          @remove="removeAttachment(attachment)"
         />
       </div>
 
@@ -85,11 +85,14 @@
         >
           <button
             :disabled="isInputDisabled"
-            class="vdb-c-font-sans vdb-c-hidden vdb-c-h-40 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-orange vdb-c-px-12 vdb-c-py-8 vdb-c-text-sm vdb-c-font-bold vdb-c-uppercase vdb-c-text-white vdb-c-transition hover:vdb-c-bg-orange-400 md:vdb-c-flex"
+            class="vdb-c-font-sans vdb-c-hidden vdb-c-h-40 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-px-12 vdb-c-py-8 vdb-c-text-sm vdb-c-font-bold vdb-c-uppercase vdb-c-text-white vdb-c-transition md:vdb-c-flex"
             :class="{
-              'vdb-c-cursor-not-allowed': isInputDisabled,
-              'vdb-c-cursor-pointer': !isInputDisabled,
+              'vdb-c-cursor-not-allowed vdb-c-bg-kilvish-400 hover:vdb-c-bg-kilvish-400':
+                isInputDisabled,
+              'hover:vdb-c-orange-400 vdb-c-cursor-pointer vdb-c-bg-orange':
+                !isInputDisabled,
             }"
+            @click="handleSubmit"
             type="submit"
           >
             <EllipsesLoading v-if="chatLoading" />
@@ -101,9 +104,11 @@
           <button
             class="vdb-c-mobile-send vdb-c-flex vdb-c-border-none vdb-c-bg-transparent vdb-c-p-8 vdb-c-pr-12 md:vdb-c-hidden"
             :class="{
-              'vdb-c-text-kilvish-400': isInputDisabled,
+              'vdb-c-bg-kilvish-400 vdb-c-text-kilvish-400 hover:vdb-c-bg-kilvish-400':
+                isInputDisabled,
               'vdb-c-mobile-send vdb-c-text-others-nightwing': !isInputDisabled,
             }"
+            @click="handleSubmit"
             type="submit"
           >
             <send-icon class-name="vdb-c-w-24 vdb-c-h-24" />
@@ -139,7 +144,7 @@ const props = defineProps({
   },
 });
 
-const { chatInput, chatAttachements, chatLoading } = useVideoDBChat();
+const { chatInput, chatAttachments, chatLoading } = useVideoDBChat();
 
 const emit = defineEmits(["on-submit", "on-change", "tag-agent"]);
 
@@ -167,12 +172,21 @@ watch(filteredAgents, () => {
   selectedAgentIndex.value = 0;
 });
 
+const imageAttachments = computed(() =>
+  chatAttachments.filter((attachment) => attachment.type === "image"),
+);
+
 const isInputDisabled = computed(() => {
-  return chatLoading.value || charCount.value < 1;
+  const hasUploadingImages = imageAttachments.value.some(
+    (attachment) =>
+      attachment.upload_status === "uploading" ||
+      attachment.upload_status === "in_queue",
+  );
+  return chatLoading.value || charCount.value < 1 || hasUploadingImages;
 });
 
 const isExpanded = computed(
-  () => isTextBoxExpanded.value || chatAttachements.length > 0,
+  () => isTextBoxExpanded.value || chatAttachments.length > 0,
 );
 
 const handleInput = (e) => {
@@ -239,31 +253,6 @@ const handleKeyDown = (e) => {
   }
 };
 
-const handlePaste = (event) => {
-  const clipboardData = event.clipboardData || window.clipboardData;
-  const items = clipboardData.items;
-
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
-    if (item.kind === "file" && item.type.startsWith("image/")) {
-      const file = item.getAsFile();
-
-      if (file) {
-        chatAttachements[0] = {
-          type: "image",
-          image_data: file,
-          key: uuidv4(),
-          upload: true,
-          upload_status: "in_queue",
-        };
-      }
-
-      event.preventDefault(); // Prevent default paste behavior
-      return;
-    }
-  }
-};
-
 const selectAgent = (agent) => {
   const beforeAgent = chatInput.value.slice(0, agentStartIndex.value);
   const afterAgent = chatInput.value.slice(
@@ -283,16 +272,41 @@ watch(
   { immediate: true },
 );
 
+const handlePaste = (event) => {
+  const clipboardData = event.clipboardData || window.clipboardData;
+  const items = Array.from(clipboardData.items);
+
+  const imageItem = items.find(
+    (item) => item.kind === "file" && item.type.startsWith("image/"),
+  );
+
+  if (imageItem) {
+    const file = imageItem.getAsFile();
+    if (file) {
+      const newImageAttachment = {
+        type: "image",
+        image_data: file,
+        key: uuidv4(),
+        upload: true,
+        upload_status: "in_queue",
+      };
+      attachAttachment(newImageAttachment);
+    }
+    event.preventDefault(); // Prevent default paste behavior
+  }
+};
+
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    chatAttachements[0] = {
+    const newImageAttachment = {
       type: "image",
       image_data: file,
       key: uuidv4(),
       upload: true,
       upload_status: "in_queue",
     };
+    attachAttachment(newImageAttachment);
   }
 };
 
@@ -302,10 +316,10 @@ const handleSubmit = (e) => {
   if (!showAgentList.value && chatInput.value.trim() !== "") {
     emit("on-submit", {
       text: chatInput.value,
-      images: chatAttachements,
+      images: chatAttachments,
     });
     chatInput.value = "";
-    chatAttachements.splice(0, chatAttachements.length);
+    clearAllAttachments();
     charCount.value = 0;
     resetTag();
   }
@@ -322,13 +336,21 @@ function adjustHeight() {
   }
 }
 
-const removeAttachement = (attachment) => {
-  const index = chatAttachements.findIndex(
+const attachAttachment = (attachment) => {
+  chatAttachments[0] = attachment;
+};
+
+const removeAttachment = (attachment) => {
+  const index = chatAttachments.findIndex(
     (item) => item.key === attachment.key,
   );
   if (index !== -1) {
-    chatAttachements.splice(index, 1);
+    chatAttachments.splice(index, 1);
   }
+};
+
+const clearAllAttachments = () => {
+  chatAttachments.splice(0, chatAttachments.length);
 };
 
 defineExpose({

@@ -45,7 +45,7 @@
       />
 
       <!-- Main Content -->
-      <div class="vdb-c-flex vdb-c-flex-1 vdb-c-flex-col">
+      <div class="vdb-c-flex vdb-c-w-full vdb-c-flex-1 vdb-c-flex-col">
         <div
           class="vdb-c-relative vdb-c-flex vdb-c-h-full vdb-c-flex-1 vdb-c-flex-col vdb-c-justify-between vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
         >
@@ -60,27 +60,33 @@
               v-else
               ref="chatWindowRef"
               class="vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
+              @scroll="handleScroll"
             >
               <!-- Header -->
               <div
-                class="vdb-c-collection-header vdb-c-shadow vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-bg-white vdb-c-py-24"
+                class="vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-white"
                 ref="headerRef"
-                :class="{
-                  'vdb-c-flex vdb-c-w-5/6 vdb-c-flex-col vdb-c-px-24':
-                    Object.keys(conversations).length === 0,
-                  'vdb-c-w-full vdb-c-px-30':
-                    Object.keys(conversations).length > 0,
-                }"
               >
                 <template v-if="$slots.header">
                   <slot name="header" />
                 </template>
                 <template v-else>
-                  <CollectionHeader
-                    :collection-name="activeCollectionData?.name"
+                  <Header
+                    :collection-name="activeCollectionData?.name || null"
                     :video-name="activeVideoData?.name || null"
-                    :is-chat-screen="!isDefaultScreen"
+                    :headerState="isDefaultScreen ? 'primary' : 'secondary'"
                     :header-config="headerConfig"
+                    class="vdb-c-w-full vdb-c-transition-shadow"
+                    :class="{
+                      'vdb-c-px-24': !isDefaultScreen,
+                      'vdb-c-pl-16 vdb-c-pr-24 md:vdb-c-pl-32 md:vdb-c-pr-60 2xl:vdb-c-pl-60 2xl:vdb-c-pr-80':
+                        isDefaultScreen,
+                      'vdb-c-border-b-2 vdb-c-border-roy vdb-c-pl-16 vdb-c-pr-24 md:vdb-c-pl-32 md:vdb-c-pr-60 2xl:vdb-c-pl-60 2xl:vdb-c-pr-80':
+                        isCollectionView,
+                      'header-shadow':
+                        isScrolled && !isCollectionView && !isDefaultScreen,
+                    }"
+                    @toggle-sidebar="toggleSidebar"
                     @upload-button-click="showUploadDialog = true"
                     @collection-click="handleCollectionClick(collectionId)"
                   />
@@ -235,7 +241,7 @@ import UploadNotifications from "./elements/UploadNotifications.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 import NotificationCenter from "./elements/NotificationCenter.vue";
 
-import CollectionHeader from "./elements/CollectionHeader.vue";
+import Header from "./elements/Header.vue";
 import ConfirmModal from "../modals/ConfirmModal.vue";
 import UploadModal from "../modals/UploadModal.vue";
 import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
@@ -369,15 +375,15 @@ const {
 
 const {
   chatInput,
-  chatAttachements,
+  chatAttachments,
   setChatInput,
   messageHandlers,
   registerMessageHandler,
 } = useChatInterface();
 
-// Watch chatAttachements for new uploads
-watch(chatAttachements, async (newAttachements) => {
-  for (const attachment of newAttachements) {
+// Watch chatAttachments for new uploads
+watch(chatAttachments, async (newAttachments) => {
+  for (const attachment of newAttachments) {
     if (attachment.upload && attachment.upload_status === "in_queue") {
       attachment.upload_status = "uploading";
 
@@ -398,12 +404,13 @@ watch(chatAttachements, async (newAttachements) => {
 
           // Update attachment with image data
           attachment.image_id = uploadResData.id;
-          attachment.image_url = generateUrlData.data.url;
+          attachment.url = generateUrlData.url;
           attachment.upload_status = "complete";
         } else {
-          attachment.upload_status = "error";
+          throw Error("Upload failed");
         }
       } catch (e) {
+        console.log("something went wrong", e);
         attachment.upload_status = "error";
       }
     }
@@ -431,7 +438,6 @@ const isSetupComplete = computed(() => {
   );
 });
 
-const collectionName = computed(() => activeCollectionData.value?.name);
 const isFreshUser = computed(() => {
   if (collections.value && activeCollectionVideos.value) {
     return (
@@ -448,6 +454,22 @@ const chatLoading = computed(() =>
     ),
   ),
 );
+
+const isDefaultScreen = computed(
+  () => Object.keys(conversations).length === 0 && !showCollectionView.value,
+);
+
+const isCollectionView = computed(
+  () => Object.keys(conversations).length === 0 && showCollectionView.value,
+);
+
+const isScrolled = ref(false);
+
+const handleScroll = () => {
+  if (chatWindowRef.value) {
+    isScrolled.value = chatWindowRef.value.scrollTop > 0;
+  }
+};
 
 const dynamicActionCards = computed(() => {
   return (
@@ -519,6 +541,11 @@ watch(chatLoading, (val) => {
     scrollToBottom();
   }
 });
+
+// -- Header Click handlers --
+const toggleSidebar = () => {
+  sidebarRef.value.toggleSidebar();
+};
 
 // --- Sidebar Click Handlers ---
 const createNewSession = () => {
@@ -600,8 +627,6 @@ const handleViewAllVideosClick = (redirectTo = "") => {
     chatInput.value = "";
   }
 };
-
-const isDefaultScreen = computed(() => Object.keys(conversations).length === 0);
 
 const handleTagAgent = (agent, addToInput = true) => {
   const agentName = agent.name || agent;
@@ -715,25 +740,13 @@ const handleAddMessage = async ({ text = "", images = [] }) => {
   if (images?.length > 0) {
     for (const image of images) {
       console.log("processing image", image);
-      // const data = image.image_data;
-      // const uploadData = {
-      //   source: data,
-      //   sourceType: "file",
-      //   collectionId: activeCollectionData.value?.id,
-      // };
-      // let uploadResData = await uploadMedia(uploadData);
-      // uploadResData = await uploadResData.json();
-      // console.log("this is uploadResData", uploadResData);
-      // let generateUrlData = await generateImageUrl(
-      //   uploadResData.collection_id,
-      //   uploadResData.id,
-      // );
-      // console.log("this is generateUrldata", generateUrlData);
-      // content.push({
-      //   type: "image",
-      //   image_id: uploadResData.id,
-      //   image_url: generateUrlData.data.url,
-      // });
+      content.push({
+        type: "image",
+        image: {
+          image_id: image.image_id,
+          url: image.url,
+        },
+      });
     }
   }
 
@@ -746,7 +759,7 @@ const handleAddMessage = async ({ text = "", images = [] }) => {
 
 defineExpose({
   chatInput,
-  chatAttachements,
+  chatAttachments,
   chatInputRef,
   conversations,
   messageHandlers,
@@ -758,11 +771,12 @@ defineExpose({
   setChatInput,
   registerMessageHandler,
   uploadMedia,
+  isScrolled,
 });
 
 provide("videodb-chat", {
   chatInput,
-  chatAttachements,
+  chatAttachments,
   chatLoading,
   conversations,
   messageHandlers,
@@ -777,6 +791,15 @@ provide("videodb-chat", {
 </script>
 
 <style>
+.header-shadow {
+  box-shadow:
+    0 12px 26px rgba(0, 0, 0, 0.06),
+    0 47px 47px rgba(0, 0, 0, 0.05),
+    0 105px 63px rgba(0, 0, 0, 0.03),
+    0 186px 75px rgba(0, 0, 0, 0.01),
+    0 291px 82px rgba(0, 0, 0, 0);
+}
+
 /* #TODO: Scrollbar Styling */
 .vdb-c-message-container::-webkit-scrollbar {
   width: 8px;

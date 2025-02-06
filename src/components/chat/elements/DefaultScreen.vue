@@ -89,7 +89,7 @@
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
             <span
-              class="vdb-c-w-1/2 vdb-c-text-sm vdb-c-font-semibold md:vdb-c-text-lg"
+              class="vdb-c-w-1/2 vdb-c-text-lg vdb-c-font-semibold md:vdb-c-text-xl"
             >
               See agents in action:
             </span>
@@ -109,11 +109,11 @@
                     <span class="vdb-c-hidden md:vdb-c-block">
                       Watch more demos</span
                     >
-                    <span class="vdb-c-block md:vdb-c-hidden">
+                    <span class="vdb-c-block vdb-c-text-xs md:vdb-c-hidden">
                       More Demos
                     </span>
                   </div>
-                  <ExternalLinkIcon />
+                  <ExternalLinkIcon class="vdb-c-hidden md:vdb-c-inline" />
                 </div>
               </Button>
             </div>
@@ -126,7 +126,7 @@
             v-if="collectionName"
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
-            <span class="vdb-c-w-4/6 vdb-c-text-sm md:vdb-c-text-xl">
+            <span class="vdb-c-w-4/6 vdb-c-text-lg md:vdb-c-text-xl">
               <b> Videos </b> in {{ collectionName }}
             </span>
             <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
@@ -138,7 +138,9 @@
                 <div
                   class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
                 >
-                  <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
+                  <div class="vdb-c-text-xs vdb-c-font-medium md:vdb-c-text-sm">
+                    View all
+                  </div>
                   <ChevronRightCircled class="vdb-c-hidden md:vdb-c-block" />
                 </div>
               </Button>

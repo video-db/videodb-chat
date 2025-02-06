@@ -2,7 +2,7 @@
   <div
     v-if="!isSystem"
     :class="[
-      'vdb-c-flex vdb-c-h-auto vdb-c-w-full vdb-c-justify-start vdb-c-py-14',
+      'vdb-c-flex vdb-c-h-auto vdb-c-w-full vdb-c-justify-start vdb-c-py-18',
       {
         'vdb-c-border-b vdb-c-border-kilvish-300 vdb-c-bg-white': isUser,
       },
@@ -13,8 +13,15 @@
         v-if="isUser"
         class="vdb-c-w-full vdb-c-transform vdb-c-transition-all"
       >
+        <image-handler
+          v-if="message.content.find((c) => c.type === 'image')"
+          :content="message.content.find((c) => c.type === 'image')"
+          :is-user="true"
+          :conv-id="message.conv_id"
+          :msg-id="message.msg_id"
+        />
         <text-response
-          :content="message.content[0]"
+          :content="message.content.find((c) => c.type === 'text')"
           :is-user="true"
           :conv-id="message.conv_id"
           :msg-id="message.msg_id"
@@ -52,9 +59,12 @@
 <script setup>
 import { computed, watch } from "vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
+import ImageHandler from "../message-handlers/ImageHandler.vue";
 import ChatMessageSteps from "./elements/ChatMessageSteps.vue";
 
 import { useVideoDBChat } from "../../context.js";
+
+const SUPPORTED_INPUT_TYPES = ["image", "text"];
 
 const props = defineProps({
   message: {

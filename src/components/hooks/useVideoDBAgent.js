@@ -80,11 +80,24 @@ export function useVideoDBAgent(config) {
     }
   };
 
-  const generateImageUrl = async (collectionId, imageId) =>
-    fetchData(
-      httpUrl,
-      `/videodb/collection/${collectionId}/image/${imageId}/generate_url`,
-    );
+  const generateImageUrl = async (collectionId, imageId) => {
+    const res = {};
+    try {
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}/image/${imageId}/generate_url`,
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const url = await response.text();
+      res.status = "success";
+      res.url = url;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
 
   const refetchCollectionVideos = async () => {
     fetchCollectionVideos(session.collectionId).then((res) => {
@@ -147,6 +160,7 @@ export function useVideoDBAgent(config) {
   watch(
     () => session.collectionId,
     (val) => {
+      const fetchedForSession = session.sessionId;
       activeCollectionData.value = null;
       activeCollectionVideos.value = null;
       if (val) {
@@ -155,10 +169,12 @@ export function useVideoDBAgent(config) {
           activeCollectionData.value = collection;
         } else {
           fetchCollection(val).then((res) => {
+            if (session.sessionId !== fetchedForSession) return;
             activeCollectionData.value = res.data;
           });
         }
         fetchCollectionVideos(val).then((res) => {
+          if (session.sessionId !== fetchedForSession) return;
           activeCollectionVideos.value = res.data;
         });
       }
@@ -168,9 +184,11 @@ export function useVideoDBAgent(config) {
   watch(
     () => session.videoId,
     (val) => {
+      const fetchedForSession = session.sessionId;
       activeVideoData.value = null;
       if (val) {
         fetchCollectionVideo(session.collectionId, val).then((res) => {
+          if (session.sessionId !== fetchedForSession) return;
           activeVideoData.value = res.data;
         });
       }
