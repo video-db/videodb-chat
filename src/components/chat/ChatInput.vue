@@ -120,7 +120,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { useVideoDBChat } from "../../context";
 import ChatEnterIcon from "../icons/ChatEnter.vue";
 import SendIcon from "../icons/Send.vue";
@@ -310,18 +310,20 @@ const handleFileUpload = (event) => {
   }
 };
 
-const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
   if (isInputDisabled.value) return;
   e.preventDefault();
   if (!showAgentList.value && chatInput.value.trim() !== "") {
     emit("on-submit", {
       text: chatInput.value,
-      images: chatAttachments,
+      images: imageAttachments.value,
     });
     chatInput.value = "";
     clearAllAttachments();
     charCount.value = 0;
     resetTag();
+    await nextTick();
+    adjustHeight();
   }
 };
 

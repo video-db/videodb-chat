@@ -57,14 +57,12 @@
 </template>
 
 <script setup>
-import { computed, watch } from "vue";
+import { computed } from "vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 import ImageHandler from "../message-handlers/ImageHandler.vue";
 import ChatMessageSteps from "./elements/ChatMessageSteps.vue";
 
 import { useVideoDBChat } from "../../context.js";
-
-const SUPPORTED_INPUT_TYPES = ["image", "text"];
 
 const props = defineProps({
   message: {

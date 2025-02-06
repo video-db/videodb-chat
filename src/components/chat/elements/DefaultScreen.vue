@@ -86,7 +86,7 @@
         <!-- Demo Videos Header -->
         <div v-if="showDemoVideos">
           <div
-            class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
+            class="vdb-c-mb-12 vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4 md:vdb-c-mb-16"
           >
             <span
               class="vdb-c-w-1/2 vdb-c-text-lg vdb-c-font-semibold md:vdb-c-text-xl"
