@@ -773,7 +773,6 @@ const handleAddMessage = async ({ text = "", images = [] }) => {
   }
   if (images?.length > 0) {
     for (const image of images) {
-      console.log("processing image", image);
       content.push({
         type: "image",
         image: {
