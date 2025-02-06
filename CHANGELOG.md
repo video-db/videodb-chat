@@ -1,5 +1,32 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- `<ChatInput/>` Enhancements:
+  - Improved multiline input experience.
+  - Support for image attachments in chat (one image per message):
+    - Ctrl + V paste.
+    - Attach via file explorer.
+    - New `<ChatImagePreview/>` component to show image preview
+  - Removed context capsule.
+- New `<Header/>` component:
+  - Persistent header across all screens.
+  - Includes a hamburger menu for mobile screens.
+- Update `<ChatMessage/>` to show Image Inputs
+- VideoDB Hook 
+  - Wrapper function that calls `/videodb/collection/${collectionId}/image/${imageId}/generate_url` to director-backend to get url of uploaded image.
+
+- Custom header support:
+  - Users can pass a custom header component to `<ChatInterface/>` via the `header` slot.
+
+### Fixed
+- Chat input:
+  - Loading and disabled state for action button.
+- Issues related to collection and session switching.
+- Turn off autocomplete on Create Collection Modal's Input
+- Mobile screen improvements.
+
 ## [0.0.31]() - 2025-02-05
 
 ### Added

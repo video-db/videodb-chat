@@ -80,6 +80,25 @@ export function useVideoDBAgent(config) {
     }
   };
 
+  const generateImageUrl = async (collectionId, imageId) => {
+    const res = {};
+    try {
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}/image/${imageId}/generate_url`,
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const url = await response.text();
+      res.status = "success";
+      res.url = url;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
   const refetchCollectionVideos = async () => {
     fetchCollectionVideos(session.collectionId).then((res) => {
       activeCollectionVideos.value = res.data;
@@ -130,7 +149,10 @@ export function useVideoDBAgent(config) {
     () => conversations,
     (val) => {
       if (debug)
-        console.log("debug :videodb-chat conversations updated:", JSON.parse(JSON.stringify(val)));
+        console.log(
+          "debug :videodb-chat conversations updated:",
+          JSON.parse(JSON.stringify(val)),
+        );
     },
     { deep: true },
   );
@@ -138,6 +160,7 @@ export function useVideoDBAgent(config) {
   watch(
     () => session.collectionId,
     (val) => {
+      const fetchedForSession = session.sessionId;
       activeCollectionData.value = null;
       activeCollectionVideos.value = null;
       if (val) {
@@ -146,10 +169,12 @@ export function useVideoDBAgent(config) {
           activeCollectionData.value = collection;
         } else {
           fetchCollection(val).then((res) => {
+            if (session.sessionId !== fetchedForSession) return;
             activeCollectionData.value = res.data;
           });
         }
         fetchCollectionVideos(val).then((res) => {
+          if (session.sessionId !== fetchedForSession) return;
           activeCollectionVideos.value = res.data;
         });
       }
@@ -159,9 +184,11 @@ export function useVideoDBAgent(config) {
   watch(
     () => session.videoId,
     (val) => {
+      const fetchedForSession = session.sessionId;
       activeVideoData.value = null;
       if (val) {
         fetchCollectionVideo(session.collectionId, val).then((res) => {
+          if (session.sessionId !== fetchedForSession) return;
           activeVideoData.value = res.data;
         });
       }
@@ -227,7 +254,7 @@ export function useVideoDBAgent(config) {
     if (!name || name.trim() === "") {
       throw new Error("Collection name is required.");
     }
-  
+
     try {
       const response = await fetch(`${httpUrl}/videodb/collection`, {
         method: "POST",
@@ -236,14 +263,14 @@ export function useVideoDBAgent(config) {
         },
         body: JSON.stringify({ name, description }),
       });
-     
+
       let res;
       try {
         res = await response.json();
       } catch (jsonError) {
         throw new Error("Failed to parse server response.");
       }
-      
+
       if (Array.isArray(collections.value)) {
         collections.value.push(res.data.collection);
       }
@@ -251,81 +278,90 @@ export function useVideoDBAgent(config) {
       return res.data.collection;
     } catch (error) {
       console.error("Error creating collection:", error);
-      throw new Error("An unexpected error occurred while creating the collection.");
+      throw new Error(
+        "An unexpected error occurred while creating the collection.",
+      );
     }
   };
-  
+
   const deleteCollection = async (collectionId) => {
     if (!collectionId) {
       throw new Error("Collection ID is required.");
     }
-  
+
     try {
-      const response = await fetch(`${httpUrl}/videodb/collection/${collectionId}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
-  
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+
       const data = await response.json();
-  
+
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Failed to delete the collection.");
       }
-  
+
       if (Array.isArray(collections.value)) {
-        collections.value = collections.value.filter(c => c.id !== collectionId);
+        collections.value = collections.value.filter(
+          (c) => c.id !== collectionId,
+        );
       }
-  
+
       if (session.collectionId === collectionId) {
-        session.collectionId = collections.value.length > 0 ? collections.value[0].id : null;
+        session.collectionId =
+          collections.value.length > 0 ? collections.value[0].id : null;
       }
-  
+
       return data;
     } catch (error) {
-      if (error.message.includes("Invalid request: Your collection has non-zero")) {
+      if (
+        error.message.includes("Invalid request: Your collection has non-zero")
+      ) {
         throw error;
       }
-  
+
       console.error("Unexpected error deleting collection:", error);
       throw error;
     }
   };
-   
-  
+
   const deleteVideo = async (collectionId, videoId) => {
     if (!collectionId || !videoId) {
       throw new Error("Collection ID and Video ID are required.");
     }
-  
+
     try {
       const response = await fetch(
         `${httpUrl}/videodb/collection/${collectionId}/video/${videoId}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
-  
+
       const data = await response.json();
-  
+
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Failed to delete the video.");
       }
       const collection = collections.value.find(
-        (col) => col.id === collectionId
+        (col) => col.id === collectionId,
       );
-  
+
       if (collection && Array.isArray(activeCollectionVideos.value)) {
         activeCollectionVideos.value = activeCollectionVideos.value.filter(
-          (video) => video.id !== videoId
+          (video) => video.id !== videoId,
         );
-      }      
+      }
       return data;
     } catch (error) {
       console.error(`Failed to delete video ${videoId}:`, error);
       throw error;
     }
-  };  
+  };
 
   const addClientLoadingMessage = (convId) => {
     const messages = Object.values(conversations[convId]);
@@ -418,6 +454,7 @@ export function useVideoDBAgent(config) {
     deleteCollection,
     deleteVideo,
     uploadMedia,
+    generateImageUrl,
     refetchCollectionVideos,
   };
 }

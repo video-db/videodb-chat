@@ -79,5 +79,3 @@ const handleVideoClick = (video) => {
   emit("video-click", video);
 };
 </script>
-
-<style scoped></style>

@@ -1,50 +1,5 @@
 <template>
-  <div
-    class="vdb-c-flex vdb-c-h-full vdb-c-w-5/6 vdb-c-flex-col vdb-c-gap-32 vdb-c-p-16 md:vdb-c-p-32"
-  >
-    <!-- Collection Header -->
-    <slot name="header">
-      <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-8">
-        <h1
-          class="vdb-c-flex vdb-c-items-center vdb-c-gap-4 vdb-c-text-xl vdb-c-leading-tight sm:vdb-c-text-3xl md:vdb-c-text-5xl"
-          :style="{ lineHeight: '1.2' }"
-        >
-          <div
-            v-if="headerText"
-            class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between"
-          >
-            <span
-              class="vdb-c-line-clamp-2 vdb-c-inline-block vdb-c-max-w-[60%] vdb-c-font-bold md:vdb-c-line-clamp-none md:vdb-c-max-w-[80%] md:vdb-c-font-extrabold vdb-c-text-orange"
-              :title="headerText"
-            >
-              {{ headerText }}
-            </span>
-            <Button
-              v-if="headerConfig.uploadButton"
-              @click="$emit('upload-button-click')"
-              variant="tertiary"
-              class="!vdb-c-px-8 !vdb-c-py-10"
-            >
-              <div
-                class="vdb-c-flex vdb-c-items-center vdb-c-gap-6 vdb-c-text-sm vdb-c-font-medium"
-              >
-                <UploadIcon
-                  class="vdb-c-hidden vdb-c-h-20 vdb-c-w-20 md:vdb-c-block"
-                />
-                <span class="vdb-c-flex vdb-c-flex-row vdb-c-gap-4">
-                  Upload Video
-                </span>
-              </div>
-            </Button>
-          </div>
-          <span
-            v-else
-            class="vdb-c-inline-block vdb-c-h-[3rem] vdb-c-w-4/6 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
-          ></span>
-        </h1>
-      </div>
-    </slot>
-
+  <div class="vdb-c-flex vdb-c-flex-col vdb-c-items-center vdb-c-gap-32">
     <!-- Action Cards -->
     <div
       class="fade-in-anim vdb-c-flex vdb-c-grow vdb-c-items-start vdb-c-justify-center vdb-c-pt-4"
@@ -62,8 +17,7 @@
                 query.type === 'primary',
               'vdb-c-border-roy vdb-c-bg-vdb-lightgrey hover:vdb-c-bg-roy':
                 query.type === 'muted',
-              'vdb-c-bg-orange hover:vdb-c-bg-orange-600':
-                query.type === 'cta',
+              'vdb-c-bg-orange hover:vdb-c-bg-orange-600': query.type === 'cta',
             },
           ]"
           @click="$emit('query-card-click', query)"
@@ -121,7 +75,7 @@
     </div>
 
     <!-- Demo/Preview Videos -->
-    <div class="vdb-c-flex vdb-c-flex-col vdb-c-gap-12">
+    <div class="vdb-c-flex vdb-c-w-full vdb-c-flex-col vdb-c-gap-12">
       <!-- Divider -->
       <div class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"></div>
 
@@ -135,7 +89,7 @@
             class="vdb-c-mb-12 vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4 md:vdb-c-mb-16"
           >
             <span
-              class="vdb-c-w-1/2 vdb-c-text-sm vdb-c-font-semibold md:vdb-c-text-lg"
+              class="vdb-c-w-1/2 vdb-c-text-lg vdb-c-font-semibold md:vdb-c-text-xl"
             >
               See agents in action:
             </span>
@@ -155,11 +109,11 @@
                     <span class="vdb-c-hidden md:vdb-c-block">
                       Watch more demos</span
                     >
-                    <span class="vdb-c-block md:vdb-c-hidden">
+                    <span class="vdb-c-block vdb-c-text-xs md:vdb-c-hidden">
                       More Demos
                     </span>
                   </div>
-                  <ExternalLinkIcon />
+                  <ExternalLinkIcon class="vdb-c-hidden md:vdb-c-inline" />
                 </div>
               </Button>
             </div>
@@ -172,7 +126,7 @@
             v-if="collectionName"
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
-            <span class="vdb-c-w-4/6 vdb-c-text-sm md:vdb-c-text-xl">
+            <span class="vdb-c-w-4/6 vdb-c-text-lg md:vdb-c-text-xl">
               <b> Videos </b> in {{ collectionName }}
             </span>
             <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
@@ -184,7 +138,9 @@
                 <div
                   class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-6"
                 >
-                  <div class="vdb-c-text-sm vdb-c-font-medium">View all</div>
+                  <div class="vdb-c-text-xs vdb-c-font-medium md:vdb-c-text-sm">
+                    View all
+                  </div>
                   <ChevronRightCircled class="vdb-c-hidden md:vdb-c-block" />
                 </div>
               </Button>
@@ -201,7 +157,7 @@
       <!-- Videos -->
       <div
         v-if="previewVideos"
-        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-12 sm:vdb-c-mb-32 sm:vdb-c-gap-18"
+        class="vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-12 sm:vdb-c-gap-18"
       >
         <div
           v-for="(item, index) in previewVideos"
@@ -223,7 +179,7 @@
       <!-- Videos Loader -->
       <div
         v-else
-        class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
+        class="vdb-c-grid vdb-c-w-full vdb-c-grid-cols-12 vdb-c-gap-24"
       >
         <div
           v-for="(item, index) in [1, 2, 3, 4]"

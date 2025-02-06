@@ -12,13 +12,13 @@
 
     <transition name="fade" mode="out-in">
       <div
-        v-if="content.status === 'success'"
+        v-if="content.status === 'success' || isUser"
         class="vdb-c-shadow-md vdb-c-overflow-hidden"
       >
         <img
           :src="image.url"
           :alt="'Generated image'"
-          class="vdb-c-h-auto vdb-c-w-4/5 vdb-c-max-w-[400px] vdb-c-rounded-lg sm:vdb-c-w-3/4 md:vdb-c-w-1/2"
+          class="vdb-c-max-h-[50vh] vdb-c-h-auto vdb-c-w-4/5 vdb-c-max-w-[400px] vdb-c-rounded-lg sm:vdb-c-w-3/4 md:vdb-c-w-1/2"
         />
       </div>
       <div
@@ -50,7 +50,7 @@ const props = defineProps({
   },
   isLastConv: {
     type: Boolean,
-    required: true,
+    default: false,
   },
 });
 

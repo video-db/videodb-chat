@@ -37,7 +37,7 @@
         @agent-click="
           if (!chatLoading) {
             handleTagAgent($event, false);
-            handleAddMessage(`@${$event.name} `);
+            handleAddMessage({ text: `@${$event.name} ` });
           }
         "
         @session-click="handleSessionClick"
@@ -45,59 +45,68 @@
       />
 
       <!-- Main Content -->
-      <div class="vdb-c-flex vdb-c-flex-1 vdb-c-flex-col">
+      <div class="vdb-c-flex vdb-c-w-full vdb-c-flex-1 vdb-c-flex-col">
         <div
-          class="vdb-c-relative vdb-c-flex-1 vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
+          class="vdb-c-relative vdb-c-flex vdb-c-h-full vdb-c-flex-1 vdb-c-flex-col vdb-c-justify-between vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
         >
           <div
-            class="vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-pt-24 lg:vdb-c-hidden"
+            class="vdb-c-chat-parent vdb-c-relative vdb-c-flex vdb-c-flex-1 vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden"
           >
-            <director-icon />
-          </div>
-          <div class="vdb-c-chat-parent vdb-c-relative vdb-c-overflow-hidden">
-            <div v-if="configStatus === null"></div>
             <setup-screen
-              v-else-if="!isSetupComplete"
+              v-if="!isSetupComplete && configStatus !== null"
               :config-status="configStatus"
             />
             <section
-              v-else-if="isSetupComplete"
-              ref="chatWindow"
-              class="vdb-c-absolute vdb-c-left-0 vdb-c-top-0 vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
+              v-else
+              ref="chatWindowRef"
+              class="vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
+              @scroll="handleScroll"
             >
-              <template v-if="Object.keys(conversations).length === 0">
-                <!-- Empty Container -->
-                <div
-                  v-if="showCollectionView"
-                  class="vdb-c-w-full vdb-c-p-16 vdb-c-px-30"
-                >
-                  <div
-                    class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-border-b vdb-c-border-roy vdb-c-py-12 vdb-c-text-lg vdb-c-text-black"
-                  >
-                    <span class="vdb-c-flex vdb-c-font-bold">
-                      <span
-                        v-if="collectionName"
-                        class="vdb-c-cursor-pointer"
-                        @click="videoId = null"
-                      >
-                        {{ collectionName }}
-                      </span>
-                      <span
-                        v-else
-                        class="vdb-c-inline-block vdb-c-h-20 vdb-c-w-100 vdb-c-animate-pulse vdb-c-rounded vdb-c-bg-roy"
-                      ></span>
-                    </span>
-                  </div>
-                  <collection-view
-                    v-if="showCollectionView"
-                    :collection-id="collectionId"
-                    :collection-data="activeCollectionData"
-                    :collection-videos="activeCollectionVideos"
-                    @video-click="handleVideoClick"
-                    @delete-video="promptDeleteVideo"
-                    class="vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+              <!-- Header -->
+              <div
+                class="vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-white"
+                ref="headerRef"
+              >
+                <template v-if="$slots.header">
+                  <slot name="header" />
+                </template>
+                <template v-else>
+                  <Header
+                    :collection-name="activeCollectionData?.name || null"
+                    :video-name="activeVideoData?.name || null"
+                    :headerState="isDefaultScreen ? 'primary' : 'secondary'"
+                    :header-config="headerConfig"
+                    class="vdb-c-w-full vdb-c-transition-shadow"
+                    :class="{
+                      'vdb-c-px-24': !isDefaultScreen,
+                      'vdb-c-pl-16 vdb-c-pr-24 md:vdb-c-pl-32 md:vdb-c-pr-60 2xl:vdb-c-pl-60 2xl:vdb-c-pr-80':
+                        isDefaultScreen,
+                      'vdb-c-border-b-2 vdb-c-border-roy vdb-c-pl-16 vdb-c-pr-24 md:vdb-c-pl-32 md:vdb-c-pr-60 2xl:vdb-c-pl-60 2xl:vdb-c-pr-80':
+                        isCollectionView,
+                      'header-shadow':
+                        isScrolled && !isCollectionView && !isDefaultScreen,
+                    }"
+                    @toggle-sidebar="toggleSidebar"
+                    @upload-button-click="showUploadDialog = true"
+                    @collection-click="handleCollectionClick(collectionId)"
                   />
-                </div>
+                </template>
+              </div>
+
+              <!-- Main Layout, Scrollable Content, and Static Footer -->
+              <div
+                v-if="Object.keys(conversations).length === 0"
+                class="vdb-c-w-[90%] vdb-c-p-16 md:vdb-c-w-5/6 md:vdb-c-p-24"
+              >
+                <collection-view
+                  v-if="showCollectionView"
+                  :collection-id="collectionId"
+                  :collection-data="activeCollectionData"
+                  :collection-videos="activeCollectionVideos"
+                  @video-click="handleVideoClick"
+                  @delete-video="promptDeleteVideo"
+                  class="vdb-c-w-full vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
+                />
 
                 <default-screen
                   v-else
@@ -123,26 +132,25 @@
                   @upload-button-click="showUploadDialog = true"
                   @view-all-videos-click="handleViewAllVideosClick"
                 />
-              </template>
+              </div>
 
               <!-- Message Container -->
               <chat-message-container
-                v-else
                 v-for="(key, i) in Object.keys(conversations)"
                 :key="key"
                 :conversation="conversations[key]"
                 :search-term="chatInput"
                 :is-static-page="isStaticPage"
                 :is-last-conv="i === Object.keys(conversations).length - 1"
-                class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+                class="vdb-c-px-30 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-px-60"
               />
             </section>
             <UploadNotifications ref="uploadNotificationsRef" />
           </div>
 
-          <!-- chat input -->
+          <!-- Chat Input -->
           <div
-            class="vdb-c-chat-input-container vdb-c-relative vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+            class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
             :class="{
               'vdb-c-pointer-events-none vdb-c-opacity-20': !(
                 configStatus !== null && isSetupComplete
@@ -259,6 +267,7 @@ import UploadNotifications from "./elements/UploadNotifications.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 import NotificationCenter from "./elements/NotificationCenter.vue";
 
+import Header from "./elements/Header.vue";
 import ConfirmModal from "../modals/ConfirmModal.vue";
 import UploadModal from "../modals/UploadModal.vue";
 import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
@@ -382,6 +391,7 @@ const {
   deleteSession,
   conversations,
   loadSession,
+  generateImageUrl,
   uploadMedia,
   createCollection,
   deleteCollection,
@@ -389,8 +399,49 @@ const {
   deleteVideo,
 } = useChatHook(props.chatHookConfig);
 
-const { chatInput, setChatInput, messageHandlers, registerMessageHandler } =
-  useChatInterface();
+const {
+  chatInput,
+  chatAttachments,
+  setChatInput,
+  messageHandlers,
+  registerMessageHandler,
+} = useChatInterface();
+
+// Watch chatAttachments for new uploads
+watch(chatAttachments, async (newAttachments) => {
+  for (const attachment of newAttachments) {
+    if (attachment.upload && attachment.upload_status === "in_queue") {
+      attachment.upload_status = "uploading";
+
+      try {
+        const uploadData = {
+          source: attachment.image_data,
+          sourceType: "file",
+          collectionId: activeCollectionData.value?.id,
+        };
+
+        const res = await uploadMedia(uploadData);
+        if (res.ok) {
+          const uploadResData = await res.json();
+          const generateUrlData = await generateImageUrl(
+            uploadResData.collection_id,
+            uploadResData.id,
+          );
+
+          // Update attachment with image data
+          attachment.image_id = uploadResData.id;
+          attachment.url = generateUrlData.url;
+          attachment.upload_status = "complete";
+        } else {
+          throw Error("Upload failed");
+        }
+      } catch (e) {
+        console.log("something went wrong", e);
+        attachment.upload_status = "error";
+      }
+    }
+  }
+});
 
 registerMessageHandler("video", ChatVideo);
 registerMessageHandler("videos", ChatVideos);
@@ -399,7 +450,8 @@ registerMessageHandler("search_results", ChatSearchResults);
 registerMessageHandler("image", ImageHandler);
 
 const isStaticPage = ref(false);
-const chatWindow = ref(null);
+const chatWindowRef = ref(null);
+const headerRef = ref(null);
 const showDeleteVideoDialog = ref(false);
 const videoToDelete = ref(null);
 const showDeleteCollectionErrorModal = ref(false);
@@ -413,7 +465,6 @@ const isSetupComplete = computed(() => {
   );
 });
 
-const collectionName = computed(() => activeCollectionData.value?.name);
 const isFreshUser = computed(() => {
   if (collections.value && activeCollectionVideos.value) {
     return (
@@ -430,6 +481,23 @@ const chatLoading = computed(() =>
     ),
   ),
 );
+
+const isDefaultScreen = computed(
+  () => Object.keys(conversations).length === 0 && !showCollectionView.value,
+);
+
+const isCollectionView = computed(
+  () => Object.keys(conversations).length === 0 && showCollectionView.value,
+);
+
+const isScrolled = ref(false);
+
+const handleScroll = () => {
+  if (chatWindowRef.value) {
+    isScrolled.value = chatWindowRef.value.scrollTop > 0;
+  }
+};
+
 const dynamicActionCards = computed(() => {
   return (
     props.defaultScreenConfig.actionCardQueries ||
@@ -482,10 +550,16 @@ const dynamicActionCards = computed(() => {
 });
 
 const scrollToBottom = () => {
-  const element = chatWindow.value;
-  if (!element) return;
+  const chatWindow = chatWindowRef.value;
+  const header = headerRef.value;
+  if (!chatWindow) return;
   nextTick(() => {
-    element.scroll({ top: element.scrollHeight - 50, behavior: "smooth" });
+    const scroll =
+      chatWindow.scrollHeight - chatWindow.clientHeight - header.clientHeight;
+    chatWindow.scroll({
+      top: scroll,
+      behavior: "smooth",
+    });
   });
 };
 
@@ -494,6 +568,11 @@ watch(chatLoading, (val) => {
     scrollToBottom();
   }
 });
+
+// -- Header Click handlers --
+const toggleSidebar = () => {
+  sidebarRef.value.toggleSidebar();
+};
 
 // --- Sidebar Click Handlers ---
 const createNewSession = () => {
@@ -563,7 +642,7 @@ const handleQueryCardClick = (query) => {
     chatInput.value = "";
   } else if (query.action === "chat") {
     chatInput.value = "";
-    handleAddMessage(query.content);
+    handleAddMessage({ text: query.content });
   }
 };
 
@@ -574,11 +653,6 @@ const handleViewAllVideosClick = (redirectTo = "") => {
     showCollectionView.value = true;
     chatInput.value = "";
   }
-};
-
-const handleExploreAgentsClick = () => {
-  sidebarRef.value.triggerExploreAgentsFocusAnimation();
-  sidebarRef.value.toggleExploreAgents(true);
 };
 
 const handleTagAgent = (agent, addToInput = true) => {
@@ -601,7 +675,7 @@ const handleVideoClick = (video) => {
     window.open(video.external_url, "_blank");
   } else {
     videoId.value = video.id;
-    handleAddMessage(`@stream_video ${video.name}`);
+    handleAddMessage({ text: `@stream_video ${video.name}` });
   }
 };
 
@@ -688,12 +762,29 @@ const promptDeleteCollection = async (collection) => {
   }
 };
 
-const handleAddMessage = (content) => {
+const handleAddMessage = async ({ text = "", images = [] }) => {
   if (!sessionId.value) {
     loadSession();
   }
+
+  const content = [];
+  if (text) {
+    content.push({ type: "text", text: text });
+  }
+  if (images?.length > 0) {
+    for (const image of images) {
+      content.push({
+        type: "image",
+        image: {
+          image_id: image.image_id,
+          url: image.url,
+        },
+      });
+    }
+  }
+
   addMessage({
-    content: [{ type: "text", text: content }],
+    content: content,
     agents: taggedAgent.value,
   });
   taggedAgent.value = [];
@@ -701,6 +792,7 @@ const handleAddMessage = (content) => {
 
 defineExpose({
   chatInput,
+  chatAttachments,
   chatInputRef,
   conversations,
   messageHandlers,
@@ -712,10 +804,12 @@ defineExpose({
   setChatInput,
   registerMessageHandler,
   uploadMedia,
+  isScrolled,
 });
 
 provide("videodb-chat", {
   chatInput,
+  chatAttachments,
   chatLoading,
   conversations,
   messageHandlers,
@@ -730,35 +824,25 @@ provide("videodb-chat", {
 </script>
 
 <style>
-.vdb-c-chat-input-container {
-  height: 94px;
+.header-shadow {
+  box-shadow:
+    0 12px 26px rgba(0, 0, 0, 0.06),
+    0 47px 47px rgba(0, 0, 0, 0.05),
+    0 105px 63px rgba(0, 0, 0, 0.03),
+    0 186px 75px rgba(0, 0, 0, 0.01),
+    0 291px 82px rgba(0, 0, 0, 0);
 }
 
-.vdb-c-chat-parent {
-  height: calc(100% - 94px);
+/* #TODO: Scrollbar Styling */
+.vdb-c-message-container::-webkit-scrollbar {
+  width: 8px;
 }
-
-.vdb-c-chat-cont {
-  border: 10px solid white;
+.vdb-c-message-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
 }
-
-@media (max-width: 1024px) {
-  .vdb-c-chat-parent {
-    height: calc(100% - 94px - 64px);
-  }
-}
-
-@media (max-width: 768px) {
-  .vdb-c-chat-input-container {
-    height: 62px;
-  }
-  .vdb-c-chat-parent {
-    height: calc(100% - 62px - 64px);
-  }
-}
-
-.vdb-c-rsb {
-  font-size: 12px !important;
+.vdb-c-message-container::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
 }
 
 @-webkit-keyframes rotating /* Safari and Chrome */ {

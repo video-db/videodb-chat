@@ -322,21 +322,6 @@
       </Button>
     </div>
   </div>
-  <transition name="fade">
-    <button
-      v-if="isMobile && !isOpen"
-      @click="toggleSidebar"
-      class="vdb-c-shadow-md vdb-c-fixed vdb-c-left-16 vdb-c-top-16 vdb-c-z-50 vdb-c-rounded-full vdb-c-bg-white vdb-c-p-8"
-    >
-      <div
-        class="vdb-c-flex vdb-c-h-24 vdb-c-w-24 vdb-c-flex-col vdb-c-items-center vdb-c-justify-center"
-      >
-        <div class="vdb-c-mb-2 vdb-c-h-2 vdb-c-w-20 vdb-c-bg-gray-600"></div>
-        <div class="vdb-c-mb-2 vdb-c-h-2 vdb-c-w-20 vdb-c-bg-gray-600"></div>
-        <div class="vdb-c-mb-2 vdb-c-h-2 vdb-c-w-20 vdb-c-bg-gray-600"></div>
-      </div>
-    </button>
-  </transition>
 </template>
 
 <script setup>
