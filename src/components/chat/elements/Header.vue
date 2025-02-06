@@ -21,9 +21,9 @@
       >
         <div
           :class="[
-            'vdb-c-flex vdb-c-grow vdb-c-overflow-hidden',
+            'vdb-c-flex vdb-c-grow vdb-c-gap-0 vdb-c-overflow-hidden md:vdb-c-gap-4',
             {
-              'vdb-c-text-lg vdb-c-font-bold vdb-c-text-orange sm:vdb-c-text-2xl md:vdb-c-text-4xl md:vdb-c-font-extrabold':
+              'vdb-c-text-xl vdb-c-font-bold vdb-c-text-orange sm:vdb-c-text-2xl md:vdb-c-text-4xl md:vdb-c-font-extrabold':
                 headerState === 'primary',
               'vdb-c-text-lg vdb-c-font-bold vdb-c-text-black sm:vdb-c-text-xl md:vdb-c-text-xl md:vdb-c-font-semibold':
                 headerState === 'secondary',

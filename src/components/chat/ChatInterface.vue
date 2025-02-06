@@ -96,7 +96,7 @@
               <!-- Main Layout, Scrollable Content, and Static Footer -->
               <div
                 v-if="Object.keys(conversations).length === 0"
-                class="vdb-c-w-5/6 vdb-c-p-24"
+                class="vdb-c-w-[90%] vdb-c-p-16 md:vdb-c-w-5/6 md:vdb-c-p-24"
               >
                 <collection-view
                   v-if="showCollectionView"
@@ -142,7 +142,7 @@
                 :search-term="chatInput"
                 :is-static-page="isStaticPage"
                 :is-last-conv="i === Object.keys(conversations).length - 1"
-                class="vdb-c-px-60 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+                class="vdb-c-px-30 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-px-60"
               />
             </section>
             <UploadNotifications ref="uploadNotificationsRef" />
