@@ -1,7 +1,12 @@
 # Changelog
 
-## [0.0.32]() - 2025-02-06
+## [0.0.33]() - 2025-02-07
 
+### Fixed
+
+- Issues related to ChatMessage Scroll
+
+## [0.0.32]() - 2025-02-06
 
 ### Added
 
