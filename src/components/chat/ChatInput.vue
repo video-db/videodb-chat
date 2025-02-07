@@ -104,8 +104,7 @@
           <button
             class="vdb-c-mobile-send vdb-c-flex vdb-c-border-none vdb-c-bg-transparent vdb-c-p-8 vdb-c-pr-12 md:vdb-c-hidden"
             :class="{
-              'vdb-c-bg-kilvish-400 vdb-c-text-kilvish-400 hover:vdb-c-bg-kilvish-400':
-                isInputDisabled,
+              'vdb-c-bg-kilvish-400 vdb-c-text-kilvish-400': isInputDisabled,
               'vdb-c-mobile-send vdb-c-text-others-nightwing': !isInputDisabled,
             }"
             @click="handleSubmit"

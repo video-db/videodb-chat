@@ -1,7 +1,6 @@
 <template>
   <div
     class="vdb-c-relative vdb-c-h-auto vdb-c-w-full"
-    :class="{ 'vdb-c-min-h-full vdb-c-pt-16': isLastConv }"
   >
     <div
       v-for="(message, i) in messages"

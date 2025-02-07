@@ -143,6 +143,10 @@
                 :is-static-page="isStaticPage"
                 :is-last-conv="i === Object.keys(conversations).length - 1"
                 class="vdb-c-px-30 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-px-60"
+                :class="{
+                  'last-conv-height':
+                    i === Object.keys(conversations).length - 1,
+                }"
               />
             </section>
             <UploadNotifications ref="uploadNotificationsRef" />
@@ -252,7 +256,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, provide, ref, watch } from "vue";
+import { computed, nextTick, provide, ref, watch, onUnmounted } from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -452,6 +456,8 @@ registerMessageHandler("image", ImageHandler);
 const isStaticPage = ref(false);
 const chatWindowRef = ref(null);
 const headerRef = ref(null);
+const headerHeight = ref(0);
+const headerObserver = ref(null); // ResizeObserver
 const showDeleteVideoDialog = ref(false);
 const videoToDelete = ref(null);
 const showDeleteCollectionErrorModal = ref(false);
@@ -549,15 +555,38 @@ const dynamicActionCards = computed(() => {
   );
 });
 
+watch(
+  headerRef,
+  (val) => {
+    if (val) {
+      if (headerObserver.value) {
+        headerObserver.value.disconnect();
+      }
+      headerObserver.value = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          headerHeight.value = entry.contentRect.height;
+        }
+      });
+      headerObserver.value.observe(val);
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  headerHeight,
+  (val) => {
+    document.documentElement.style.setProperty("--header-height", `${val}px`);
+  },
+  { immediate: true },
+);
+
 const scrollToBottom = () => {
   const chatWindow = chatWindowRef.value;
-  const header = headerRef.value;
   if (!chatWindow) return;
   nextTick(() => {
-    const scroll =
-      chatWindow.scrollHeight - chatWindow.clientHeight - header.clientHeight;
     chatWindow.scroll({
-      top: scroll,
+      top: chatWindow.scrollHeight - 50,
       behavior: "smooth",
     });
   });
@@ -790,6 +819,12 @@ const handleAddMessage = async ({ text = "", images = [] }) => {
   taggedAgent.value = [];
 };
 
+onUnmounted(() => {
+  if (headerObserver.value) {
+    headerObserver.value.disconnect();
+  }
+});
+
 defineExpose({
   chatInput,
   chatAttachments,
@@ -843,6 +878,10 @@ provide("videodb-chat", {
 }
 .vdb-c-message-container::-webkit-scrollbar-thumb:hover {
   background: #aaa;
+}
+
+.last-conv-height {
+  min-height: calc(100% - var(--header-height));
 }
 
 @-webkit-keyframes rotating /* Safari and Chrome */ {
