@@ -5,6 +5,7 @@
       class="vdb-c-flex vdb-c-items-center vdb-c-gap-16"
     >
       <button
+        v-if="isSidebarEnabled"
         @click="$emit('toggle-sidebar')"
         class="vdb-c-flex vdb-c-flex-none lg:vdb-c-hidden"
       >
@@ -95,6 +96,10 @@ const props = defineProps({
   headerState: {
     type: String,
     default: "primary",
+  },
+  isSidebarEnabled: {
+    type: Boolean,
+    default: false,
   },
   headerConfig: {
     type: Object,

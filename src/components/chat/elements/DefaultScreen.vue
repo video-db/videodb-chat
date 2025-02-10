@@ -75,7 +75,10 @@
     </div>
 
     <!-- Demo/Preview Videos -->
-    <div class="vdb-c-flex vdb-c-w-full vdb-c-flex-col vdb-c-gap-12">
+    <div
+      class="vdb-c-flex vdb-c-w-full vdb-c-flex-col vdb-c-gap-12"
+      v-if="enableVideoView"
+    >
       <!-- Divider -->
       <div class="vdb-c-mt-12 vdb-c-h-1 vdb-c-w-full vdb-c-bg-[#EFEFEF]"></div>
 
@@ -194,7 +197,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed } from "vue";
 
 import VideoCard from "../../collection/VideoCard.vue";
 import VideoCardLoader from "../../collection/VideoCardLoader.vue";
@@ -212,9 +215,9 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  headerConfig: {
-    type: Object,
-    default: () => ({}),
+  enableVideoView: {
+    type: Boolean,
+    default: true,
   },
   showDemoVideos: {
     type: Boolean,
@@ -231,9 +234,6 @@ const props = defineProps({
 });
 
 const collectionName = computed(() => props.collectionData?.name);
-const headerText = computed(
-  () => props.headerConfig.headerText || props.collectionData?.name,
-);
 
 defineEmits([
   "query-card-click",
