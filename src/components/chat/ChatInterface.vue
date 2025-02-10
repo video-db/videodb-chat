@@ -9,6 +9,7 @@
     <div class="vdb-c-flex vdb-c-h-full vdb-c-w-full">
       <!-- Collapsible Sidebar -->
       <Sidebar
+        v-if="sidebarConfig.enabled"
         ref="sidebarRef"
         :status="
           configStatus !== null && isSetupComplete ? 'active' : 'inactive'
@@ -72,6 +73,7 @@
                 </template>
                 <template v-else>
                   <Header
+                    :is-sidebar-enabled="sidebarConfig.enabled"
                     :collection-name="activeCollectionData?.name || null"
                     :video-name="activeVideoData?.name || null"
                     :headerState="isDefaultScreen ? 'primary' : 'secondary'"
@@ -119,6 +121,7 @@
                     (activeCollectionData &&
                       activeCollectionVideos?.length === 0)
                   "
+                  :enable-video-view="props.defaultScreenConfig.enableVideoView"
                   :preview-videos="
                     isFreshUser ||
                     (activeCollectionData &&
@@ -154,7 +157,7 @@
 
           <!-- Chat Input -->
           <div
-            class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+            class="vdb-c-chat-input-container vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
             :class="{
               'vdb-c-pointer-events-none vdb-c-opacity-20': !(
                 configStatus !== null && isSetupComplete
@@ -322,6 +325,7 @@ const props = defineProps({
   sidebarConfig: {
     type: Object,
     default: () => ({
+      enabled: true,
       icon: DirectorIcon,
       links: [
         {
@@ -340,6 +344,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       actionCardQueries: null,
+      enableVideoView: true,
       demoVideos: [
         {
           id: 1,

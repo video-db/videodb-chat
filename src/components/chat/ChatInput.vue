@@ -44,7 +44,7 @@
         <!-- Upload Button -->
         <div
           :class="[
-            'vdb-c-ml-4 vdb-c-cursor-pointer vdb-c-px-8',
+            'vdb-c-chat-input-upload-icon vdb-c-ml-4 vdb-c-cursor-pointer vdb-c-px-8',
             isExpanded ? 'vdb-c-self-end vdb-c-py-10' : 'vdb-c-py-2',
           ]"
         >

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.34]() - 2025-02-10
+
+### Added
+- Config for Components
+- `sidebarConfig.enabled` 
+- `defaultScreenConfig.enableVideoView`
+
 ## [0.0.33]() - 2025-02-07
 
 ### Fixed
