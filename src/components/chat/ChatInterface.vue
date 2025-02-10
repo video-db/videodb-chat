@@ -157,7 +157,7 @@
 
           <!-- Chat Input -->
           <div
-            class="vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
+            class="vdb-c-chat-input-container vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
             :class="{
               'vdb-c-pointer-events-none vdb-c-opacity-20': !(
                 configStatus !== null && isSetupComplete
