@@ -1,5 +1,12 @@
 # Changelog
 
+
+## [0.0.35]() - 2025-02-20
+
+### Added
+- Update UI Data on socket event :  `event`
+
+
 ## [0.0.34]() - 2025-02-10
 
 ### Added

@@ -437,6 +437,29 @@ export function useVideoDBAgent(config) {
     }
   });
 
+  socket.on("event", (event) => {
+    if (debug) console.log("debug :videodb-chat socket emmited event", event);
+    if (event.event_type === "update_data") {
+      if (
+        event.update === "videos" &&
+        event.collection_id === session.collectionId
+      ) {
+        const fetchedForCollection = event.collection_id;
+        fetchCollectionVideos(event.collection_id).then((res) => {
+          if (session.collectionId !== fetchedForCollection) return;
+          activeCollectionVideos.value = res.data;
+        });
+      }
+      if (event_update === "collections") {
+        fetchCollections().then((res) => {
+          const defaultCollection = res.data[0];
+          defaultCollection.name = "VideoDB Default Collection";
+          collections.value = [defaultCollection, ...res.data.slice(1)];
+        });
+      }
+    }
+  });
+
   return {
     ...toRefs(session),
     configStatus,
