@@ -123,6 +123,7 @@ export function useVideoDBAgent(config) {
           const defaultCollection = res.data[0];
           defaultCollection.name = "VideoDB Default Collection";
           activeCollectionData.value = defaultCollection;
+          session.collectionId = defaultCollection.id;
           collections.value = [defaultCollection, ...res.data.slice(1)];
         }),
         fetchCollectionVideos(session.collectionId).then((res) => {
@@ -159,7 +160,8 @@ export function useVideoDBAgent(config) {
 
   watch(
     () => session.collectionId,
-    (val) => {
+    (val, oldVal) => {
+      if (oldVal == "default") return;
       const fetchedForSession = session.sessionId;
       activeCollectionData.value = null;
       activeCollectionVideos.value = null;
@@ -450,7 +452,7 @@ export function useVideoDBAgent(config) {
           activeCollectionVideos.value = res.data;
         });
       }
-      if (event_update === "collections") {
+      if (event.update === "collections") {
         fetchCollections().then((res) => {
           const defaultCollection = res.data[0];
           defaultCollection.name = "VideoDB Default Collection";
