@@ -252,6 +252,23 @@ export function useVideoDBAgent(config) {
       });
   };
 
+  const updateCollection = async () => {
+    try {
+      const res = await fetchCollections();
+      if (res.status === "success") {
+        const defaultCollection = res.data[0];
+        defaultCollection.name = "VideoDB Default Collection";
+        collections.value = [defaultCollection, ...res.data.slice(1)];
+
+        if (!collections.value.find((c) => c.id === session.collectionId)) {
+          session.collectionId = defaultCollection.id;
+        }
+      }
+    } catch (error) {
+      console.error("Error updating collections:", error);
+    }
+  };
+
   const createCollection = async (name, description) => {
     if (!name || name.trim() === "") {
       throw new Error("Collection name is required.");
@@ -273,10 +290,7 @@ export function useVideoDBAgent(config) {
         throw new Error("Failed to parse server response.");
       }
 
-      if (Array.isArray(collections.value)) {
-        collections.value.push(res.data.collection);
-      }
-
+      await updateCollection();
       return res.data.collection;
     } catch (error) {
       console.error("Error creating collection:", error);
@@ -312,11 +326,7 @@ export function useVideoDBAgent(config) {
         );
       }
 
-      if (session.collectionId === collectionId) {
-        session.collectionId =
-          collections.value.length > 0 ? collections.value[0].id : null;
-      }
-
+      await updateCollection();
       return data;
     } catch (error) {
       if (
@@ -453,11 +463,7 @@ export function useVideoDBAgent(config) {
         });
       }
       if (event.update === "collections") {
-        fetchCollections().then((res) => {
-          const defaultCollection = res.data[0];
-          defaultCollection.name = "VideoDB Default Collection";
-          collections.value = [defaultCollection, ...res.data.slice(1)];
-        });
+        updateCollection();
       }
     }
   });
@@ -475,6 +481,7 @@ export function useVideoDBAgent(config) {
     addMessage,
     loadSession,
     deleteSession,
+    updateCollection,
     createCollection,
     deleteCollection,
     deleteVideo,
