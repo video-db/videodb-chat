@@ -48,8 +48,11 @@
 
 <script setup>
 import { computed, watch } from "vue";
+import Prism from "prismjs";
 import { marked } from "marked";
 import markedKatex from "marked-katex-extension";
+import "prismjs/themes/prism.css";
+import "prismjs/components/prism-python"
 import LoadingMessage from "./elements/LoadingMessage.vue";
 import { useVideoDBChat } from "../../context.js";
 const options = {
@@ -85,6 +88,15 @@ const props = defineProps({
 
 const text = computed(() => props.content?.text || "");
 const { conversations } = useVideoDBChat();
+
+marked.setOptions({
+  highlight: function (code, lang) {
+    if (Prism.languages[lang]) {
+      return Prism.highlight(code, Prism.languages[lang], lang);
+    }
+    return code; // Fallback
+  },
+});
 
 const getMarkedMsg = (msg) => {
   marked.use(markedKatex(options));
