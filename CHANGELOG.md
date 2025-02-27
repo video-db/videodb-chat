@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.36]() - 2025-02-28
+
+### Added
+- Code Syntax Highlight support for python code in `<TextReponse/>` message handler
+
 
 ## [0.0.35]() - 2025-02-20
 
