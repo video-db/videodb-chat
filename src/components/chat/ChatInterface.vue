@@ -105,8 +105,12 @@
                   :collection-id="collectionId"
                   :collection-data="activeCollectionData"
                   :collection-videos="activeCollectionVideos"
+                  :collection-audios="activeCollectionAudios"
+                  :collection-images="activeCollectionImages"
                   @video-click="handleVideoClick"
                   @delete-video="promptDeleteVideo"
+                  @delete-audio="promptDeleteAudio"
+                  @delete-image="promptDeleteImage"
                   class="vdb-c-w-full vdb-c-transition-opacity vdb-c-duration-300 vdb-c-ease-in-out"
                 />
 
@@ -208,6 +212,34 @@
       @confirm-delete="confirmDeleteVideo"
     />
 
+    <!-- Delete Image Dialog -->
+    <ConfirmModal
+      heading-text="Delete Image"
+      description-text="Are you sure you want to delete this image? This action cannot be undone."
+      action-button-text="Delete"
+      cancel-button-text="Cancel"
+      :show-dialog="showDeleteImageDialog"
+      @cancel-delete="
+        showDeleteImageDialog = false;
+        imageToDelete = null;
+      "
+      @confirm-delete="confirmDeleteImage"
+    />
+
+    <!-- Delete Audio Dialog -->
+    <ConfirmModal
+      heading-text="Delete Audio"
+      description-text="Are you sure you want to delete this audio? This action cannot be undone."
+      action-button-text="Delete"
+      cancel-button-text="Cancel"
+      :show-dialog="showDeleteAudioDialog"
+      @cancel-delete="
+        showDeleteAudioDialog = false;
+        audioToDelete = null;
+      "
+      @confirm-delete="confirmDeleteAudio"
+    />
+
     <!-- Create Collection Modal-->
     <CreateCollectionModal
       :showDialog="showCreateCollectionModal"
@@ -259,7 +291,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, provide, ref, watch, onUnmounted } from "vue";
+import { computed, nextTick, onUnmounted, provide, ref, watch } from "vue";
 
 import { useChatInterface } from "../hooks/useChatInterface";
 import { useVideoDBAgent } from "../hooks/useVideoDBAgent";
@@ -268,17 +300,17 @@ import ChatInput from "./ChatInput.vue";
 import ChatMessageContainer from "./ChatMessageContainer.vue";
 import CollectionView from "./CollectionView.vue";
 import DefaultScreen from "./elements/DefaultScreen.vue";
+import NotificationCenter from "./elements/NotificationCenter.vue";
 import SetupScreen from "./elements/SetupScreen.vue";
 import Sidebar from "./elements/Sidebar.vue";
 import UploadNotifications from "./elements/UploadNotifications.vue";
 import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
-import NotificationCenter from "./elements/NotificationCenter.vue";
 
-import Header from "./elements/Header.vue";
 import ConfirmModal from "../modals/ConfirmModal.vue";
-import UploadModal from "../modals/UploadModal.vue";
-import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
 import CreateCollectionModal from "../modals/CreateCollectionModal.vue";
+import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
+import UploadModal from "../modals/UploadModal.vue";
+import Header from "./elements/Header.vue";
 
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
 import ChatVideo from "../message-handlers/ChatVideo.vue";
@@ -286,13 +318,13 @@ import ChatVideos from "../message-handlers/ChatVideos.vue";
 import ImageHandler from "../message-handlers/ImageHandler.vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 
+import CheckIcon from "../icons/Check.vue";
 import CollectionIcon from "../icons/Collection.vue";
+import DeleteIcon from "../icons/Delete3.vue";
 import DirectorIcon from "../icons/Director.vue";
 import ExternalLink from "../icons/ExternalLink.vue";
-import SearchIcon from "../icons/SearchIcon.vue";
 import QueryIcon from "../icons/Query.vue";
-import DeleteIcon from "../icons/Delete3.vue";
-import CheckIcon from "../icons/Check.vue";
+import SearchIcon from "../icons/SearchIcon.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -405,7 +437,15 @@ const {
   createCollection,
   deleteCollection,
   refetchCollectionVideos,
+  activeCollectionAudios,
+  activeAudioData,
+  refetchCollectionAudios,
+  activeCollectionImages,
+  activeImageData,
+  refetchCollectionImages,
   deleteVideo,
+  deleteAudio,
+  deleteImage,
 } = useChatHook(props.chatHookConfig);
 
 const {
@@ -465,6 +505,10 @@ const headerHeight = ref(0);
 const headerObserver = ref(null); // ResizeObserver
 const showDeleteVideoDialog = ref(false);
 const videoToDelete = ref(null);
+const showDeleteAudioDialog = ref(false);
+const audioToDelete = ref(null);
+const showDeleteImageDialog = ref(false);
+const imageToDelete = ref(null);
 const showDeleteCollectionErrorModal = ref(false);
 const deleteCollectionErrorCode = ref(null);
 
@@ -661,6 +705,8 @@ const handleUpload = async (uploadData) => {
     if (res.ok) {
       uploadNotificationsRef.value.updateUploadStatus(uploadId, "success");
       refetchCollectionVideos();
+      refetchCollectionAudios();
+      refetchCollectionImages();
     } else {
       uploadNotificationsRef.value.updateUploadStatus(uploadId, "error");
     }
@@ -718,6 +764,16 @@ const promptDeleteVideo = (video) => {
   showDeleteVideoDialog.value = true;
 };
 
+const promptDeleteAudio = (audio) => {
+  audioToDelete.value = audio;
+  showDeleteAudioDialog.value = true;
+};
+
+const promptDeleteImage = (image) => {
+  imageToDelete.value = image;
+  showDeleteImageDialog.value = true;
+};
+
 const confirmDeleteVideo = async () => {
   if (!videoToDelete.value) {
     console.error("No video to delete.");
@@ -738,6 +794,58 @@ const confirmDeleteVideo = async () => {
   } catch (error) {
     console.error(`Error deleting video: ${error.message}`);
     notificationCenterRef.value.addNotification("Error deleting video", {
+      type: "error",
+      icon: DeleteIcon,
+    });
+  }
+};
+
+const confirmDeleteAudio = async () => {
+  if (!audioToDelete.value) {
+    console.error("No video to delete.");
+    return;
+  }
+
+  showDeleteAudioDialog.value = false;
+
+  const { collection_id, id } = audioToDelete.value;
+  audioToDelete.value = null;
+
+  try {
+    await deleteAudio(collection_id, id);
+    notificationCenterRef.value.addNotification("Audio deleted successfully.", {
+      type: "error",
+      icon: DeleteIcon,
+    });
+  } catch (error) {
+    console.error(`Error deleting audio: ${error.message}`);
+    notificationCenterRef.value.addNotification("Error deleting audio", {
+      type: "error",
+      icon: DeleteIcon,
+    });
+  }
+};
+
+const confirmDeleteImage = async () => {
+  if (!imageToDelete.value) {
+    console.error("No video to delete.");
+    return;
+  }
+
+  showDeleteImageDialog.value = false;
+
+  const { collection_id, id } = imageToDelete.value;
+  imageToDelete.value = null;
+
+  try {
+    await deleteImage(collection_id, id);
+    notificationCenterRef.value.addNotification("Image deleted successfully.", {
+      type: "error",
+      icon: DeleteIcon,
+    });
+  } catch (error) {
+    console.error(`Error deleting image: ${error.message}`);
+    notificationCenterRef.value.addNotification("Error deleting image", {
       type: "error",
       icon: DeleteIcon,
     });
@@ -840,6 +948,8 @@ defineExpose({
   loadSession,
   activeCollectionData,
   activeCollectionVideos,
+  activeCollectionAudios,
+  activeCollectionImages,
   createNewSession,
   setChatInput,
   registerMessageHandler,
@@ -857,6 +967,8 @@ provide("videodb-chat", {
   loadSession,
   activeCollectionData,
   activeCollectionVideos,
+  activeCollectionAudios,
+  activeCollectionImages,
   setChatInput,
   registerMessageHandler,
   uploadMedia,
