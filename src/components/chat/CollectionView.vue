@@ -1,49 +1,73 @@
 <template>
-  <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
+  <div
+    class="vdb-c-flex vdb-c-items-center vdb-c-justify-between md:vdb-c-pr-24"
+  >
     <div
-      class="vdb-c-relative vdb-c-flex vdb-c-w-[60%] vdb-c-justify-between vdb-c-text-sm"
+      class="vdb-c-relative vdb-c-flex vdb-c-w-11/12 vdb-c-justify-between vdb-c-text-sm"
     >
       <div
-        class="gap-8 vdb-c-flex vdb-c-w-[100%] vdb-c-items-center vdb-c-rounded-8 vdb-c-border vdb-c-border-gray-300 vdb-c-bg-gray-50 vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-black vdb-c-outline-none"
+        ref="inputContainer"
+        :class="[
+          'vdb-c-flex vdb-c-w-[60%] vdb-c-max-w-[400px] vdb-c-items-center vdb-c-rounded-[10px] vdb-c-border vdb-c-bg-gray-50 vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-black',
+          isFocused
+            ? 'vdb-c-border-[#EC5B16] vdb-c-shadow-[0_0_0_2px_rgba(236,91,22,0.25)]'
+            : 'vdb-c-border-gray-300',
+        ]"
       >
         <SearchIcon class="vdb-c-text-gray-700" />
         <input
           v-model="searchQuery"
           @input="handleInput"
+          @focus="isFocused = true"
+          @blur="isFocused = false"
           class="p-4 h-full vdb-c-block vdb-c-w-[100%] vdb-c-bg-gray-50 vdb-c-px-8 vdb-c-text-sm vdb-c-text-black vdb-c-placeholder-gray-700 vdb-c-outline-none"
           type="text"
           placeholder="Search"
         />
+        <button
+          class="vdb-c-flex vdb-c-size-[24px] vdb-c-items-center vdb-c-justify-center vdb-c-opacity-50 hover:vdb-c-opacity-100"
+          v-if="searchQuery"
+          @click="clearSearch"
+        >
+          <div
+            class="vdb-c-flex vdb-c-size-[14px] vdb-c-items-center vdb-c-justify-center"
+          >
+            <SearchCrossIcon />
+          </div>
+        </button>
       </div>
       <ul
+        ref="autocompleteContainer"
         v-if="showAutocomplete"
-        class="vdb-c-absolute vdb-c-top-[100%] vdb-c-z-10 vdb-c-w-[100%] vdb-c-cursor-pointer vdb-c-rounded-8 vdb-c-bg-white vdb-c-shadow-lg"
+        class="vdb-c-absolute vdb-c-top-full vdb-c-z-10 vdb-c-w-[60%] vdb-c-max-w-[400px] vdb-c-cursor-pointer vdb-c-rounded-8 vdb-c-bg-white vdb-c-text-sm vdb-c-shadow-lg"
       >
         <li
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-gap-12 vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-black hover:vdb-c-bg-[#EFEFEF]"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-start vdb-c-gap-12 vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-black hover:vdb-c-bg-[#EFEFEF]"
           v-for="item in filteredAssets.slice(0, 5)"
           :key="item.id"
           @click="selectItem(item)"
         >
-          <SearchIcon class="vdb-c-text-black" />
-          <div>
+          <SearchIcon class="vdb-c-size-20 vdb-c-text-black" />
+          <div class="vdb-c-w-11/12">
             <span
               v-for="(part, idx) in getHighlightedParts(item.name)"
               :key="idx"
             >
-              <b v-if="part.bold">{{ part.text }}</b>
+              <span class="vdb-c-font-semibold" v-if="part.bold">{{
+                part.text
+              }}</span>
               <span v-else>{{ part.text }}</span>
             </span>
           </div>
         </li>
       </ul>
     </div>
-    <div class="vdb-c-relative">
+    <div ref="mediaTypeContainer" class="vdb-c-relative">
       <button
         @click="toggleMediaDropdown"
-        class="border border-gray-700 vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-12 vdb-c-py-6 vdb-c-text-black"
+        class="border border-gray-700 vdb-c-flex vdb-c-min-w-[100px] vdb-c-items-center vdb-c-gap-8 vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-12 vdb-c-py-6 vdb-c-text-sm vdb-c-text-black"
       >
-        Type
+        {{ currentMediaType.name }}
         <ChevronDown />
       </button>
       <ul
@@ -107,15 +131,15 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useVideoDBChat } from "../../context";
 import Button from "../buttons/Button.vue";
 import VideoList from "../collection/VideoList.vue";
 import VideoListLoader from "../collection/VideoListLoader.vue";
-import UploadIcon from "../icons/FileUpload.vue";
-
-import { useVideoDBChat } from "../../context";
 import ChevronDown from "../icons/ChevronDown.vue";
+import UploadIcon from "../icons/FileUpload.vue";
 import RedCheck from "../icons/RedCheck.vue";
+import SearchCrossIcon from "../icons/SearchCross.vue";
 import SearchIcon from "../icons/SearchIcon.vue";
 
 const { chatInput, loadSession, addMessage } = useVideoDBChat();
@@ -162,10 +186,48 @@ const mediaTypes = [
   },
 ];
 
+const hover = ref(false);
+const isFocused = ref(false);
 const searchQuery = ref("");
 const showAutocomplete = ref(false);
 const showMediaDropdown = ref(false);
 const currentMediaType = ref(mediaTypes[0]);
+
+const inputContainer = ref(null);
+const autocompleteContainer = ref(null);
+const mediaTypeContainer = ref(null);
+
+const handleClickOutside = (event) => {
+  if (
+    autocompleteContainer.value &&
+    !autocompleteContainer.value.contains(event.target)
+  ) {
+    showAutocomplete.value = false;
+  }
+
+  if (inputContainer.value && !inputContainer.value.contains(event.target)) {
+    showAutocomplete.value = false;
+  }
+
+  if (
+    mediaTypeContainer.value &&
+    !mediaTypeContainer.value.contains(event.target)
+  ) {
+    showMediaDropdown.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
+
+const clearSearch = () => {
+  searchQuery.value = "";
+};
 
 function toggleMediaDropdown() {
   showMediaDropdown.value = !showMediaDropdown.value;

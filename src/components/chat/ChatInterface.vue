@@ -98,7 +98,10 @@
               <!-- Main Layout, Scrollable Content, and Static Footer -->
               <div
                 v-if="Object.keys(conversations).length === 0"
-                class="vdb-c-w-[90%] vdb-c-p-16 md:vdb-c-w-5/6 md:vdb-c-p-24"
+                :class="[
+                  'vdb-c-p-16',
+                  showCollectionView ? 'vdb-c-w-[100%]' : 'vdb-c-w-[90%]',
+                ]"
               >
                 <collection-view
                   v-if="showCollectionView"
