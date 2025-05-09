@@ -1,33 +1,33 @@
 <template>
   <div class="vdb-c-border-t vdb-c-border-kilvish-400 vdb-c-p-16">
     <div
-      v-if="showAgentList"
-      class="vdb-c-absolute vdb-c-z-50 vdb-c-w-[calc(100%-30px)] vdb-c--translate-y-full vdb-c-transform vdb-c-px-18"
-    >
-      <div
-        class="vdb-c-max-h-[160px] vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-roy vdb-c-bg-white vdb-c-px-8 vdb-c-py-4 vdb-c-shadow-lg"
-      >
-        <div
-          v-for="(agent, index) in filteredAgents"
-          :key="index"
-          :class="[
-            'vdb-c-my-2 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-pr-32 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-roy',
-            { 'vdb-c-bg-roy': index === selectedAgentIndex },
-          ]"
-          @click="selectAgent(agent)"
-        >
-          <span class="vdb-c-text-orange"> @ </span>
-          <span> {{ agent.name }} </span>
-        </div>
-      </div>
-    </div>
-    <div
       :class="[
-        'vdb-c-border vdb-c-p-8',
+        'vdb-c-relative vdb-c-border vdb-c-p-8',
         inputFocused ? 'vdb-c-border-kilvish-600' : 'vdb-c-border-kilvish-400',
         isExpanded ? 'vdb-c-rounded-20' : 'vdb-c-rounded-[50px]',
       ]"
     >
+      <div
+        v-if="showAgentList"
+        class="vdb-c-absolute vdb-c-left-0 vdb-c-z-50 vdb-c-w-full vdb-c--translate-y-full vdb-c-transform vdb-c-px-18 vdb-c-pb-12"
+      >
+        <div
+          class="vdb-c-max-h-[160px] vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-roy vdb-c-bg-white vdb-c-px-8 vdb-c-py-4 vdb-c-shadow-lg"
+        >
+          <div
+            v-for="(agent, index) in filteredAgents"
+            :key="index"
+            :class="[
+              'vdb-c-my-2 vdb-c-cursor-pointer vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-pr-32 vdb-c-text-sm vdb-c-font-normal vdb-c-text-black vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-roy',
+              { 'vdb-c-bg-roy': index === selectedAgentIndex },
+            ]"
+            @click="selectAgent(agent)"
+          >
+            <span class="vdb-c-text-orange"> @ </span>
+            <span> {{ agent.name }} </span>
+          </div>
+        </div>
+      </div>
       <div
         class="vdb-c-m-8 vdb-c-mb-14 vdb-c-flex vdb-c-flex-col vdb-c-gap-8"
         v-if="imageAttachments.length > 0"
