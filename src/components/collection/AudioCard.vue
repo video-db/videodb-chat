@@ -25,8 +25,9 @@
             class="thumbnail vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0 vdb-c-top-0 vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1"
           />
           <div
+            v-if="url"
             class="center-button transparent-button vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2 vdb-c-flex vdb-c-h-48 vdb-c-w-48 -vdb-c-translate-x-1/2 -vdb-c-translate-y-1/2 vdb-c-transform vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full lg:vdb-c-h-56 lg:vdb-c-w-56"
-            @click="playAudio(item.url)"
+            @click="playAudio(url)"
           >
             <PlayIcon class="vdb-c-h-20 vdb-c-w-20" />
           </div>
@@ -63,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import DeleteIcon from "../icons/Delete2.vue";
 import PlayIcon from "../icons/play.vue";
 
@@ -72,6 +73,7 @@ import NotificationCenter from "../chat/elements/NotificationCenter.vue";
 import CopyIcon from "../icons/CopyIcon.vue";
 
 const hoveredDeleteIcon = ref(null);
+const url = ref(null);
 
 const props = defineProps({
   item: {
@@ -86,6 +88,19 @@ const props = defineProps({
     type: String,
     default: "default",
   },
+  getAudioUrl: {
+    type: Function,
+  },
+});
+
+onMounted(async () => {
+  if (props.getAudioUrl) {
+    const audioUrl = await props.getAudioUrl(
+      props.item.collection_id,
+      props.item.id,
+    );
+    url.value = audioUrl.url;
+  }
 });
 
 const notificationCenterRef = ref(null);

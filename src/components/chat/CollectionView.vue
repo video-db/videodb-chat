@@ -69,6 +69,8 @@
       <VideoList
         v-if="videos.length > 0"
         :asset-results="filteredAssets"
+        :get-image-url="getImageUrl"
+        :get-audio-url="getAudioUrl"
         @video-click="handleVideoClick"
         @delete-video="emit('delete-video', $event)"
         @delete-image="emit('delete-image', $event)"
@@ -141,6 +143,12 @@ const props = defineProps({
     type: Array,
     default: null,
   },
+  getAudioUrl: {
+    type: Function,
+  },
+  getImageUrl: {
+    type: Function,
+  },
 });
 
 const mediaTypes = [
@@ -190,6 +198,8 @@ const emit = defineEmits([
   "delete-video",
   "delete-audio",
   "delete-image",
+  "get-image-url",
+  "get-audio-url",
 ]);
 
 const videos = computed(() => {

@@ -99,6 +99,25 @@ export function useVideoDBAgent(config) {
     }
   };
 
+  const generateAudioUrl = async (collectionId, audioId) => {
+    const res = {};
+    try {
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}/audio/${audioId}/generate_url`,
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const url = await response.text();
+      res.status = "success";
+      res.url = url;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
   const generateImageUrl = async (collectionId, imageId) => {
     const res = {};
     try {
@@ -618,5 +637,6 @@ export function useVideoDBAgent(config) {
     deleteImage,
     uploadMedia,
     generateImageUrl,
+    generateAudioUrl,
   };
 }
