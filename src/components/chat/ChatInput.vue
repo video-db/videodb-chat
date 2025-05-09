@@ -2,7 +2,7 @@
   <div class="vdb-c-border-t vdb-c-border-kilvish-400 vdb-c-p-16">
     <div
       v-if="showAgentList"
-      class="vdb-c-absolute vdb-c-z-50 vdb-c-w-full vdb-c--translate-y-full vdb-c-transform vdb-c-px-18"
+      class="vdb-c-absolute vdb-c-z-50 vdb-c-w-[calc(100%-30px)] vdb-c--translate-y-full vdb-c-transform vdb-c-px-18"
     >
       <div
         class="vdb-c-max-h-[160px] vdb-c-overflow-y-auto vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-roy vdb-c-bg-white vdb-c-px-8 vdb-c-py-4 vdb-c-shadow-lg"
@@ -119,14 +119,14 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from "vue";
+import { v4 as uuidv4 } from "uuid";
+import { computed, nextTick, ref, watch } from "vue";
 import { useVideoDBChat } from "../../context";
 import ChatEnterIcon from "../icons/ChatEnter.vue";
-import SendIcon from "../icons/Send.vue";
 import PaperClipIcon from "../icons/PaperClip.vue";
-import EllipsesLoading from "./elements/EllipsesLoading.vue";
+import SendIcon from "../icons/Send.vue";
 import ChatInputImagePreview from "./elements/ChatInputImagePreview.vue";
-import { v4 as uuidv4 } from "uuid";
+import EllipsesLoading from "./elements/EllipsesLoading.vue";
 
 const props = defineProps({
   placeholder: {
