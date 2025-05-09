@@ -32,6 +32,7 @@
           v-else-if="item.type === 'audio'"
           :item="item"
           :index="index"
+          :get-audio-url="getAudioUrl"
           @delete-audio="$emit('delete-audio', $event)"
         />
 
@@ -39,6 +40,7 @@
           v-else-if="item.type === 'image'"
           :item="item"
           :index="index"
+          :get-image-url="getImageUrl"
           @delete-image="$emit('delete-image', $event)"
         />
       </div>
@@ -101,6 +103,12 @@ const props = defineProps({
     type: Number,
     default: 4,
     validator: (value) => value >= 1 && value <= 4,
+  },
+  getImageUrl: {
+    type: Function,
+  },
+  getAudioUrl: {
+    type: Function,
   },
 });
 

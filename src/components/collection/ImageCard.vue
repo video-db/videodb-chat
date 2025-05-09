@@ -22,10 +22,10 @@
           class="vid-pb vdb-c-relative vdb-c-overflow-hidden vdb-c-rounded-[7px]"
         >
           <div
-            v-if="item.url"
+            v-if="url"
             class="thumbnail vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0 vdb-c-top-0 vdb-c-h-106 vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1"
             :style="{
-              backgroundImage: `url('${item.url}')`,
+              backgroundImage: `url('${url}')`,
               backgroundColor: 'transparent',
             }"
           ></div>
@@ -65,13 +65,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import NotificationCenter from "../chat/elements/NotificationCenter.vue";
 import CopyIcon from "../icons/CopyIcon.vue";
 import DeleteIcon from "../icons/Delete2.vue";
 
 const hoveredDeleteIcon = ref(null);
-
+const url = ref(null);
 const props = defineProps({
   item: {
     type: Object,
@@ -85,6 +85,19 @@ const props = defineProps({
     type: String,
     default: "default",
   },
+  getImageUrl: {
+    type: Function,
+  },
+});
+
+onMounted(async () => {
+  if (props.getImageUrl) {
+    const imageUrl = await props.getImageUrl(
+      props.item.collection_id,
+      props.item.id,
+    );
+    url.value = imageUrl.url;
+  }
 });
 
 const notificationCenterRef = ref(null);

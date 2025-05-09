@@ -110,6 +110,8 @@
                   :collection-videos="activeCollectionVideos"
                   :collection-audios="activeCollectionAudios"
                   :collection-images="activeCollectionImages"
+                  :get-image-url="generateImageUrl"
+                  :get-audio-url="generateAudioUrl"
                   @video-click="handleVideoClick"
                   @delete-video="promptDeleteVideo"
                   @delete-audio="promptDeleteAudio"
@@ -436,6 +438,7 @@ const {
   conversations,
   loadSession,
   generateImageUrl,
+  generateAudioUrl,
   uploadMedia,
   createCollection,
   deleteCollection,
