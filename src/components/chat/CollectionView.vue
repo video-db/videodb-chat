@@ -1,14 +1,12 @@
 <template>
-  <div
-    class="vdb-c-flex vdb-c-items-center vdb-c-justify-between md:vdb-c-pr-24"
-  >
+  <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
     <div
-      class="vdb-c-relative vdb-c-flex vdb-c-w-11/12 vdb-c-justify-between vdb-c-text-sm"
+      class="vdb-c-relative vdb-c-flex vdb-c-w-full vdb-c-justify-between vdb-c-pl-2 vdb-c-text-sm"
     >
       <div
         ref="inputContainer"
         :class="[
-          'vdb-c-flex vdb-c-w-[60%] vdb-c-max-w-[400px] vdb-c-items-center vdb-c-rounded-[10px] vdb-c-border vdb-c-bg-gray-50 vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-black',
+          'vdb-c-flex vdb-c-w-[60%] vdb-c-max-w-[400px] vdb-c-items-center vdb-c-rounded-[10px] vdb-c-border vdb-c-bg-gray-50 vdb-c-p-10 vdb-c-pr-8 vdb-c-text-sm vdb-c-text-black',
           isFocused
             ? 'vdb-c-border-[#EC5B16] vdb-c-shadow-[0_0_0_2px_rgba(236,91,22,0.25)]'
             : 'vdb-c-border-gray-300',
@@ -25,29 +23,29 @@
           placeholder="Search"
         />
         <button
-          class="vdb-c-flex vdb-c-size-[24px] vdb-c-items-center vdb-c-justify-center vdb-c-opacity-50 hover:vdb-c-opacity-100"
+          class="vdb-c-flex vdb-c-size-[20px] vdb-c-items-center vdb-c-justify-center vdb-c-opacity-20 hover:vdb-c-opacity-100"
           v-if="searchQuery"
           @click="clearSearch"
         >
           <div
-            class="vdb-c-flex vdb-c-size-[14px] vdb-c-items-center vdb-c-justify-center"
+            class="vdb-c-flex vdb-c-size-[20px] vdb-c-items-center vdb-c-justify-center"
           >
-            <SearchCrossIcon />
+            <SearchCrossIcon class="vdb-c-size-20" />
           </div>
         </button>
       </div>
       <ul
         ref="autocompleteContainer"
         v-if="showAutocomplete"
-        class="vdb-c-absolute vdb-c-top-full vdb-c-z-10 vdb-c-w-[60%] vdb-c-max-w-[400px] vdb-c-cursor-pointer vdb-c-rounded-8 vdb-c-bg-white vdb-c-text-sm vdb-c-shadow-lg"
+        class="autocomplete-drop-shadow vdb-c-absolute vdb-c-top-full vdb-c-z-10 vdb-c-mt-8 vdb-c-w-[60%] vdb-c-max-w-[400px] vdb-c-cursor-pointer vdb-c-rounded-12 vdb-c-border vdb-c-border-roy vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm"
       >
         <li
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-start vdb-c-gap-12 vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-black hover:vdb-c-bg-[#EFEFEF]"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-gap-10 vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-black hover:vdb-c-bg-roy"
           v-for="item in filteredAssets.slice(0, 5)"
           :key="item.id"
           @click="selectItem(item)"
         >
-          <SearchIcon class="vdb-c-size-20 vdb-c-text-black" />
+          <SearchIcon class="vdb-c-size-[15px] vdb-c-text-black" />
           <div class="vdb-c-w-11/12">
             <span
               v-for="(part, idx) in getHighlightedParts(item.name)"
@@ -65,30 +63,32 @@
     <div ref="mediaTypeContainer" class="vdb-c-relative">
       <button
         @click="toggleMediaDropdown"
-        class="border border-gray-700 vdb-c-flex vdb-c-min-w-[100px] vdb-c-items-center vdb-c-gap-8 vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-12 vdb-c-py-6 vdb-c-text-sm vdb-c-text-black"
+        class="vdb-c-flex vdb-c-min-w-[120px] vdb-c-items-center vdb-c-justify-between vdb-c-gap-10 vdb-c-rounded-8 vdb-c-border vdb-c-border-roy vdb-c-bg-white vdb-c-px-[11px] vdb-c-py-10 vdb-c-text-[15px] vdb-c-font-semibold vdb-c-text-black vdb-c-shadow-[0px_1px_1px_rgba(0,0,0,0.05)]"
       >
-        {{ currentMediaType.name }}
-        <ChevronDown />
+        <p class="vdb-c-w-full vdb-c-text-[#1F2937]">
+          {{ currentMediaType.name }}
+        </p>
+        <ChevronDown :class="{ 'vdb-c-rotate-180': showMediaDropdown }" />
       </button>
       <ul
         v-if="showMediaDropdown"
-        class="vdb-c-absolute vdb-c-right-0 vdb-c-top-[calc(100%+8px)] vdb-c-z-10 vdb-c-w-[180%] vdb-c-cursor-pointer vdb-c-rounded-8 vdb-c-bg-white vdb-c-p-4 vdb-c-text-sm vdb-c-shadow-lg"
+        class="multi-dropdown-shadow vdb-c-absolute vdb-c-right-0 vdb-c-top-[calc(100%+8px)] vdb-c-z-10 vdb-c-w-[190%] vdb-c-cursor-pointer vdb-c-rounded-12 vdb-c-border vdb-c-border-roy vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm"
       >
         <li
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-gap-12 vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-black hover:vdb-c-bg-[#EFEFEF]"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-between vdb-c-gap-12 vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-12 vdb-c-py-8 vdb-c-text-sm vdb-c-font-[500] vdb-c-text-black hover:vdb-c-bg-roy"
           v-for="item in mediaTypes"
           :key="item.id"
           @click="selectMedia(item)"
         >
           <div>
-            {{ item.name }}
+            {{ item.name === "All files" ? "All" : item.name }}
           </div>
           <RedCheck v-if="item.id === currentMediaType.id" />
         </li>
       </ul>
     </div>
   </div>
-  <div class="vdb-c-mx-auto vdb-c-w-11/12 vdb-c-py-28">
+  <div class="vdb-c-mx-auto vdb-c-w-11/12 vdb-c-pb-4 vdb-c-pt-28">
     <div v-if="collectionVideos !== null">
       <VideoList
         v-if="videos.length > 0"
@@ -178,7 +178,7 @@ const props = defineProps({
 const mediaTypes = [
   {
     id: "all_files",
-    name: "All Files",
+    name: "All files",
   },
   {
     id: "videos",
@@ -334,3 +334,22 @@ const handleVideoClick = (video) => {
   emit("video-click", video);
 };
 </script>
+<style>
+.autocomplete-drop-shadow {
+  box-shadow:
+    5px 5px 11px 0px rgba(0, 0, 0, 0.06),
+    10px 21px 21px 0px rgba(0, 0, 0, 0.05),
+    20px 47px 28px 0px rgba(0, 0, 0, 0.03),
+    30px 83px 33px 0px rgba(0, 0, 0, 0.01),
+    40px 130px 36px 0px rgba(0, 0, 0, 0);
+}
+
+.multi-dropdown-shadow {
+  box-shadow:
+    0px 5px 11px rgba(0, 0, 0, 0.06),
+    0px 21px 21px rgba(0, 0, 0, 0.05),
+    0px 47px 28px rgba(0, 0, 0, 0.03),
+    0px 83px 33px rgba(0, 0, 0, 0.01),
+    0px 130px 36px rgba(0, 0, 0, 0);
+}
+</style>

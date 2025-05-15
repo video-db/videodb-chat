@@ -1,9 +1,7 @@
 <template>
   <div>
     <!-- Videos Grid -->
-    <div
-      class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
-    >
+    <div class="vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-20">
       <div
         v-for="(item, index) in paginatedAssets"
         :key="`post-${item.id}`"
@@ -49,7 +47,7 @@
     <!-- Pagination -->
     <div
       v-if="showPagination"
-      class="vdb-c-mt-24 vdb-c-flex vdb-c-justify-center"
+      class="vdb-c-mt-20 vdb-c-flex vdb-c-justify-center"
     >
       <PaginationButton
         :target-page="-1"

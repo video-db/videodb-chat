@@ -19,10 +19,11 @@
         ]"
       >
         <div
-          class="vid-pb vdb-c-relative vdb-c-overflow-hidden vdb-c-rounded-[7px]"
+          class="vdb-c-relative vdb-c-h-fit vdb-c-overflow-hidden vdb-c-rounded-[7px]"
         >
-          <AudioThumbnail
-            class="thumbnail vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0 vdb-c-top-0 vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1"
+          <img
+            src="../../static/audio.png"
+            class="thumbnail w-full vdb-c-block vdb-c-aspect-video vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1"
           />
           <div
             v-if="url"
@@ -33,7 +34,7 @@
           </div>
 
           <div
-            class="vdb-c-absolute vdb-c-right-4 vdb-c-top-4 vdb-c-rounded-full vdb-c-border vdb-c-bg-black/40 vdb-c-p-6 vdb-c-backdrop-blur vdb-c-transition-transform vdb-c-duration-300 hover:vdb-c-scale-110 hover:vdb-c-bg-white/50"
+            class="vdb-c-absolute vdb-c-right-4 vdb-c-top-4 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-border vdb-c-bg-black/40 vdb-c-p-6 vdb-c-backdrop-blur vdb-c-transition-transform vdb-c-duration-300 hover:vdb-c-scale-110 hover:vdb-c-bg-white/50"
             @click="copyId(item.id)"
           >
             <CopyIcon />
@@ -68,7 +69,6 @@ import { onMounted, ref } from "vue";
 import DeleteIcon from "../icons/Delete2.vue";
 import PlayIcon from "../icons/play.vue";
 
-import AudioThumbnail from "../assets/AudioThumbnail.vue";
 import NotificationCenter from "../chat/elements/NotificationCenter.vue";
 import CopyIcon from "../icons/CopyIcon.vue";
 

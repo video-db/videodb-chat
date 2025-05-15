@@ -51,7 +51,10 @@
           class="vdb-c-relative vdb-c-flex vdb-c-h-full vdb-c-flex-1 vdb-c-flex-col vdb-c-justify-between vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
         >
           <div
-            class="vdb-c-chat-parent vdb-c-relative vdb-c-flex vdb-c-flex-1 vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden"
+            :class="[
+              'vdb-c-chat-parent vdb-c-relative vdb-c-flex vdb-c-flex-1 vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden',
+              showCollectionView ? 'vdb-c-px-12 md:vdb-c-px-[30px]' : '',
+            ]"
           >
             <setup-screen
               v-if="!isSetupComplete && configStatus !== null"
@@ -98,10 +101,11 @@
               <!-- Main Layout, Scrollable Content, and Static Footer -->
               <div
                 v-if="Object.keys(conversations).length === 0"
-                :class="[
-                  'vdb-c-p-16',
-                  showCollectionView ? 'vdb-c-w-[100%]' : 'vdb-c-w-[90%]',
-                ]"
+                :class="
+                  showCollectionView
+                    ? 'vdb-c-w-[100%] vdb-c-py-16'
+                    : 'vdb-c-w-[90%] vdb-c-p-16'
+                "
               >
                 <collection-view
                   v-if="showCollectionView"
