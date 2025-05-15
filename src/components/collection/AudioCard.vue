@@ -28,9 +28,10 @@
           <div
             v-if="url"
             class="center-button transparent-button vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2 vdb-c-flex vdb-c-h-48 vdb-c-w-48 -vdb-c-translate-x-1/2 -vdb-c-translate-y-1/2 vdb-c-transform vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full lg:vdb-c-h-56 lg:vdb-c-w-56"
-            @click="playAudio(url)"
+            @click="toggleAudio(url)"
           >
-            <PlayIcon class="vdb-c-h-20 vdb-c-w-20" />
+            <PauseIcon v-if="playing" class="vdb-c-h-20 vdb-c-w-20" />
+            <PlayIcon v-else class="vdb-c-h-20 vdb-c-w-20" />
           </div>
 
           <div
@@ -66,14 +67,16 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import DeleteIcon from "../icons/Delete2.vue";
-import PlayIcon from "../icons/play.vue";
-
 import NotificationCenter from "../chat/elements/NotificationCenter.vue";
 import CopyIcon from "../icons/CopyIcon.vue";
+import DeleteIcon from "../icons/Delete2.vue";
+import PauseIcon from "../icons/PauseIcon.vue";
+import PlayIcon from "../icons/play.vue";
 
 const hoveredDeleteIcon = ref(null);
 const url = ref(null);
+const audio = ref(null);
+const playing = ref(false);
 
 const props = defineProps({
   item: {
@@ -105,13 +108,26 @@ onMounted(async () => {
 
 const notificationCenterRef = ref(null);
 
-function playAudio(audioUrl) {
-  const audio = new Audio(audioUrl);
-  audio.play().catch(() => {
-    notificationCenterRef.value.addNotification("Error playing audio", {
-      type: "error",
+function toggleAudio(audioUrl) {
+  if (!audio.value) {
+    audio.value = new Audio(audioUrl);
+    audio.value.addEventListener("ended", () => {
+      playing.value = false;
+      audio.value = null;
     });
-  });
+  }
+
+  if (playing.value) {
+    audio.value.pause();
+    playing.value = false;
+  } else {
+    audio.value.play().catch(() => {
+      notificationCenterRef.value.addNotification("Error playing audio", {
+        type: "error",
+      });
+    });
+    playing.value = true;
+  }
 }
 
 function copyId(id) {
