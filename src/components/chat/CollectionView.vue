@@ -6,7 +6,7 @@
       <div
         ref="inputContainer"
         :class="[
-          'vdb-c-flex vdb-c-w-[60%] vdb-c-max-w-[400px] vdb-c-items-center vdb-c-rounded-[10px] vdb-c-border vdb-c-bg-gray-50 vdb-c-p-10 vdb-c-pr-8 vdb-c-text-sm vdb-c-text-black',
+          'vdb-c-flex vdb-c-w-[90%] vdb-c-max-w-[400px] vdb-c-items-center vdb-c-rounded-[10px] vdb-c-border vdb-c-bg-gray-50 vdb-c-p-10 vdb-c-pr-8 vdb-c-text-sm vdb-c-text-black md:vdb-c-w-[60%]',
           isFocused
             ? 'vdb-c-border-[#EC5B16] vdb-c-shadow-[0_0_0_2px_rgba(236,91,22,0.25)]'
             : 'vdb-c-border-gray-300',
@@ -37,16 +37,16 @@
       <ul
         ref="autocompleteContainer"
         v-if="showAutocomplete"
-        class="autocomplete-drop-shadow vdb-c-absolute vdb-c-top-full vdb-c-z-10 vdb-c-mt-8 vdb-c-w-[60%] vdb-c-max-w-[400px] vdb-c-cursor-pointer vdb-c-rounded-12 vdb-c-border vdb-c-border-roy vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm"
+        class="autocomplete-drop-shadow vdb-c-absolute vdb-c-top-full vdb-c-z-10 vdb-c-mt-8 vdb-c-max-h-[60vh] vdb-c-w-[90%] vdb-c-max-w-[400px] vdb-c-cursor-pointer vdb-c-overflow-hidden vdb-c-overflow-y-scroll vdb-c-rounded-12 vdb-c-border vdb-c-border-roy vdb-c-bg-white vdb-c-p-8 vdb-c-text-sm md:vdb-c-w-[60%]"
       >
         <li
-          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-gap-10 vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-black hover:vdb-c-bg-roy"
+          class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-gap-10 vdb-c-overflow-x-hidden vdb-c-rounded-8 vdb-c-bg-white vdb-c-px-10 vdb-c-py-8 vdb-c-text-sm vdb-c-text-black hover:vdb-c-bg-roy"
           v-for="item in filteredAssets.slice(0, 5)"
           :key="item.id"
           @click="selectItem(item)"
         >
           <SearchIcon class="vdb-c-size-[15px] vdb-c-text-black" />
-          <div class="vdb-c-w-11/12">
+          <div class="vdb-c-w-4/5 md:vdb-c-w-11/12">
             <span
               v-for="(part, idx) in getHighlightedParts(item.name)"
               :key="idx"
