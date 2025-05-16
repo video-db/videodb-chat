@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.37]() - 2025-05-16
+## Added
+- `<CollectionView />` enhancements
+    - Displays audio and image assets alongside videos with the new `<AudioCard />` and `<ImageCard />` components.
+    - Search your collection for videos, audios, and images.
+    - Filter assets in your collection by type: Videos, Audios, Images, or All files.
+
+- Copy ID feature added for videos, images, and audio files in `<VideoCard />`, `<AudioCard />` and `<ImageCard />`  components.
+
+## Improved
+UI improvements across `<CollectionView />`
+
+
 ## [0.0.36]() - 2025-02-28
 
 ### Added
