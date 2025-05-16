@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.38]() - 2025-05-16
+## Improved 
+- Responsiveness improvements in `<CollectionView />` 
+  - Search Box 
+  - Suggestion Box 
+
 ## [0.0.37]() - 2025-05-16
 ## Added
 - `<CollectionView />` enhancements
