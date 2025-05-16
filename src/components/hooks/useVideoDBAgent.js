@@ -1,6 +1,6 @@
-import { onBeforeMount, ref, reactive, toRefs, watch, computed } from "vue";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
+import { computed, onBeforeMount, reactive, ref, toRefs, watch } from "vue";
 
 const fetchData = async (rootUrl, endpoint) => {
   const res = {};
@@ -41,8 +41,15 @@ export function useVideoDBAgent(config) {
 
   const conversations = reactive({});
   const activeCollectionData = ref(null);
+
   const activeCollectionVideos = ref(null);
   const activeVideoData = ref(null);
+
+  const activeCollectionAudios = ref(null);
+  const activeAudioData = ref(null);
+
+  const activeCollectionImages = ref(null);
+  const activeImageData = ref(null);
 
   const fetchSession = async (sessionId) =>
     fetchData(httpUrl, `/session/${sessionId}`);
@@ -51,10 +58,22 @@ export function useVideoDBAgent(config) {
     fetchData(httpUrl, "/videodb/collection");
   const fetchCollection = async (collectionId) =>
     fetchData(httpUrl, `/videodb/collection/${collectionId}`);
+
   const fetchCollectionVideo = async (collectionId, videoId) =>
     fetchData(httpUrl, `/videodb/collection/${collectionId}/video/${videoId}`);
   const fetchCollectionVideos = async (collectionId) =>
     fetchData(httpUrl, `/videodb/collection/${collectionId}/video`);
+
+  const fetchCollectionAudio = async (collectionId, audioId) =>
+    fetchData(httpUrl, `/videodb/collection/${collectionId}/audio/${audioId}`);
+  const fetchCollectionAudios = async (collectionId) =>
+    fetchData(httpUrl, `/videodb/collection/${collectionId}/audio`);
+
+  const fetchCollectionImage = async (collectionId, imageId) =>
+    fetchData(httpUrl, `/videodb/collection/${collectionId}/image/${imageId}`);
+  const fetchCollectionImages = async (collectionId) =>
+    fetchData(httpUrl, `/videodb/collection/${collectionId}/image`);
+
   const fetchAllAgents = async () => fetchData(httpUrl, "/agent");
   const fetchConfigStatus = async () => fetchData(httpUrl, "/config/check");
 
@@ -78,6 +97,25 @@ export function useVideoDBAgent(config) {
         body: JSON.stringify({ source: source.url, source_type: sourceType }),
       });
     }
+  };
+
+  const generateAudioUrl = async (collectionId, audioId) => {
+    const res = {};
+    try {
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}/audio/${audioId}/generate_url`,
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const url = await response.text();
+      res.status = "success";
+      res.url = url;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
   };
 
   const generateImageUrl = async (collectionId, imageId) => {
@@ -105,6 +143,18 @@ export function useVideoDBAgent(config) {
     });
   };
 
+  const refetchCollectionAudios = async () => {
+    fetchCollectionAudios(session.collectionId).then((res) => {
+      activeCollectionAudios.value = res.data;
+    });
+  };
+
+  const refetchCollectionImages = async () => {
+    fetchCollectionImages(session.collectionId).then((res) => {
+      activeCollectionImages.value = res.data;
+    });
+  };
+
   onBeforeMount(() => {
     fetchConfigStatus().then((res) => {
       if (debug) console.log("debug :videodb-chat config status", res);
@@ -128,6 +178,12 @@ export function useVideoDBAgent(config) {
         }),
         fetchCollectionVideos(session.collectionId).then((res) => {
           activeCollectionVideos.value = res.data;
+        }),
+        fetchCollectionAudios(session.collectionId).then((res) => {
+          activeCollectionAudios.value = res.data;
+        }),
+        fetchCollectionImages(session.collectionId).then((res) => {
+          activeCollectionImages.value = res.data;
         }),
       ]);
       fetchSessions().then((res) => {
@@ -165,6 +221,9 @@ export function useVideoDBAgent(config) {
       const fetchedForSession = session.sessionId;
       activeCollectionData.value = null;
       activeCollectionVideos.value = null;
+      activeCollectionAudios.value = null;
+      activeCollectionImages.value = null;
+
       if (val) {
         const collection = collections.value.find((c) => c.id === val);
         if (collection) {
@@ -175,9 +234,20 @@ export function useVideoDBAgent(config) {
             activeCollectionData.value = res.data;
           });
         }
+
         fetchCollectionVideos(val).then((res) => {
           if (session.sessionId !== fetchedForSession) return;
           activeCollectionVideos.value = res.data;
+        });
+
+        fetchCollectionAudios(val).then((res) => {
+          if (session.sessionId !== fetchedForSession) return;
+          activeCollectionAudios.value = res.data;
+        });
+
+        fetchCollectionImages(val).then((res) => {
+          if (session.sessionId !== fetchedForSession) return;
+          activeCollectionImages.value = res.data;
         });
       }
     },
@@ -375,6 +445,77 @@ export function useVideoDBAgent(config) {
     }
   };
 
+  const deleteAudio = async (collectionId, audioId) => {
+    if (!collectionId || !audioId) {
+      throw new Error("Collection ID and Audio ID are required.");
+    }
+
+    try {
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}/audio/${audioId}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete the audio.");
+      }
+      const collection = collections.value.find(
+        (col) => col.id === collectionId,
+      );
+
+      if (collection && Array.isArray(activeCollectionAudios.value)) {
+        activeCollectionAudios.value = activeCollectionAudios.value.filter(
+          (audio) => audio.id !== audioId,
+        );
+      }
+
+      return data;
+    } catch (error) {
+      console.error(`Failed to delete audio ${audioId}:`, error);
+      throw error;
+    }
+  };
+
+  const deleteImage = async (collectionId, imageId) => {
+    if (!collectionId || !imageId) {
+      throw new Error("Collection ID and Image ID are required.");
+    }
+
+    try {
+      const response = await fetch(
+        `${httpUrl}/videodb/collection/${collectionId}/image/${imageId}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete the image.");
+      }
+      const collection = collections.value.find(
+        (col) => col.id === collectionId,
+      );
+
+      if (collection && Array.isArray(activeCollectionImages.value)) {
+        activeCollectionImages.value = activeCollectionImages.value.filter(
+          (image) => image.id !== imageId,
+        );
+      }
+      return data;
+    } catch (error) {
+      console.error(`Failed to delete image ${imageId}:`, error);
+      throw error;
+    }
+  };
+
   const addClientLoadingMessage = (convId) => {
     const messages = Object.values(conversations[convId]);
     const lastMessage = messages[messages.length - 1];
@@ -477,6 +618,13 @@ export function useVideoDBAgent(config) {
     activeCollectionData,
     activeCollectionVideos,
     activeVideoData,
+    refetchCollectionVideos,
+    activeCollectionAudios,
+    activeAudioData,
+    refetchCollectionAudios,
+    activeCollectionImages,
+    activeImageData,
+    refetchCollectionImages,
     conversations,
     addMessage,
     loadSession,
@@ -485,8 +633,10 @@ export function useVideoDBAgent(config) {
     createCollection,
     deleteCollection,
     deleteVideo,
+    deleteAudio,
+    deleteImage,
     uploadMedia,
     generateImageUrl,
-    refetchCollectionVideos,
+    generateAudioUrl,
   };
 }

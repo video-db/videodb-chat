@@ -130,7 +130,7 @@
             class="vdb-c-flex vdb-c-items-center vdb-c-justify-between vdb-c-gap-4"
           >
             <span class="vdb-c-w-4/6 vdb-c-text-lg md:vdb-c-text-xl">
-              <b> Videos </b> in {{ collectionName }}
+              {{ collectionName }}
             </span>
             <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-16">
               <Button
@@ -204,10 +204,9 @@ import VideoCardLoader from "../../collection/VideoCardLoader.vue";
 
 import Button from "../../buttons/Button.vue";
 
-import QuestionMark from "../../icons/QuestionMark.vue";
-import UploadIcon from "../../icons/FileUpload.vue";
 import ChevronRightCircled from "../../icons/ChevronRightCircled.vue";
 import ExternalLinkIcon from "../../icons/ExternalLink.vue";
+import QuestionMark from "../../icons/QuestionMark.vue";
 import StarIcon from "../../icons/Star.vue";
 
 const props = defineProps({

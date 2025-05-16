@@ -1,24 +1,23 @@
 <template>
   <div>
     <!-- Videos Grid -->
-    <div
-      class="vdb-c-mb-24 vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-24 sm:vdb-c-mb-32 sm:vdb-c-gap-32"
-    >
+    <div class="vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-20">
       <div
-        v-for="(item, index) in paginatedVideos"
+        v-for="(item, index) in paginatedAssets"
         :key="`post-${item.id}`"
         class="vdb-c-col-span-12 sm:vdb-c-col-span-6"
         :class="[
           columns >= 4
             ? 'md:vdb-c-col-span-4 lg:vdb-c-col-span-3'
             : columns >= 3
-            ? 'md:vdb-c-col-span-4 lg:vdb-c-col-span-4'
-            : columns >= 2
-            ? 'md:vdb-c-col-span-6 lg:vdb-c-col-span-6'
-            : ''
+              ? 'md:vdb-c-col-span-4 lg:vdb-c-col-span-4'
+              : columns >= 2
+                ? 'md:vdb-c-col-span-6 lg:vdb-c-col-span-6'
+                : '',
         ]"
       >
         <video-card
+          v-if="item.type !== 'audio' && item.type !== 'image'"
           :item="item"
           :border-b="true"
           :index="index"
@@ -26,13 +25,29 @@
           @video-click="$emit('video-click', $event)"
           @delete-video="$emit('delete-video', $event)"
         />
+
+        <AudioCard
+          v-else-if="item.type === 'audio'"
+          :item="item"
+          :index="index"
+          :get-audio-url="getAudioUrl"
+          @delete-audio="$emit('delete-audio', $event)"
+        />
+
+        <ImageCard
+          v-else-if="item.type === 'image'"
+          :item="item"
+          :index="index"
+          :get-image-url="getImageUrl"
+          @delete-image="$emit('delete-image', $event)"
+        />
       </div>
     </div>
 
     <!-- Pagination -->
     <div
       v-if="showPagination"
-      class="vdb-c-mt-24 vdb-c-flex vdb-c-justify-center"
+      class="vdb-c-mt-20 vdb-c-flex vdb-c-justify-center"
     >
       <PaginationButton
         :target-page="-1"
@@ -63,12 +78,14 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import VideoCard from "./VideoCard.vue";
+import { computed, ref } from "vue";
+import AudioCard from "./AudioCard.vue";
+import ImageCard from "./ImageCard.vue";
 import PaginationButton from "./PaginationButton.vue";
+import VideoCard from "./VideoCard.vue";
 
 const props = defineProps({
-  videoResults: {
+  assetResults: {
     type: Array,
     default: () => [],
   },
@@ -85,20 +102,26 @@ const props = defineProps({
     default: 4,
     validator: (value) => value >= 1 && value <= 4,
   },
+  getImageUrl: {
+    type: Function,
+  },
+  getAudioUrl: {
+    type: Function,
+  },
 });
 
 const currentPage = ref(1);
 const totalPages = computed(() =>
-  Math.ceil(props.videoResults.length / props.itemsPerPage),
+  Math.ceil(props.assetResults.length / props.itemsPerPage),
 );
 
-const paginatedVideos = computed(() => {
+const paginatedAssets = computed(() => {
   if (!props.showPagination) {
-    return props.videoResults;
+    return props.assetResults;
   }
   const start = (currentPage.value - 1) * props.itemsPerPage;
   const end = start + props.itemsPerPage;
-  return props.videoResults.slice(start, end);
+  return props.assetResults.slice(start, end);
 });
 
 const displayedPageNumbers = computed(() => {
@@ -131,5 +154,5 @@ const goToPage = (page) => {
   }
 };
 
-defineEmits(["video-click", "delete-video"]);
+defineEmits(["video-click", "delete-video", "delete-audio", "delete-image"]);
 </script>

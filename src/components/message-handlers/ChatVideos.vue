@@ -12,7 +12,7 @@
         <VideoList
           :columns="columns"
           :show-pagination="false"
-          :video-results="content.videos"
+          :asset-results="content.videos"
           @video-click="handleVideoClick"
         />
       </div>
@@ -26,7 +26,7 @@
 
 <script setup>
 import "@videodb/player-vue/dist/style.css";
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 import { useVideoDBChat } from "../../context.js";
 import VideoList from "../collection/VideoList.vue";
 import LoadingMessage from "./elements/LoadingMessage.vue";

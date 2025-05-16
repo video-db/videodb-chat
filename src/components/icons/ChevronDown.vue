@@ -34,9 +34,8 @@ export default {
     },
     strokeColor: {
       type: String,
-      default: "#20557D",
+      default: "#1F2937",
     },
   },
 };
 </script>
-

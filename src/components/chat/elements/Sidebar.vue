@@ -11,8 +11,12 @@
     ]"
   >
     <div class="vdb-c-flex vdb-c-items-center vdb-c-justify-between">
-      <div class="vdb-c-text-2xl vdb-c-font-bold">
-        <component v-if="config.icon" :is="config.icon" />
+      <div class="vdb-c-cursor-pointer vdb-c-text-2xl vdb-c-font-bold">
+        <component
+          v-if="config.icon"
+          :is="config.icon"
+          @click="$emit('create-new-session')"
+        />
       </div>
       <button
         v-if="isMobile"
@@ -325,17 +329,17 @@
 </template>
 
 <script setup>
-import { nextTick, ref, watch, computed } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 
 import Button from "../../buttons/Button.vue";
 
-import DeleteIcon from "../../icons/Delete.vue";
-import PlusIcon from "../../icons/Plus.vue";
-import ComposeIcon from "../../icons/Compose.vue";
-import ChevronDown from "../../icons/ChevronDown.vue";
 import AgentIcon from "../../icons/Agent.vue";
 import ChatIcon from "../../icons/Chat.vue";
+import ChevronDown from "../../icons/ChevronDown.vue";
 import CollectionIcon from "../../icons/Collection.vue";
+import ComposeIcon from "../../icons/Compose.vue";
+import DeleteIcon from "../../icons/Delete.vue";
+import PlusIcon from "../../icons/Plus.vue";
 
 const props = defineProps({
   sessions: {

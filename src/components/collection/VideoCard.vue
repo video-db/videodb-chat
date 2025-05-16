@@ -30,9 +30,16 @@
             >
               <template #overlay>
                 <BigCenterButton
-                  class="vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-h-48 vdb-c-w-48 vdb-c-bg-black/40 hover:vdb-c-bg-white/40 vdb-c-transition-all vdb-c-duration-300"
+                  class="vdb-c-absolute vdb-c-left-1/2 vdb-c-top-1/2 vdb-c-flex vdb-c-h-48 vdb-c-w-48 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-black/40 vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-bg-white/40"
                 >
                 </BigCenterButton>
+
+                <div
+                  class="vdb-c-absolute vdb-c-right-4 vdb-c-top-4 vdb-c-rounded-full vdb-c-border vdb-c-bg-black/40 vdb-c-p-6 vdb-c-backdrop-blur vdb-c-transition-transform vdb-c-duration-300 hover:vdb-c-scale-110 hover:vdb-c-bg-white/50"
+                  @click="copyId(item.id)"
+                >
+                  <CopyIcon />
+                </div>
 
                 <div
                   class="vdb-c-absolute vdb-c-bottom-4 vdb-c-right-4 vdb-c-rounded-full vdb-c-border vdb-c-bg-black/40 vdb-c-p-6 vdb-c-backdrop-blur vdb-c-transition-transform vdb-c-duration-300 hover:vdb-c-scale-110 hover:vdb-c-bg-white/50"
@@ -94,16 +101,19 @@
       </div>
     </div>
   </div>
+  <NotificationCenter ref="notificationCenterRef" />
 </template>
 
 <script setup>
-import { ref } from "vue";
-import PlayIcon from "../icons/play.vue";
-import DefaultThumbnail from "../assets/DefaultThumbnail.vue";
-import DeleteIcon from "../icons/Delete2.vue";
-import { VideoDBPlayer, BigCenterButton } from "@videodb/player-vue";
+import { BigCenterButton, VideoDBPlayer } from "@videodb/player-vue";
 import "@videodb/player-vue/dist/style.css";
+import { ref } from "vue";
+import DefaultThumbnail from "../assets/DefaultThumbnail.vue";
+import NotificationCenter from "../chat/elements/NotificationCenter.vue";
+import DeleteIcon from "../icons/Delete2.vue";
+import PlayIcon from "../icons/play.vue";
 
+import CopyIcon from "../icons/CopyIcon.vue";
 import ExternalLinkIcon from "../icons/ExternalLink.vue";
 
 const hoveredVideo = ref(null);
@@ -134,6 +144,20 @@ const secondsToHHMMSS = (val) => {
   return time;
 };
 
+const notificationCenterRef = ref(null);
+
+function copyId(id) {
+  navigator.clipboard
+    .writeText(id)
+    .then(() => {
+      notificationCenterRef.value.addNotification("Video ID Copied");
+    })
+    .catch((e) => {
+      print(e);
+      notificationCenterRef.value.addNotification("Failed to copy ID");
+    });
+}
+
 const emit = defineEmits(["delete-video"]);
 </script>
 
@@ -154,6 +178,7 @@ const emit = defineEmits(["delete-video"]);
 
 .text-elip {
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
