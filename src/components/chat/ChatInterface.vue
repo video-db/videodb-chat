@@ -52,8 +52,7 @@
         >
           <div
             :class="[
-              'vdb-c-chat-parent vdb-c-relative vdb-c-flex vdb-c-flex-1 vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden',
-              showCollectionView ? 'vdb-c-px-12 md:vdb-c-px-[30px]' : '',
+              'vdb-c-chat-parent vdb-c-relative vdb-c-flex vdb-c-flex-1 vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden vdb-c-px-12 md:vdb-c-px-[30px]',
             ]"
           >
             <setup-screen
