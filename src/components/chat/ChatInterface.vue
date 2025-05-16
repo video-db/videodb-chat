@@ -81,12 +81,11 @@
                     :video-name="activeVideoData?.name || null"
                     :headerState="isDefaultScreen ? 'primary' : 'secondary'"
                     :header-config="headerConfig"
-                    class="vdb-c-w-full vdb-c-transition-shadow"
+                    class="vdb-c-w-full vdb-c-transition-shadow vdb-c-header"
                     :class="{
-                      'vdb-c-px-24': !isDefaultScreen,
                       'vdb-c-pl-16 vdb-c-pr-24 md:vdb-c-pl-32 md:vdb-c-pr-60 2xl:vdb-c-pl-60 2xl:vdb-c-pr-80':
                         isDefaultScreen,
-                      'vdb-c-border-b-2 vdb-c-border-roy vdb-c-pl-16 vdb-c-pr-24 md:vdb-c-pl-32 md:vdb-c-pr-60 2xl:vdb-c-pl-60 2xl:vdb-c-pr-80':
+                      'vdb-c-border-b-2 vdb-c-border-roy':
                         isCollectionView,
                       'header-shadow':
                         isScrolled && !isCollectionView && !isDefaultScreen,
