@@ -1,6 +1,6 @@
 <template>
   <div
-    class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-[60] vdb-c-p-24 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-black/50"
+    class="vdb-c-fixed vdb-c-inset-0 vdb-c-z-[60] vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-bg-black/50 vdb-c-p-24"
     v-if="showUploadDialog"
     @click="handleCancel"
   >
@@ -32,14 +32,14 @@
             placeholder="Upload a URL"
             class="vdb-c-w-full vdb-c-rounded-lg vdb-c-border vdb-c-border-[#424242] vdb-c-bg-[#0C0C0C] vdb-c-px-16 vdb-c-py-8 vdb-c-text-white placeholder:vdb-c-text-[#424242] focus:vdb-c-outline-none focus:vdb-c-ring-1 focus:vdb-c-ring-[#FF5B0A]"
             v-model="url"
-            :disabled="hasUploadedFile"
+            :disabled="hasUploadedFiles"
             @input="handleUrlInput"
           />
           <p
-            v-if="hasUploadedFile"
+            v-if="hasUploadedFiles"
             class="vdb-c-mt-2 vdb-c-text-xs vdb-c-text-gray-400"
           >
-            URL input disabled - file already selected
+            URL input disabled - file(s) already selected
           </p>
         </div>
 
@@ -56,7 +56,7 @@
             'vdb-c-rounded-lg vdb-c-border-2 vdb-c-border-dashed vdb-c-p-32 vdb-c-text-center vdb-c-transition-colors',
             isDragging
               ? 'vdb-c-border-[#FF5B0A] vdb-c-bg-black/40'
-              : hasUrl || hasUploadedFile
+              : hasUrl || hasUploadedFiles
                 ? 'vdb-c-border-[#2C2C2C] vdb-c-bg-[#1A1A1A]'
                 : 'vdb-c-cursor-pointer vdb-c-border-white/20 vdb-c-bg-black/20 hover:vdb-c-border-white/40 hover:vdb-c-bg-black/20',
           ]"
@@ -64,28 +64,37 @@
           @dragleave.prevent="handleDragLeave"
           @dragover.prevent="handleDragOver"
           @drop.prevent="handleDrop"
-          @click="!hasUrl && !hasUploadedFile && triggerFileInput()"
+          @click="!hasUrl && !hasUploadedFiles && triggerFileInput()"
         >
           <input
             type="file"
             ref="fileInputEl"
             class="vdb-c-hidden"
             accept="audio/*,video/*,image/*"
+            multiple
             @change="handleFileSelect"
           />
           <div
-            v-if="hasUploadedFile"
-            class="vdb-c-flex vdb-c-flex-col vdb-c-items-center vdb-c-gap-8"
+            v-if="hasUploadedFiles"
+            style="scrollbar-gutter: stable"
+            :class="[
+              'vdb-c-uploaded-files-container vdb-c-flex vdb-c-max-h-[240px] vdb-c-flex-col vdb-c-gap-8 vdb-c-overflow-y-auto',
+              fileInput.length > 2 ? 'vdb-c-items-start' : 'vdb-c-items-center',
+            ]"
           >
-            <p class="vdb-c-text-gray-300">
-              Selected file: {{ fileInput.name }}
-            </p>
-            <button
-              @click.stop="clearSelectedFile"
-              class="vdb-c-text-[#FF5B0A] hover:vdb-c-text-[#FF7B3A]"
+            <p
+              v-for="(file, index) in fileInput"
+              :key="file.name + index"
+              class="vdb-c-text-gray-300"
             >
-              Remove file
-            </button>
+              {{ file.name }}
+              <button
+                @click.stop="removeFile(index)"
+                class="vdb-c-ml-2 vdb-c-text-[#FF5B0A] hover:vdb-c-text-[#FF7B3A]"
+              >
+                (Remove)
+              </button>
+            </p>
           </div>
           <p v-else class="vdb-c-text-gray-300">
             {{
@@ -167,7 +176,7 @@
 import ChevronDown from "../icons/ChevronDown.vue";
 import CrossIcon from "../icons/Cross.vue";
 import Button from "../buttons/Button.vue";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 
 const emit = defineEmits(["cancel-upload", "upload"]);
 
@@ -191,22 +200,22 @@ let dragCounter = 0;
 const isDragging = ref(false);
 
 const hasUrl = ref(false);
-const hasUploadedFile = ref(false);
-
 const url = ref("");
-const fileInput = ref(null);
+
+const fileInput = ref([]);
 const fileInputEl = ref(null);
 
 const selectedCollection = ref(null);
 const isDropdownOpen = ref(false);
 
+const hasUploadedFiles = computed(() => fileInput.value.length > 0);
+
 const clearState = () => {
   dragCounter = 0;
   isDragging.value = false;
   hasUrl.value = false;
-  hasUploadedFile.value = false;
   url.value = "";
-  fileInput.value = null;
+  fileInput.value = [];
   selectedCollection.value = props.defaultSelectedCollectionId || null;
   isDropdownOpen.value = false;
 };
@@ -214,20 +223,20 @@ const clearState = () => {
 const handleUrlInput = (e) => {
   if (e.target.value) {
     hasUrl.value = true;
+    fileInput.value = [];
   } else {
     hasUrl.value = false;
   }
 };
 
-const clearSelectedFile = () => {
-  fileInput.value = null;
-  hasUploadedFile.value = false;
+const removeFile = (index) => {
+  fileInput.value.splice(index, 1);
 };
 
 const handleDragEnter = (e) => {
   e.preventDefault();
   dragCounter++;
-  if (!hasUrl.value && !hasUploadedFile.value) {
+  if (!hasUrl.value && !hasUploadedFiles.value) {
     isDragging.value = true;
   }
 };
@@ -242,7 +251,7 @@ const handleDragLeave = (e) => {
 
 const handleDragOver = (e) => {
   e.preventDefault();
-  if (!hasUrl.value && !hasUploadedFile.value) {
+  if (!hasUrl.value && !hasUploadedFiles.value) {
     isDragging.value = true;
   }
 };
@@ -252,7 +261,7 @@ const handleDrop = (e) => {
   isDragging.value = false;
   dragCounter = 0;
 
-  if (!hasUrl.value && !hasUploadedFile.value) {
+  if (!hasUrl.value && !hasUploadedFiles.value) {
     const files = Array.from(e.dataTransfer.files);
     const validFiles = files.filter(
       (file) =>
@@ -262,23 +271,19 @@ const handleDrop = (e) => {
     );
 
     if (validFiles.length > 0) {
-      hasUploadedFile.value = true;
+      fileInput.value = [...fileInput.value, ...validFiles]; // Add dropped files to the array
       url.value = "";
       hasUrl.value = false;
-
-      // Choose 1st file
-      fileInput.value = files[0];
     }
   }
 };
 
 const handleFileSelect = (e) => {
-  const files = e.target.files;
+  const files = Array.from(e.target.files);
   if (files.length > 0) {
-    hasUploadedFile.value = true;
+    fileInput.value = [...fileInput.value, ...files]; // Add selected files to the array
     url.value = "";
     hasUrl.value = false;
-    fileInput.value = files[0];
   }
 };
 
@@ -298,11 +303,13 @@ const handleUpload = () => {
       sourceType: "url",
       collectionId: selectedCollection.value,
     });
-  } else if (hasUploadedFile.value) {
-    emit("upload", {
-      source: fileInput.value,
-      sourceType: "file",
-      collectionId: selectedCollection.value,
+  } else if (hasUploadedFiles.value) {
+    fileInput.value.forEach((file) => {
+      emit("upload", {
+        source: file,
+        sourceType: "file",
+        collectionId: selectedCollection.value,
+      });
     });
   }
   clearState();
@@ -328,3 +335,27 @@ watch(
   },
 );
 </script>
+
+<style>
+.vdb-c-uploaded-files-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.vdb-c-uploaded-files-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vdb-c-uploaded-files-container::-webkit-scrollbar-thumb {
+  background: #242424;
+  border-radius: 4px;
+}
+
+.vdb-c-uploaded-files-container::-webkit-scrollbar-thumb:hover {
+  background: #2d2d2d;
+}
+
+.vdb-c-uploaded-files-container {
+  scrollbar-width: thin;
+  scrollbar-color: #242424 transparent;
+}
+</style>
