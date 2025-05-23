@@ -76,14 +76,18 @@
           />
           <div
             v-if="hasUploadedFiles"
-            class="vdb-c-flex vdb-c-flex-col vdb-c-items-center vdb-c-gap-8"
+            style="scrollbar-gutter: stable"
+            :class="[
+              'vdb-c-uploaded-files-container vdb-c-flex vdb-c-max-h-[240px] vdb-c-flex-col vdb-c-gap-8 vdb-c-overflow-y-auto',
+              fileInput.length > 2 ? 'vdb-c-items-start' : 'vdb-c-items-center',
+            ]"
           >
             <p
               v-for="(file, index) in fileInput"
               :key="file.name + index"
               class="vdb-c-text-gray-300"
             >
-              Selected file: {{ file.name }}
+              {{ file.name }}
               <button
                 @click.stop="removeFile(index)"
                 class="vdb-c-ml-2 vdb-c-text-[#FF5B0A] hover:vdb-c-text-[#FF7B3A]"
@@ -331,3 +335,27 @@ watch(
   },
 );
 </script>
+
+<style>
+.vdb-c-uploaded-files-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.vdb-c-uploaded-files-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vdb-c-uploaded-files-container::-webkit-scrollbar-thumb {
+  background: #242424;
+  border-radius: 4px;
+}
+
+.vdb-c-uploaded-files-container::-webkit-scrollbar-thumb:hover {
+  background: #2d2d2d;
+}
+
+.vdb-c-uploaded-files-container {
+  scrollbar-width: thin;
+  scrollbar-color: #242424 transparent;
+}
+</style>
