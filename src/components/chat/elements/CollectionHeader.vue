@@ -64,7 +64,7 @@
               class="vdb-c-hidden vdb-c-h-20 vdb-c-w-20 md:vdb-c-block"
             />
             <span class="vdb-c-flex vdb-c-flex-row vdb-c-gap-4">
-              Upload <span class="vdb-c-hidden md:vdb-c-inline"> Video </span>
+              Upload <span class="vdb-c-hidden md:vdb-c-inline"> Media </span>
             </span>
           </div>
         </Button>
