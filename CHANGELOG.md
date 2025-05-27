@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.39]() - 2025-05-16
+## Added 
+- Ability to upload multiple media files at once through the `Upload Media` button
+
 ## [0.0.38]() - 2025-05-16
 ## Improved 
 - Responsiveness improvements in `<CollectionView />` 
