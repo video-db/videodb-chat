@@ -1,6 +1,12 @@
 # Changelog
 
 ## [0.0.39]() - 2025-05-27
+## Fixed 
+- Default screen will not display demo videos if images and audios are uploaded
+- Copy ID Button visibility improved on hover
+
+
+## [0.0.39]() - 2025-05-27
 ## Added 
 - Ability to upload multiple media files at once through the `Upload Media` button
 
