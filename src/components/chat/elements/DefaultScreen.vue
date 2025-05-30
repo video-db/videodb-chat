@@ -159,22 +159,39 @@
 
       <!-- Videos -->
       <div
-        v-if="previewVideos"
+        v-if="!isContentLoading"
         class="vdb-c-grid vdb-c-grid-cols-12 vdb-c-gap-12 sm:vdb-c-gap-18"
       >
         <div
-          v-for="(item, index) in previewVideos"
+          v-for="(item, index) in previewMedia"
           :key="`post-${item.id}`"
           class="vdb-c-col-span-12 sm:vdb-c-col-span-6 md:vdb-c-col-span-4 lg:vdb-c-col-span-3"
         >
           <video-card
-            border-class="sm:vdb-c-hidden"
+            v-if="item.type !== 'audio' && item.type !== 'image'"
             :item="item"
             :border-b="true"
             :index="index"
             :variant="showDemoVideos ? 'hide-title' : 'default'"
-            @video-click="$emit('video-click', item)"
-            @delete-video="$emit('delete-video', item)"
+            border-class="sm:vdb-c-hidden"
+            @video-click="$emit('video-click', $event)"
+            @delete-video="$emit('delete-video', $event)"
+          />
+
+          <AudioCard
+            v-else-if="item.type === 'audio'"
+            :item="item"
+            :index="index"
+            :get-audio-url="getAudioUrl"
+            @delete-audio="$emit('delete-audio', $event)"
+          />
+
+          <ImageCard
+            v-else-if="item.type === 'image'"
+            :item="item"
+            :index="index"
+            :get-image-url="getImageUrl"
+            @delete-image="$emit('delete-image', $event)"
           />
         </div>
       </div>
@@ -200,6 +217,8 @@
 import { computed } from "vue";
 
 import VideoCard from "../../collection/VideoCard.vue";
+import AudioCard from "../../collection/AudioCard.vue";
+import ImageCard from "../../collection/ImageCard.vue";
 import VideoCardLoader from "../../collection/VideoCardLoader.vue";
 
 import Button from "../../buttons/Button.vue";
@@ -222,7 +241,7 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  previewVideos: {
+  previewMedia: {
     type: Array,
     default: null,
   },
@@ -230,7 +249,19 @@ const props = defineProps({
     type: Object,
     default: () => null,
   },
+  getAudioUrl: {
+    type: Function,
+  },
+  getImageUrl: {
+    type: Function,
+  },
+  isContentLoading: {
+    type: Boolean,
+    default: true,
+  },
 });
+
+console.log(props.isContentLoading, props.previewMedia);
 
 const collectionName = computed(() => props.collectionData?.name);
 
@@ -240,6 +271,8 @@ defineEmits([
   "view-all-videos-click",
   "upload-button-click",
   "delete-video",
+  "delete-audio",
+  "delete-image",
 ]);
 </script>
 
