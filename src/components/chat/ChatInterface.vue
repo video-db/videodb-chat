@@ -80,12 +80,11 @@
                     :video-name="activeVideoData?.name || null"
                     :headerState="isDefaultScreen ? 'primary' : 'secondary'"
                     :header-config="headerConfig"
-                    class="vdb-c-w-full vdb-c-transition-shadow vdb-c-header"
+                    class="vdb-c-header vdb-c-w-full vdb-c-transition-shadow"
                     :class="{
                       'vdb-c-pl-16 vdb-c-pr-24 md:vdb-c-pl-32 md:vdb-c-pr-60 2xl:vdb-c-pl-60 2xl:vdb-c-pr-80':
                         isDefaultScreen,
-                      'vdb-c-border-b-2 vdb-c-border-roy':
-                        isCollectionView,
+                      'vdb-c-border-b-2 vdb-c-border-roy': isCollectionView,
                       'header-shadow':
                         isScrolled && !isCollectionView && !isDefaultScreen,
                     }"
@@ -130,19 +129,32 @@
                   :show-demo-videos="
                     isFreshUser ||
                     (activeCollectionData &&
-                      activeCollectionVideos?.length === 0)
+                      activeCollectionVideos?.length === 0 &&
+                      activeCollectionImages?.length === 0 &&
+                      activeCollectionAudios?.length === 0)
                   "
                   :enable-video-view="props.defaultScreenConfig.enableVideoView"
-                  :preview-videos="
+                  :is-content-loading="isContentLoading"
+                  :preview-media="
                     isFreshUser ||
                     (activeCollectionData &&
-                      activeCollectionVideos?.length === 0)
+                      activeCollectionVideos?.length === 0 &&
+                      activeCollectionImages?.length === 0 &&
+                      activeCollectionAudios?.length === 0)
                       ? defaultScreenConfig.demoVideos?.slice(0, 4)
-                      : activeCollectionVideos?.slice(0, 4)
+                      : [
+                          ...(activeCollectionVideos || []),
+                          ...(activeCollectionAudios || []),
+                          ...(activeCollectionImages || []),
+                        ].slice(0, 4)
                   "
+                  :get-image-url="generateImageUrl"
+                  :get-audio-url="generateAudioUrl"
                   @query-card-click="handleQueryCardClick"
                   @video-click="handleVideoClick"
                   @delete-video="promptDeleteVideo"
+                  @delete-audio="promptDeleteAudio"
+                  @delete-image="promptDeleteImage"
                   @upload-button-click="showUploadDialog = true"
                   @view-all-videos-click="handleViewAllVideosClick"
                 />
@@ -528,10 +540,26 @@ const isSetupComplete = computed(() => {
   );
 });
 
+const isContentLoading = computed(() => {
+  return !(
+    Array.isArray(activeCollectionVideos.value) &&
+    Array.isArray(activeCollectionImages.value) &&
+    Array.isArray(activeCollectionAudios.value)
+  );
+});
+
 const isFreshUser = computed(() => {
-  if (collections.value && activeCollectionVideos.value) {
+  if (
+    collections.value &&
+    activeCollectionVideos.value &&
+    activeCollectionAudios.value &&
+    activeCollectionImages.value
+  ) {
     return (
-      collections.value.length < 2 && activeCollectionVideos.value.length < 1
+      collections.value.length < 2 &&
+      activeCollectionVideos.value.length < 1 &&
+      activeCollectionAudios.value.length < 1 &&
+      activeCollectionImages.value.length < 1
     );
   }
   return false;

@@ -34,7 +34,7 @@
             class="thumbnail vdb-c-absolute vdb-c-bottom-0 vdb-c-left-0 vdb-c-right-0 vdb-c-top-0 vdb-c-h-106 vdb-c-animate-pulse vdb-c-rounded-lg vdb-c-bg-cover vdb-c-bg-center vdb-c-bg-no-repeat vdb-c-shadow-1"
           />
           <div
-            class="vdb-c-absolute vdb-c-right-4 vdb-c-top-4 vdb-c-rounded-full vdb-c-border vdb-c-bg-black/40 vdb-c-p-6 vdb-c-backdrop-blur vdb-c-transition-transform vdb-c-duration-300 hover:vdb-c-scale-110 hover:vdb-c-bg-white/50"
+            class="vdb-c-absolute vdb-c-right-4 vdb-c-top-4 vdb-c-rounded-full vdb-c-border vdb-c-bg-black/40 vdb-c-p-6 vdb-c-backdrop-blur vdb-c-transition-transform vdb-c-duration-300 hover:vdb-c-scale-110 hover:vdb-c-bg-white/45"
             @click="copyId(item.id)"
           >
             <CopyIcon />

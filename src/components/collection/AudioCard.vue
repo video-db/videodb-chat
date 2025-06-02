@@ -35,7 +35,7 @@
           </div>
 
           <div
-            class="vdb-c-absolute vdb-c-right-4 vdb-c-top-4 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-border vdb-c-bg-black/40 vdb-c-p-6 vdb-c-backdrop-blur vdb-c-transition-transform vdb-c-duration-300 hover:vdb-c-scale-110 hover:vdb-c-bg-white/50"
+            class="vdb-c-absolute vdb-c-right-4 vdb-c-top-4 vdb-c-flex vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-border vdb-c-bg-black/40 vdb-c-p-6 vdb-c-backdrop-blur vdb-c-transition-transform vdb-c-duration-300 hover:vdb-c-scale-110 hover:vdb-c-bg-white/45"
             @click="copyId(item.id)"
           >
             <CopyIcon />
