@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.39]() - 2025-05-27
+## [0.0.40]() - 2025-06-01
 ## Fixed 
 - Default screen will not display demo videos if images and audios are uploaded
 - Copy ID Button visibility improved on hover
