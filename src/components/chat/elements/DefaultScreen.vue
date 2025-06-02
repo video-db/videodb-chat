@@ -170,10 +170,8 @@
           <video-card
             v-if="item.type !== 'audio' && item.type !== 'image'"
             :item="item"
-            :border-b="true"
             :index="index"
             :variant="showDemoVideos ? 'hide-title' : 'default'"
-            border-class="sm:vdb-c-hidden"
             @video-click="$emit('video-click', $event)"
             @delete-video="$emit('delete-video', $event)"
           />
