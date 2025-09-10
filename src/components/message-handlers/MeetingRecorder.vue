@@ -264,17 +264,32 @@ function toggleTopic(t) {
 }
 
 const canSave = computed(
-  () => objective.value.trim().length > 0 && selectedMainGoals.value.size > 0,
+  () =>
+    selectedMainGoals.value.size > 0 ||
+    objective.value.trim().length > 0 ||
+    selectedTopics.value.size > 0 ||
+    discussionTopicText.value.trim().length > 0,
 );
 
 /* chat ctx */
-const { appendMessageMetadata, openCanvas, conversations, canvasState } =
+const { saveMeetingContext, fetchMeetingContext, openCanvas, canvasState } =
   useVideoDBChat();
-const message = computed(() => conversations?.[props.convId]?.[props.msgId]);
 
-onMounted(() => {
-  if (message.value?.metadata?.meeting_context) {
-    openCanvas && openCanvas("meeting_recorder", props.content);
+onMounted(async () => {
+  openCanvas && openCanvas("meeting_recorder", props.content);
+  if (props.content?.ui_id) {
+    const res = await fetchMeetingContext(props.content.ui_id);
+    if (res.status === "success" && res.data) {
+      const ctx = res.data?.meeting_context;
+      if (!ctx) return;
+      if (Array.isArray(ctx.main_goals))
+        selectedMainGoals.value = new Set(ctx.main_goals);
+      if (typeof ctx.objective === "string") objective.value = ctx.objective;
+      if (Array.isArray(ctx.topics)) selectedTopics.value = new Set(ctx.topics);
+      if (typeof ctx.discussion_topic_text === "string")
+        discussionTopicText.value = ctx.discussion_topic_text;
+      isOpen.value = false;
+    }
   }
 });
 
@@ -289,39 +304,19 @@ watch(
   { deep: true, immediate: true },
 );
 
-watch(
-  () => message.value?.metadata,
-  (m) => {
-    const ctx = m?.meeting_context;
-    if (!ctx) return;
-    if (Array.isArray(ctx.main_goals))
-      selectedMainGoals.value = new Set(ctx.main_goals);
-    if (typeof ctx.objective === "string") objective.value = ctx.objective;
-    if (Array.isArray(ctx.topics)) selectedTopics.value = new Set(ctx.topics);
-    if (typeof ctx.discussion_topic_text === "string")
-      discussionTopicText.value = ctx.discussion_topic_text;
-
-    // Close the drawer when metadata is present (already filled previously)
-    isOpen.value = false;
-  },
-  { deep: true, immediate: true },
-);
-
 async function handleSave() {
   if (!canSave.value) return;
 
-  const metadata = {
-    meeting_context: {
-      main_goals: Array.from(selectedMainGoals.value),
-      objective: objective.value.trim(),
-      topics: Array.from(selectedTopics.value),
-      discussion_topic_text: discussionTopicText.value.trim(),
-      ui_id: props.content.ui_id,
-    },
+  const meetingContext = {
+    main_goals: Array.from(selectedMainGoals.value),
+    objective: objective.value.trim(),
+    topics: Array.from(selectedTopics.value),
+    discussion_topic_text: discussionTopicText.value.trim(),
+    ui_id: props.content.ui_id,
   };
 
   const targetMsgId = props.content?.msg_id || props.msgId;
-  appendMessageMetadata && appendMessageMetadata(targetMsgId, metadata);
+  saveMeetingContext(targetMsgId, meetingContext);
   openCanvas && openCanvas("meeting_recorder", props.content);
 
   // 2) Auto-close the drawer

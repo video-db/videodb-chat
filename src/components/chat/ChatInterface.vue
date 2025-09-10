@@ -490,7 +490,8 @@ const {
   deleteAudio,
   deleteImage,
   renameSession,
-  appendMessageMetadata,
+  saveMeetingContext,
+  fetchMeetingContext,
 } = useChatHook(props.chatHookConfig);
 
 const {
@@ -1055,6 +1056,8 @@ defineExpose({
   openCanvas,
   closeCanvas,
   setShrinkChat,
+  saveMeetingContext,
+  fetchMeetingContext,
 });
 
 provide("videodb-chat", {
@@ -1078,7 +1081,8 @@ provide("videodb-chat", {
   openCanvas,
   closeCanvas,
   setShrinkChat,
-  appendMessageMetadata,
+  saveMeetingContext,
+  fetchMeetingContext,
 });
 </script>
 
