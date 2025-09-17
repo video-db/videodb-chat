@@ -95,7 +95,7 @@
                     closeSidebar();
                   "
                   :class="[
-                    'vdb-c-ml-24 vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-between vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
+                    'vdb-c-ml-24 vdb-c-flex vdb-c-cursor-pointer vdb-c-items-center vdb-c-justify-between vdb-c-truncate vdb-c-rounded-lg vdb-c-p-8 vdb-c-px-16 vdb-c-text-sm vdb-c-font-medium vdb-c-text-vdb-darkishgrey',
                     {
                       'vdb-c-bg-[#FFF5EC]':
                         showSelectedCollection &&
@@ -241,37 +241,116 @@
                 ]"
               >
                 <span class="vdb-c-w-[90%] vdb-c-truncate">
-                  {{
-                    session.name ||
-                    new Date(session.created_at * 1000)
-                      .toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: false,
-                      })
-                      .replace(/\//g, ".")
-                      .replace(",", " -")
-                  }}
+                  <template v-if="editingSessionId === session.session_id">
+                    <input
+                      :id="`edit-input-${session.session_id}`"
+                      v-model="editingName"
+                      type="text"
+                      class="vdb-c-w-full vdb-c-truncate vdb-c-rounded vdb-c-border vdb-c-border-[#E5E5E5] vdb-c-bg-white vdb-c-px-6 vdb-c-py-2 vdb-c-text-sm vdb-c-text-black vdb-c-outline-none"
+                      @click.stop
+                      @keydown.enter.prevent="saveSessionName(session)"
+                      @keydown.esc.stop="cancelEditing()"
+                      @blur="saveSessionName(session)"
+                    />
+                  </template>
+                  <template v-else>
+                    <span
+                      class="vdb-c-inline-block vdb-c-w-full vdb-c-truncate"
+                      @dblclick.stop="startEditing(session)"
+                      title="Double-click to rename"
+                    >
+                      {{
+                        session.name ||
+                        session?.metadata?.name ||
+                        new Date(session.created_at * 1000)
+                          .toLocaleString("en-US", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: false,
+                          })
+                          .replace(/\//g, ".")
+                          .replace(",", " -")
+                      }}
+                    </span>
+                  </template>
                 </span>
-                <span
-                  @click.stop="
-                    $emit('delete-session', session.session_id);
-                    closeSidebar();
-                  "
-                  class="vdb-c-transition-all vdb-c-duration-300 hover:vdb-c-scale-110"
-                >
-                  <DeleteIcon
-                    :fill="
-                      hoveredSession === session.session_id
-                        ? 'black'
-                        : '#CCCCCC'
-                    "
-                  />
-                </span>
+                <div class="vdb-c-flex vdb-c-items-center vdb-c-gap-6">
+                  <Popper
+                    class="vdb-session-menu"
+                    hover
+                    arrow
+                    :placement="'right'"
+                    offset-distance="8"
+                    :style="{
+                      '--popper-theme-background-color': '#ffffff',
+                      '--popper-theme-text-color': '#000000',
+                      '--popper-theme-border-color': '#e5e5e5',
+                      '--popper-theme-border-width': '1px',
+                      '--popper-theme-border-radius': '12px',
+                      '--popper-theme-padding': '6px 0px',
+                      '--popper-theme-box-shadow':
+                        '0 6px 18px rgba(0, 0, 0, 0.08)',
+                    }"
+                  >
+                    <template #content>
+                      <button
+                        @click.stop="copySessionId(session.session_id)"
+                        :class="[
+                          'vdb-c-mb-6 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-gap-8 vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-8 hover:vdb-c-bg-roy',
+                          {
+                            'vdb-c-text-[#53B745]':
+                              copiedSessionId === session.session_id,
+                          },
+                        ]"
+                      >
+                        <template v-if="copiedSessionId === session.session_id">
+                          <CheckIcon />
+                          <span class="vdb-c-text-sm">Copied</span>
+                        </template>
+                        <template v-else>
+                          <CopyIcon />
+                          <span class="vdb-c-text-sm vdb-c-text-black">
+                            Copy ID
+                          </span>
+                        </template>
+                      </button>
+                      <button
+                        @click.stop="startEditing(session)"
+                        class="vdb-c-mb-[2.5px] vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-gap-8 vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-8 hover:vdb-c-bg-roy"
+                      >
+                        <EditIcon />
+                        <span class="vdb-c-text-sm vdb-c-text-black"
+                          >Rename</span
+                        >
+                      </button>
+                      <div
+                        class="vdb-c-my-2 vdb-c-mb-[2.5px] vdb-c-h-px vdb-c-bg-[#EDEDED]"
+                      ></div>
+                      <button
+                        @click.stop="
+                          $emit('delete-session', session.session_id);
+                          closeSidebar();
+                        "
+                        class="vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-gap-8 vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-8 vdb-c-text-[#d33] hover:vdb-c-bg-roy"
+                      >
+                        <DeleteIcon :fill="'#d33'" />
+                        <span class="vdb-c-text-sm">Delete</span>
+                      </button>
+                    </template>
+                    <button
+                      @click.stop
+                      class="vdb-c-text-[#CCCCCC] hover:vdb-c-text-black"
+                      aria-label="Session actions"
+                      title="Actions"
+                    >
+                      <DotVertical />
+                    </button>
+                  </Popper>
+                </div>
               </div>
             </transition-group>
           </div>
@@ -340,6 +419,11 @@ import CollectionIcon from "../../icons/Collection.vue";
 import ComposeIcon from "../../icons/Compose.vue";
 import DeleteIcon from "../../icons/Delete.vue";
 import PlusIcon from "../../icons/Plus.vue";
+import CopyIcon from "../../icons/CopyIcon.vue";
+import CheckIcon from "../../icons/Check.vue";
+import DotVertical from "../../icons/DotVertical.vue";
+import EditIcon from "../../icons/Edit.vue";
+import Popper from "vue3-popper";
 
 const props = defineProps({
   sessions: {
@@ -413,6 +497,10 @@ const hoveredSession = ref(null);
 const isMobile = ref(window?.innerWidth < 1024);
 const isOpen = ref(false);
 const hoveredCollection = ref(null);
+const editingSessionId = ref(null);
+const editingName = ref("");
+const copiedSessionId = ref(null);
+const copyFeedbackTimeout = ref(null);
 
 const visibleSections = computed(() => {
   return props.sidebarSections;
@@ -426,6 +514,7 @@ const emit = defineEmits([
   "agent-click",
   "create-collection",
   "delete-collection",
+  "update-session-name",
 ]);
 
 const closeSidebar = () => {
@@ -501,6 +590,46 @@ defineExpose({
   triggerExploreAgentsFocusAnimation,
   toggleSidebar,
 });
+
+const startEditing = (session) => {
+  editingSessionId.value = session.session_id;
+  editingName.value = session.name || "";
+  nextTick(() => {
+    const input = document.getElementById(`edit-input-${session.session_id}`);
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  });
+};
+
+const cancelEditing = () => {
+  editingSessionId.value = null;
+  editingName.value = "";
+};
+
+const saveSessionName = (session) => {
+  if (editingSessionId.value !== session.session_id) return;
+  const trimmed = (editingName.value || "").trim();
+  emit("update-session-name", { sessionId: session.session_id, name: trimmed });
+  cancelEditing();
+};
+
+const copySessionId = async (sessionId) => {
+  try {
+    await navigator.clipboard.writeText(String(sessionId));
+    copiedSessionId.value = sessionId;
+    if (copyFeedbackTimeout.value) {
+      clearTimeout(copyFeedbackTimeout.value);
+    }
+    copyFeedbackTimeout.value = setTimeout(() => {
+      copiedSessionId.value = null;
+      copyFeedbackTimeout.value = null;
+    }, 2000);
+  } catch (error) {
+    console.error("Failed to copy session ID", error);
+  }
+};
 </script>
 
 <style>
@@ -544,5 +673,44 @@ defineExpose({
 
 .sidebar-section {
   overflow: auto;
+}
+
+/* Popper theme overrides for the session action menu */
+.vdb-session-menu :deep(.popper) {
+  --popper-theme-background-color: #ffffff;
+  --popper-theme-background-color-hover: #ffffff;
+  --popper-theme-text-color: #000000;
+  --popper-theme-border-color: #e5e5e5;
+  --popper-theme-border-width: 1px;
+  --popper-theme-border-radius: 12px;
+  --popper-theme-padding: 6px;
+  --popper-theme-box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  z-index: 50;
+}
+
+/* Fallback if CSS variables are not applied */
+.vdb-session-menu .popper {
+  background-color: #ffffff !important;
+  color: #000000;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 6px !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.vdb-session-menu .popper:hover,
+.vdb-session-menu .popper:hover > #arrow::before {
+  background: #ffffff !important;
+}
+
+.popper > #arrow {
+  z-index: -50;
+}
+
+/* The library uses #arrow for the element, ensure it inherits our variables */
+.vdb-session-menu :deep(#arrow),
+.vdb-session-menu :deep(#arrow::before) {
+  background: var(--popper-theme-background-color, #ffffff) !important;
+  border-color: var(--popper-theme-border-color, #e5e5e5) !important;
 }
 </style>

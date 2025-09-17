@@ -137,6 +137,58 @@ export function useVideoDBAgent(config) {
     return res;
   };
 
+  const saveMeetingContext = async (msgId, context) => {
+    const res = {};
+    try {
+      const response = await fetch(
+        `${httpUrl}/session/message/${msgId}/meeting_context`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(context),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      res.status = "success";
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
+  const fetchMeetingContext = async (uiId) => {
+    const res = {};
+    try {
+      const response = await fetch(
+        `${httpUrl}/session/meeting_context/${uiId}`,
+      );
+      if (response.status === 404) {
+        res.status = "not_found";
+        return res;
+      }
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      res.status = "success";
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
   const refetchCollectionVideos = async () => {
     fetchCollectionVideos(session.collectionId).then((res) => {
       activeCollectionVideos.value = res.data;
@@ -638,5 +690,7 @@ export function useVideoDBAgent(config) {
     uploadMedia,
     generateImageUrl,
     generateAudioUrl,
+    saveMeetingContext,
+    fetchMeetingContext,
   };
 }
