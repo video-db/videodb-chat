@@ -1,5 +1,4 @@
 import io from "socket.io-client";
-import { v4 as uuidv4 } from "uuid";
 import { computed, onBeforeMount, reactive, ref, toRefs, watch } from "vue";
 
 const fetchData = async (rootUrl, endpoint) => {
@@ -189,6 +188,34 @@ export function useVideoDBAgent(config) {
     return res;
   };
 
+  const makeSessionPublic = async (sessionId, isPublic = true) => {
+    const res = {};
+    try {
+      const response = await fetch(`${httpUrl}/session/${sessionId}/public`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ is_public: isPublic }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      res.status = "success";
+      res.success = true;
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.success = false;
+      res.error = error.message;
+    }
+    return res;
+  };
+
   const refetchCollectionVideos = async () => {
     fetchCollectionVideos(session.collectionId).then((res) => {
       activeCollectionVideos.value = res.data;
@@ -322,7 +349,7 @@ export function useVideoDBAgent(config) {
   const loadSession = (sessionId) => {
     let fetchPastMessages = true;
     if (!sessionId) {
-      sessionId = uuidv4();
+      sessionId = crypto.randomUUID();
       fetchPastMessages = false;
     }
     if (debug) console.log("debug :videodb-chat session loading", sessionId);
@@ -692,5 +719,6 @@ export function useVideoDBAgent(config) {
     generateAudioUrl,
     saveMeetingContext,
     fetchMeetingContext,
+    makeSessionPublic,
   };
 }
