@@ -9,7 +9,7 @@
     <div class="vdb-c-flex vdb-c-h-full vdb-c-w-full">
       <!-- Collapsible Sidebar -->
       <Sidebar
-        v-if="sidebarConfig.enabled"
+        v-if="showSidebar && sidebarConfig.enabled"
         ref="sidebarRef"
         :status="
           configStatus !== null && isSetupComplete ? 'active' : 'inactive'
@@ -44,6 +44,7 @@
         "
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
+        @share-session="handleShareSession"
       />
 
       <!-- Main Content -->
@@ -68,6 +69,7 @@
             >
               <!-- Header -->
               <div
+                v-if="showHeader"
                 class="vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-white vdb-c-px-12 md:vdb-c-px-[30px]"
                 ref="headerRef"
               >
@@ -200,6 +202,7 @@
 
           <!-- Chat Input -->
           <div
+            v-if="showChatInput"
             class="vdb-c-chat-input-container vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
             :class="{
               'vdb-c-pointer-events-none vdb-c-opacity-20': !(
@@ -326,6 +329,14 @@
       @upload="handleUpload"
       @cancel-upload="showUploadDialog = false"
     />
+
+    <!-- Share Modal -->
+    <ShareModal
+      :show-dialog="showShareModal"
+      :session-id="sessionToShare?.session_id"
+      :on-make-public="makeSessionPublic"
+      @close="showShareModal = false"
+    />
   </section>
 </template>
 
@@ -348,6 +359,7 @@ import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 import ConfirmModal from "../modals/ConfirmModal.vue";
 import CreateCollectionModal from "../modals/CreateCollectionModal.vue";
 import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
+import ShareModal from "../modals/ShareModal.vue";
 import UploadModal from "../modals/UploadModal.vue";
 import Header from "./elements/Header.vue";
 
@@ -447,6 +459,18 @@ const props = defineProps({
       ],
     }),
   },
+  showSidebar: {
+    type: Boolean,
+    default: true,
+  },
+  showHeader: {
+    type: Boolean,
+    default: true,
+  },
+  showChatInput: {
+    type: Boolean,
+    default: true,
+  },
 });
 const emit = defineEmits([]);
 
@@ -492,6 +516,7 @@ const {
   renameSession,
   saveMeetingContext,
   fetchMeetingContext,
+  makeSessionPublic,
 } = useChatHook(props.chatHookConfig);
 
 const {
@@ -566,6 +591,8 @@ const showDeleteImageDialog = ref(false);
 const imageToDelete = ref(null);
 const showDeleteCollectionErrorModal = ref(false);
 const deleteCollectionErrorCode = ref(null);
+const showShareModal = ref(false);
+const sessionToShare = ref(null);
 
 const isSetupComplete = computed(() => {
   return (
@@ -784,6 +811,11 @@ const handleUpdateSessionName = async ({ sessionId: _sessionId, name }) => {
   } catch (error) {
     console.error("Error renaming session:", error?.message || error);
   }
+};
+
+const handleShareSession = (session) => {
+  sessionToShare.value = session;
+  showShareModal.value = true;
 };
 
 // --- Upload Dialog Handlers ---

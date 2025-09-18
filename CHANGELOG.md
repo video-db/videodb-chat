@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.41]() - 2025-09-15
+## Improved
+- Bump Videodb Player to 0.0.6, which disposes the player on unmount
+
+
 ## [0.0.40]() - 2025-06-01
 ## Fixed 
 - Default screen will not display demo videos if images and audios are uploaded

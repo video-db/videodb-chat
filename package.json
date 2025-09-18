@@ -1,7 +1,7 @@
 {
   "name": "@videodb/chat-vue",
   "description": "Chat component for Director",
-  "version": "0.0.40",
+  "version": "0.0.41",
   "author": "VideoDB",
   "license": "Apache-2.0",
   "private": false,
@@ -68,7 +68,7 @@
     "vue-tsc": "^2.0.29"
   },
   "dependencies": {
-    "@videodb/player-vue": "^0.0.5",
+    "@videodb/player-vue": "~0.0.6",
     "dayjs": "^1.11.13",
     "katex": "^0.16.11",
     "marked": "^4.2.5",
@@ -76,7 +76,6 @@
     "prismjs": "^1.29.0",
     "socket.io-client": "^4.7.5",
     "swiper": "^11.1.10",
-    "uuid": "^10.0.0",
     "vue3-popper": "^1.5.0"
   }
 }

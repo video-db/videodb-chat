@@ -119,7 +119,6 @@
 </template>
 
 <script setup>
-import { v4 as uuidv4 } from "uuid";
 import { computed, nextTick, ref, watch } from "vue";
 import { useVideoDBChat } from "../../context";
 import ChatEnterIcon from "../icons/ChatEnter.vue";
@@ -285,7 +284,7 @@ const handlePaste = (event) => {
       const newImageAttachment = {
         type: "image",
         image_data: file,
-        key: uuidv4(),
+        key: crypto.randomUUID(),
         upload: true,
         upload_status: "in_queue",
       };
@@ -301,7 +300,7 @@ const handleFileUpload = (event) => {
     const newImageAttachment = {
       type: "image",
       image_data: file,
-      key: uuidv4(),
+      key: crypto.randomUUID(),
       upload: true,
       upload_status: "in_queue",
     };
