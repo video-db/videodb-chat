@@ -5,7 +5,7 @@
     @click="closeModal"
   >
     <div
-      class="vdb-c-max-w-md vdb-c-mx-16 vdb-c-w-full vdb-c-rounded-lg vdb-c-bg-white vdb-c-p-24"
+      class="vdb-c-mx-16 vdb-c-w-full vdb-c-max-w-[600px] vdb-c-rounded-lg vdb-c-bg-white vdb-c-p-24"
       @click.stop
     >
       <!-- Header -->
@@ -35,7 +35,7 @@
           class="vdb-c-flex vdb-c-items-center vdb-c-gap-8 vdb-c-rounded-lg vdb-c-bg-gray-50 vdb-c-p-12"
         >
           <div
-            class="vdb-c-h-4 vdb-c-w-4 vdb-c-animate-spin vdb-c-rounded-full vdb-c-border-2 vdb-c-border-gray-300 vdb-c-border-t-blue-500"
+            class="vdb-c-h-16 vdb-c-w-16 vdb-c-animate-spin vdb-c-rounded-full vdb-c-border-2 vdb-c-border-gray-300 vdb-c-border-t-blue-500"
           ></div>
           <span class="vdb-c-text-sm vdb-c-text-gray-600"
             >Creating public link...</span
@@ -93,7 +93,7 @@
           class="vdb-c-flex vdb-c-flex-col vdb-c-items-center vdb-c-gap-4 vdb-c-rounded-lg vdb-c-p-8 vdb-c-transition-colors hover:vdb-c-bg-gray-50"
         >
           <div
-            class="vdb-c-flex vdb-c-h-8 vdb-c-w-8 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-blue-600"
+            class="vdb-c-flex vdb-c-h-32 vdb-c-w-32 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-blue-600"
           >
             <span class="vdb-c-text-xs vdb-c-font-bold vdb-c-text-white"
               >in</span
@@ -107,7 +107,7 @@
           class="vdb-c-flex vdb-c-flex-col vdb-c-items-center vdb-c-gap-4 vdb-c-rounded-lg vdb-c-p-8 vdb-c-transition-colors hover:vdb-c-bg-gray-50"
         >
           <div
-            class="vdb-c-flex vdb-c-h-8 vdb-c-w-8 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-orange-500"
+            class="vdb-c-flex vdb-c-h-32 vdb-c-w-32 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-orange-500"
           >
             <span class="vdb-c-text-xs vdb-c-font-bold vdb-c-text-white"
               >r</span
@@ -121,7 +121,7 @@
           class="vdb-c-flex vdb-c-flex-col vdb-c-items-center vdb-c-gap-4 vdb-c-rounded-lg vdb-c-p-8 vdb-c-transition-colors hover:vdb-c-bg-gray-50"
         >
           <div
-            class="vdb-c-flex vdb-c-h-8 vdb-c-w-8 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-black"
+            class="vdb-c-flex vdb-c-h-32 vdb-c-w-32 vdb-c-items-center vdb-c-justify-center vdb-c-rounded-full vdb-c-bg-black"
           >
             <span class="vdb-c-text-xs vdb-c-font-bold vdb-c-text-white"
               >X</span
