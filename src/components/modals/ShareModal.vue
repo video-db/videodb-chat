@@ -24,8 +24,9 @@
       </div>
 
       <!-- Description -->
-      <p class="vdb-c-mb-16 vdb-c-text-sm vdb-c-text-gray-600">
-        A public link to your chat has been created.
+      <p class="vdb-c-mb-16 vdb-c-text-sm vdb-c-text-black">
+        Share the link with everyone to show all the cool things you made
+        {{ ":)" }}
       </p>
 
       <!-- Loading State -->
@@ -50,7 +51,7 @@
           <input
             :value="publicLink"
             readonly
-            class="vdb-c-flex-1 vdb-c-border-none vdb-c-bg-transparent vdb-c-text-sm vdb-c-text-gray-800 vdb-c-outline-none"
+            class="vdb-c-flex-1 vdb-c-border-none vdb-c-bg-transparent vdb-c-text-sm vdb-c-text-black vdb-c-outline-none"
           />
           <button
             @click="copyLink"
