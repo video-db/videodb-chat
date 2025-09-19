@@ -25,8 +25,7 @@
 
       <!-- Description -->
       <p class="vdb-c-mb-16 vdb-c-text-sm vdb-c-text-gray-600">
-        A public link to your chat has been created. Manage previously shared
-        chats at any time via Settings.
+        A public link to your chat has been created.
       </p>
 
       <!-- Loading State -->
@@ -149,6 +148,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  isPublic: {
+    type: Boolean,
+    default: false,
+  },
   onMakePublic: {
     type: Function,
     required: true,
@@ -184,7 +187,7 @@ const copyLink = async () => {
 };
 
 const shareOnLinkedIn = () => {
-  const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(publicLink.value)}`;
+  const url = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent("Check out this chat session from VideoDB Director! \n" + publicLink.value)}`;
   window.open(url, "_blank");
 };
 
@@ -198,11 +201,41 @@ const shareOnX = () => {
   window.open(url, "_blank");
 };
 
+const initializeShare = async (sid) => {
+  if (!sid || !props.showDialog) return;
+  if (props.isPublic) {
+    publicLink.value = `${window.location.origin}/share/${sid}`;
+    isLoading.value = false;
+    error.value = "";
+    return;
+  }
+  isLoading.value = true;
+  error.value = "";
+  publicLink.value = "";
+  try {
+    const result = await props.onMakePublic(sid);
+    if (result.success) {
+      publicLink.value = `${window.location.origin}/share/${sid}`;
+    } else {
+      error.value = result.error || "Failed to create public link";
+    }
+  } catch (err) {
+    error.value = "Failed to create public link";
+    console.error("Error making session public:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 // Watch for sessionId changes and make session public
 watch(
   () => props.sessionId,
   async (newSessionId) => {
     if (newSessionId && props.showDialog) {
+      if (props.isPublic) {
+        publicLink.value = `${window.location.origin}/share/${newSessionId}`;
+        return;
+      }
       isLoading.value = true;
       error.value = "";
       publicLink.value = "";
@@ -223,6 +256,16 @@ watch(
     }
   },
   { immediate: true },
+);
+
+// Re-run initialization whenever the modal is opened
+watch(
+  () => props.showDialog,
+  async (isOpen) => {
+    if (isOpen) {
+      await initializeShare(props.sessionId);
+    }
+  },
 );
 </script>
 

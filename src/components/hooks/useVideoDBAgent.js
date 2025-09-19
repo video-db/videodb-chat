@@ -208,6 +208,14 @@ export function useVideoDBAgent(config) {
       res.status = "success";
       res.success = true;
       res.data = data;
+
+      const idx = sessions.value.findIndex((s) => s.session_id === sessionId);
+      if (idx !== -1) {
+        sessions.value[idx] = {
+          ...sessions.value[idx],
+          is_public: isPublic,
+        };
+      }
     } catch (error) {
       res.status = "error";
       res.success = false;
