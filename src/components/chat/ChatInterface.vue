@@ -334,6 +334,7 @@
     <ShareModal
       :show-dialog="showShareModal"
       :session-id="sessionToShare?.session_id"
+      :is-public="sessionToShare?.is_public"
       :on-make-public="makeSessionPublic"
       @close="showShareModal = false"
     />
