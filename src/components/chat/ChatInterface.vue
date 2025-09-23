@@ -35,6 +35,8 @@
         @create-collection="showCreateCollectionModal = true"
         @delete-session="showDeleteSessionDialog"
         @delete-collection="promptDeleteCollection"
+        @update-session-name="handleUpdateSessionName"
+        @share-session="handleShareSession"
         @agent-click="
           if (!chatLoading) {
             handleTagAgent($event, false);
@@ -67,6 +69,7 @@
             >
               <!-- Header -->
               <div
+                v-if="showHeader"
                 class="vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-white"
                 ref="headerRef"
               >
@@ -180,6 +183,7 @@
 
           <!-- Chat Input -->
           <div
+            v-if="showChatInput"
             class="vdb-c-chat-input-container vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
             :class="{
               'vdb-c-pointer-events-none vdb-c-opacity-20': !(
@@ -306,6 +310,15 @@
       @upload="handleUpload"
       @cancel-upload="showUploadDialog = false"
     />
+
+    <!-- Share Modal -->
+    <ShareModal
+      :show-dialog="showShareModal"
+      :session-id="sessionToShare?.session_id"
+      :is-public="sessionToShare?.is_public"
+      :on-make-public="makeSessionPublic"
+      @close="showShareModal = false"
+    />
   </section>
 </template>
 
@@ -329,6 +342,8 @@ import ConfirmModal from "../modals/ConfirmModal.vue";
 import CreateCollectionModal from "../modals/CreateCollectionModal.vue";
 import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
 import UploadModal from "../modals/UploadModal.vue";
+import ShareModal from "../modals/ShareModal.vue";
+
 import Header from "./elements/Header.vue";
 
 import ChatSearchResults from "../message-handlers/ChatSearchResults.vue";
@@ -390,6 +405,14 @@ const props = defineProps({
         },
       ],
     }),
+  },
+  showHeader: {
+    type: Boolean,
+    default: true,
+  },
+  showChatInput: {
+    type: Boolean,
+    default: true,
   },
   defaultScreenConfig: {
     type: Object,
@@ -466,6 +489,8 @@ const {
   deleteVideo,
   deleteAudio,
   deleteImage,
+  renameSession,
+  makeSessionPublic,
 } = useChatHook(props.chatHookConfig);
 
 const {
@@ -531,6 +556,8 @@ const showDeleteImageDialog = ref(false);
 const imageToDelete = ref(null);
 const showDeleteCollectionErrorModal = ref(false);
 const deleteCollectionErrorCode = ref(null);
+const showShareModal = ref(false);
+const sessionToShare = ref(null);
 
 const isSetupComplete = computed(() => {
   return (
@@ -723,6 +750,18 @@ const confirmDeleteSession = () => {
   deleteSession(sessionToDelete.value);
   showDeleteDialog.value = false;
   sessionToDelete.value = null;
+};
+
+const handleUpdateSessionName = async ({ sessionId: _sessionId, name }) => {
+  try {
+    await renameSession(_sessionId, name);
+  } catch (error) {
+    console.error("Error renaming session:", error?.message || error);
+  }
+};
+const handleShareSession = (session) => {
+  sessionToShare.value = session;
+  showShareModal.value = true;
 };
 
 // --- Upload Dialog Handlers ---
