@@ -48,6 +48,7 @@
               :search-term="searchTerm"
               :conv-id="message.conv_id"
               :msg-id="message.msg_id"
+              :call-api="callApi"
             />
           </div>
         </div>
@@ -68,6 +69,10 @@ const props = defineProps({
   message: {
     type: Object,
     default: () => ({}),
+  },
+  callApi: {
+    type: Function,
+    default: null,
   },
   isStaticPage: {
     type: Boolean,

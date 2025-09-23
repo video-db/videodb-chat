@@ -19,10 +19,60 @@ const fetchData = async (rootUrl, endpoint) => {
   return res;
 };
 
+const apiRequest = async (rootUrl, endpoint, options = {}) => {
+  const {
+    method = "GET",
+    payload = null,
+    headers: customHeaders = {},
+    responseType = "json",
+  } = options;
+
+  const res = {};
+  try {
+    const init = { method, headers: { ...customHeaders } };
+
+    if (payload instanceof FormData) {
+      init.body = payload;
+      // Let the browser set the correct multipart/form-data headers
+    } else if (payload !== null && payload !== undefined) {
+      init.headers = {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        ...customHeaders,
+      };
+      init.body = JSON.stringify(payload);
+    }
+
+    const response = await fetch(`${rootUrl}${endpoint}`, init);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    let data;
+    if (responseType === "text") {
+      data = await response.text();
+    } else if (responseType === "blob") {
+      data = await response.blob();
+    } else {
+      data = await response.json();
+    }
+
+    res.status = "success";
+    res.data = data;
+  } catch (error) {
+    res.status = "error";
+    res.error = error;
+  }
+  return res;
+};
+
 export function useVideoDBAgent(config) {
   const { debug = false, socketUrl, httpUrl } = config;
   if (debug) console.log("debug :videodb-chat config", config);
   const socket = io(socketUrl);
+
+  const callApi = (endpoint, options = {}) =>
+    apiRequest(httpUrl, endpoint, options);
 
   const session = reactive({
     isConnected: false,
@@ -638,5 +688,6 @@ export function useVideoDBAgent(config) {
     uploadMedia,
     generateImageUrl,
     generateAudioUrl,
+    callApi,
   };
 }
