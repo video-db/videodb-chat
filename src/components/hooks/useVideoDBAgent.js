@@ -51,6 +51,13 @@ export function useVideoDBAgent(config) {
   const activeCollectionImages = ref(null);
   const activeImageData = ref(null);
 
+  const setActiveSession = (sessionId) => {
+    session.sessionId = sessionId;
+    if (session.isConnected && session.sessionId) {
+      socket.emit("join_session", { session_id: session.sessionId });
+    }
+  };
+
   const fetchSession = async (sessionId) =>
     fetchData(httpUrl, `/session/${sessionId}`);
   const fetchSessions = async () => fetchData(httpUrl, "/session");
@@ -274,7 +281,7 @@ export function useVideoDBAgent(config) {
       fetchPastMessages = false;
     }
     if (debug) console.log("debug :videodb-chat session loading", sessionId);
-    session.sessionId = sessionId;
+    setActiveSession(sessionId);
     if (!fetchPastMessages) {
       Object.keys(conversations).forEach((key) => delete conversations[key]);
     } else {
@@ -575,6 +582,9 @@ export function useVideoDBAgent(config) {
   socket.on("connect", () => {
     if (debug) console.log("debug :videodb-chat socket emmited connect");
     session.isConnected = true;
+    if (session.sessionId) {
+      socket.emit("join_session", { session_id: session.sessionId });
+    }
   });
 
   socket.on("chat", (event) => {
@@ -608,6 +618,14 @@ export function useVideoDBAgent(config) {
       }
     }
   });
+
+  if (typeof document !== "undefined" && typeof window !== "undefined") {
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && session.sessionId && session.isConnected) {
+        socket.emit("join_session", { session_id: session.sessionId });
+      }
+    });
+  }
 
   return {
     ...toRefs(session),
