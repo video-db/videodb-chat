@@ -176,11 +176,13 @@ The `ChatInterface` component exposes a method `registerMessageHandler` accessib
 
 **The handler component will receive the following props:**
 
-- `content`: _Object_  
-  The content object of matched content type.
-
-- `isLastConv`: _Boolean_  
-  Indicates if the message is the last conversation.
+- `content` (Object): The matched content object for this type
+- `isLastConv` (Boolean): Whether this message is in the last conversation block
+- `isUser` (Boolean): Whether the message is authored by the user
+- `searchTerm` (String): Current chat search term (if any)
+- `convId` (String): Conversation ID for this message
+- `msgId` (String): Message ID for this message
+- `callApi` (Function): Helper for calling backend endpoints bound to `httpUrl`
 
 #### Register via prop: customMessageHandlers
 
