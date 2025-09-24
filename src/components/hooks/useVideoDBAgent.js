@@ -51,6 +51,13 @@ export function useVideoDBAgent(config) {
   const activeCollectionImages = ref(null);
   const activeImageData = ref(null);
 
+  const setActiveSession = (sessionId) => {
+    session.sessionId = sessionId;
+    if (session.isConnected && session.sessionId) {
+      socket.emit("join_session", { session_id: session.sessionId });
+    }
+  };
+
   const fetchSession = async (sessionId) =>
     fetchData(httpUrl, `/session/${sessionId}`);
   const fetchSessions = async () => fetchData(httpUrl, "/session");
@@ -274,7 +281,7 @@ export function useVideoDBAgent(config) {
       fetchPastMessages = false;
     }
     if (debug) console.log("debug :videodb-chat session loading", sessionId);
-    session.sessionId = sessionId;
+    setActiveSession(sessionId);
     if (!fetchPastMessages) {
       Object.keys(conversations).forEach((key) => delete conversations[key]);
     } else {
@@ -566,7 +573,6 @@ export function useVideoDBAgent(config) {
         ...message,
       };
 
-      conversations[convId] = { [msgId]: _message };
       socket.emit("chat", _message);
       addClientLoadingMessage(convId);
     }
@@ -575,18 +581,27 @@ export function useVideoDBAgent(config) {
   socket.on("connect", () => {
     if (debug) console.log("debug :videodb-chat socket emmited connect");
     session.isConnected = true;
+    if (session.sessionId) {
+      socket.emit("join_session", { session_id: session.sessionId });
+    }
   });
 
   socket.on("chat", (event) => {
-    if (debug) console.log("debug :videodb-chat socket emmited chat", event);
+    if (debug) console.log("debug :videodb-chat socket received chat", event);
     if (session.sessionId !== event.session_id) return;
+
     if (session.isConnected) {
       const { conv_id: convId, msg_id: msgId } = event;
       if (!conversations[convId]) {
         conversations[convId] = {};
       }
-      conversations[convId][msgId] = { sender: "assistant", ...event };
-      removeClientLoadingMessage(convId);
+
+      const sender = event.msg_type === "input" ? "user" : "assistant";
+      conversations[convId][msgId] = { sender, ...event };
+
+      if (event.msg_type === "output") {
+        removeClientLoadingMessage(convId);
+      }
     }
   });
 
@@ -608,6 +623,14 @@ export function useVideoDBAgent(config) {
       }
     }
   });
+
+  if (typeof document !== "undefined" && typeof window !== "undefined") {
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && session.sessionId && session.isConnected) {
+        socket.emit("join_session", { session_id: session.sessionId });
+      }
+    });
+  }
 
   return {
     ...toRefs(session),
