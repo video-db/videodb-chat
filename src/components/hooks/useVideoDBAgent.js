@@ -573,7 +573,6 @@ export function useVideoDBAgent(config) {
         ...message,
       };
 
-      conversations[convId] = { [msgId]: _message };
       socket.emit("chat", _message);
       addClientLoadingMessage(convId);
     }
@@ -588,15 +587,21 @@ export function useVideoDBAgent(config) {
   });
 
   socket.on("chat", (event) => {
-    if (debug) console.log("debug :videodb-chat socket emmited chat", event);
+    if (debug) console.log("debug :videodb-chat socket received chat", event);
     if (session.sessionId !== event.session_id) return;
+
     if (session.isConnected) {
       const { conv_id: convId, msg_id: msgId } = event;
       if (!conversations[convId]) {
         conversations[convId] = {};
       }
-      conversations[convId][msgId] = { sender: "assistant", ...event };
-      removeClientLoadingMessage(convId);
+
+      const sender = event.msg_type === "input" ? "user" : "assistant";
+      conversations[convId][msgId] = { sender, ...event };
+
+      if (event.msg_type === "output") {
+        removeClientLoadingMessage(convId);
+      }
     }
   });
 
