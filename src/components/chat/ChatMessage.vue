@@ -4,7 +4,8 @@
     :class="[
       'vdb-c-flex vdb-c-h-auto vdb-c-w-full vdb-c-justify-start vdb-c-py-8 md:vdb-c-py-12',
       {
-        'vdb-c-border-b vdb-c-border-kilvish-300 vdb-c-bg-white': isUser,
+        'user-message vdb-c-border-b vdb-c-border-kilvish-300 vdb-c-bg-white':
+          isUser,
       },
     ]"
   >
@@ -104,6 +105,10 @@ const { messageHandlers } = useVideoDBChat();
 const isUser = computed(() => props.message.msg_type === "input");
 const isAssistant = computed(() => props.message.msg_type === "output");
 const isSystem = computed(() => props.message.msg_type === "system");
+
+if (props.isLastConv) {
+  console.log("last message!", props.message);
+}
 
 const finalStatus = computed(() => {
   if (props.message.status === "error") {

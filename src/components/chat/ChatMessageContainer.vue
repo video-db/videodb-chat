@@ -1,11 +1,11 @@
 <template>
-  <div
-    class="vdb-c-relative vdb-c-h-auto vdb-c-w-full"
-  >
+  <div class="vdb-c-relative vdb-c-h-auto vdb-c-w-full">
     <div
       v-for="(message, i) in messages"
       :key="message.msg_id"
       class="vdb-c-w-full"
+      :data-msg-id="message.msg_id"
+      :data-msg-type="message.msg_type"
     >
       <chat-message
         :message="message"
