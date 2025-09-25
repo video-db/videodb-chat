@@ -167,6 +167,7 @@
                 :conversation="conversations[key]"
                 :search-term="chatInput"
                 :call-api="callApi"
+                :add-message="addMessage"
                 :is-static-page="isStaticPage"
                 :is-last-conv="i === Object.keys(conversations).length - 1"
                 class="vdb-c-px-30 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-px-60"

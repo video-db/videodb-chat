@@ -49,6 +49,7 @@
               :conv-id="message.conv_id"
               :msg-id="message.msg_id"
               :call-api="callApi"
+              :add-message="addMessage"
             />
           </div>
         </div>
@@ -71,6 +72,10 @@ const props = defineProps({
     default: () => ({}),
   },
   callApi: {
+    type: Function,
+    default: null,
+  },
+  addMessage: {
     type: Function,
     default: null,
   },
