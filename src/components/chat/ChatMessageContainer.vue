@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="vdb-c-relative vdb-c-h-auto vdb-c-w-full"
-  >
+  <div class="vdb-c-relative vdb-c-h-auto vdb-c-w-full">
     <div
       v-for="(message, i) in messages"
       :key="message.msg_id"
@@ -220,6 +218,7 @@ const messageLoading = computed(() => {
 .markdown-body [type="reset"],
 .markdown-body [type="submit"] {
   -webkit-appearance: button;
+  appearance: button;
 }
 
 .markdown-body [type="checkbox"],
@@ -236,6 +235,7 @@ const messageLoading = computed(() => {
 .markdown-body [type="search"]::-webkit-search-cancel-button,
 .markdown-body [type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
+  appearance: none;
 }
 
 .markdown-body ::-webkit-input-placeholder {
@@ -245,6 +245,7 @@ const messageLoading = computed(() => {
 
 .markdown-body ::-webkit-file-upload-button {
   -webkit-appearance: button;
+  appearance: button;
   font: inherit;
 }
 
