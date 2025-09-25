@@ -174,6 +174,8 @@
                     :key="key"
                     :conversation="conversations[key]"
                     :search-term="chatInput"
+                    :call-api="callApi"
+                    :add-message="addMessage"
                     :is-static-page="isStaticPage"
                     :is-last-conv="i === Object.keys(conversations).length - 1"
                     :open-canvas="openCanvas"
@@ -445,6 +447,10 @@ const props = defineProps({
       ],
     }),
   },
+  customMessageHandlers: {
+    type: Array,
+    default: () => [],
+  },
 });
 const emit = defineEmits([]);
 
@@ -487,6 +493,7 @@ const {
   deleteVideo,
   deleteAudio,
   deleteImage,
+  callApi,
 } = useChatHook(props.chatHookConfig);
 
 const {
@@ -543,6 +550,14 @@ registerMessageHandler("videos", ChatVideos);
 registerMessageHandler("text", TextResponse);
 registerMessageHandler("search_results", ChatSearchResults);
 registerMessageHandler("image", ImageHandler);
+
+if (Array.isArray(props.customMessageHandlers)) {
+  for (const handler of props.customMessageHandlers) {
+    if (handler && typeof handler.type === "string" && handler.component) {
+      registerMessageHandler(handler.type, handler.component);
+    }
+  }
+}
 
 const isStaticPage = ref(false);
 const chatWindowRef = ref(null);

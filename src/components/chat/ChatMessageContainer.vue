@@ -18,6 +18,8 @@
         :open-canvas="openCanvas"
         :canvas-state="canvasState"
         :close-canvas="closeCanvas"
+        :call-api="callApi"
+        :add-message="addMessage"
       />
     </div>
   </div>
@@ -31,6 +33,14 @@ const props = defineProps({
   conversation: {
     type: Object,
     default: () => ({}),
+  },
+  callApi: {
+    type: Function,
+    default: null,
+  },
+  addMessage: {
+    type: Function,
+    default: null,
   },
   isStaticPage: {
     type: Boolean,
