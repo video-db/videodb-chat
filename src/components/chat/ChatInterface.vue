@@ -451,6 +451,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  customCanvasHandlers: {
+    type: Array,
+    default: () => [],
+  },
 });
 const emit = defineEmits([]);
 
@@ -555,6 +559,14 @@ if (Array.isArray(props.customMessageHandlers)) {
   for (const handler of props.customMessageHandlers) {
     if (handler && typeof handler.type === "string" && handler.component) {
       registerMessageHandler(handler.type, handler.component);
+    }
+  }
+}
+
+if (Array.isArray(props.customCanvasHandlers)) {
+  for (const handler of props.customCanvasHandlers) {
+    if (handler && typeof handler.type === "string" && handler.component) {
+      registerCanvasHandler(handler.type, handler.component);
     }
   }
 }

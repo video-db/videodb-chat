@@ -160,6 +160,91 @@ These are the default message handlers that are currently supported by this pack
 
 [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ChatSearchResults.vue)
 
+### 🪟 Canvas Views
+
+---
+
+Canvas Views let message handlers open a UI outside the message flow (overlay) or alongside the chat. They are useful for rich interactions like editors, previews, or multi-step tools.
+
+Core APIs are provided by the chat interface hook and are threaded to handlers:
+
+- `openCanvas(type: string, content?: any)`
+- `closeCanvas()`
+- `canvasState: { show: boolean; type: string|null; content: any }`
+- `registerCanvasHandler(type: string, component)` (via `ref`/provide on `ChatInterface`)
+
+How it works:
+
+- Provide canvas components using the `customCanvasHandlers` prop, or register imperatively with `registerCanvasHandler(type, component)`.
+- From any message handler, call `openCanvas("my_canvas_type", payload)` to display the canvas.
+- The `ChatInterface` will render the corresponding canvas component and pass two props:
+  - `canvas-state`: the reactive `canvasState`
+  - `closeCanvas`: a function to close the canvas
+
+Example: Declare canvases via prop
+
+```html
+<script setup>
+  import { ref } from "vue";
+  import { ChatInterface } from "@videodb/chat-vue";
+  import MyCanvas from "./MyCanvas.vue";
+
+  const customCanvasHandlers = [
+    { type: "my_canvas", component: MyCanvas },
+    // { type: "inspector", component: InspectorCanvas },
+  ];
+</script>
+
+<template>
+  <ChatInterface :custom-canvas-handlers="customCanvasHandlers" />
+</template>
+```
+
+Handler usage:
+
+```vue
+<!-- Inside your custom message handler -->
+<script setup>
+const props = defineProps({
+  content: Object,
+  openCanvas: Function,
+  closeCanvas: Function,
+  canvasState: Object,
+});
+
+function openDetails() {
+  props.openCanvas("my_canvas", { id: props.content?.id });
+}
+</script>
+
+<template>
+  <button @click="openDetails">Open Details</button>
+</template>
+```
+
+Canvas component contract:
+
+```vue
+<script setup>
+const props = defineProps({
+  canvasState: Object, // { show, type, content }
+  closeCanvas: Function,
+});
+</script>
+
+<template>
+  <div v-if="canvasState.show" class="my-canvas">
+    <!-- render using canvasState.content -->
+    <button @click="closeCanvas()">Close</button>
+  </div>
+</template>
+```
+
+Notes:
+
+- `ChatInterface` renders the active canvas via the registered handlers: `:is="canvasHandlers[canvasState.type]"` and passes `:canvas-state` and `:closeCanvas`.
+- Handlers also receive `openCanvas`, `closeCanvas`, and `canvasState` as props, so they can control canvases directly.
+
 ### 🔧 Custom Message Handler
 
 ---
@@ -183,6 +268,10 @@ The `ChatInterface` component exposes a method `registerMessageHandler` accessib
 - `convId` (String): Conversation ID for this message
 - `msgId` (String): Message ID for this message
 - `callApi` (Function): Helper for calling backend endpoints bound to `httpUrl`
+- `addMessage` (Function): Add a message to the conversation programmatically
+- `openCanvas` (Function): Open a canvas view with a given `type` and `content`
+- `closeCanvas` (Function): Close the currently open canvas
+- `canvasState` (Object): Reactive canvas state `{ show, type, content }`
 
 #### Register via prop: customMessageHandlers
 
