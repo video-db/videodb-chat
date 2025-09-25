@@ -15,6 +15,9 @@
         :current-index="i"
         :message-loading="messageLoading"
         :search-term="searchTerm"
+        :open-canvas="openCanvas"
+        :canvas-state="canvasState"
+        :close-canvas="closeCanvas"
       />
     </div>
   </div>
@@ -40,6 +43,18 @@ const props = defineProps({
   searchTerm: {
     type: String,
     default: "",
+  },
+  openCanvas: {
+    type: Function,
+    default: null,
+  },
+  canvasState: {
+    type: Object,
+    default: () => ({}),
+  },
+  closeCanvas: {
+    type: Function,
+    default: null,
   },
 });
 

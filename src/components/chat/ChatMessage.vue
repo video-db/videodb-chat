@@ -48,6 +48,9 @@
               :search-term="searchTerm"
               :conv-id="message.conv_id"
               :msg-id="message.msg_id"
+              :open-canvas="openCanvas"
+              :canvas-state="canvasState"
+              :close-canvas="closeCanvas"
             />
           </div>
         </div>
@@ -96,6 +99,18 @@ const props = defineProps({
   isLastConv: {
     type: Boolean,
     default: false,
+  },
+  openCanvas: {
+    type: Function,
+    default: null,
+  },
+  canvasState: {
+    type: Object,
+    default: () => ({}),
+  },
+  closeCanvas: {
+    type: Function,
+    default: null,
   },
 });
 

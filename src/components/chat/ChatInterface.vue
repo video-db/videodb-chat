@@ -176,6 +176,9 @@
                     :search-term="chatInput"
                     :is-static-page="isStaticPage"
                     :is-last-conv="i === Object.keys(conversations).length - 1"
+                    :open-canvas="openCanvas"
+                    :canvas-state="canvasState"
+                    :close-canvas="closeCanvas"
                     class="vdb-c-px-30 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-px-60"
                     :class="{
                       'last-conv-height':
@@ -188,7 +191,7 @@
                 <component
                   v-if="canvasState.show"
                   :is="canvasHandlers[canvasState.type]"
-                  :content="canvasState.content"
+                  :canvas-state="canvasState"
                   :closeCanvas="closeCanvas"
                 />
               </div>
