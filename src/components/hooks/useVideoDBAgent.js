@@ -322,6 +322,76 @@ export function useVideoDBAgent(config) {
       });
   };
 
+  const renameSession = async (sessionId, name) => {
+    const trimmed = (name || "").trim();
+    if (trimmed.length === 0) {
+      throw new Error("Session name cannot be empty.");
+    }
+    try {
+      const response = await fetch(`${httpUrl}/session/${sessionId}/rename`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: trimmed }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        const message = (data && data.message) || "Failed to rename session.";
+        throw new Error(message);
+      }
+
+      const index = sessions.value.findIndex((s) => s.session_id === sessionId);
+      if (index !== -1) {
+        sessions.value[index] = { ...sessions.value[index], name: trimmed };
+      }
+
+      return data || { success: true };
+    } catch (error) {
+      if (debug)
+        console.error("debug :videodb-chat error renaming session", error);
+      throw error;
+    }
+  };
+
+  const makeSessionPublic = async (sessionId, isPublic = true) => {
+    const res = {};
+    try {
+      const response = await fetch(`${httpUrl}/session/${sessionId}/public`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ is_public: isPublic }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      res.status = "success";
+      res.success = true;
+      res.data = data;
+
+      const idx = sessions.value.findIndex((s) => s.session_id === sessionId);
+      if (idx !== -1) {
+        sessions.value[idx] = {
+          ...sessions.value[idx],
+          is_public: isPublic,
+        };
+      }
+    } catch (error) {
+      res.status = "error";
+      res.success = false;
+      res.error = error.message;
+    }
+    return res;
+  };
+
   const updateCollection = async () => {
     try {
       const res = await fetchCollections();
@@ -544,12 +614,6 @@ export function useVideoDBAgent(config) {
   const addMessage = (message) => {
     if (debug) console.log("debug :videodb-chat addMessage", message);
     if (session.isConnected) {
-      if (!sessions.value.some((s) => s.session_id === session.sessionId)) {
-        sessions.value.push({
-          session_id: session.sessionId,
-          created_at: Date.now() / 1000,
-        });
-      }
       const convId = Date.now();
       const msgId = convId + 1;
       const _message = {
@@ -565,6 +629,36 @@ export function useVideoDBAgent(config) {
         video_id: session.videoId ? String(session.videoId) : null,
         ...message,
       };
+
+      if (!sessions.value.some((s) => s.session_id === session.sessionId)) {
+        const sessionData = {
+          session_id: session.sessionId,
+          message: _message,
+          created_at: Date.now(new Date()),
+        };
+        fetch(`${httpUrl}/session/${session.sessionId}`, {
+          method: "POST",
+          body: JSON.stringify(sessionData),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            sessions.value.push({
+              session_id: data.session_id,
+              created_at: data.created_at,
+              name: data.name,
+            });
+
+            sessions.value = sessions.value.sort(
+              (a, b) => b.created_at - a.created_at,
+            );
+
+            session.sessionId = data.session_id;
+            session.name = data.name;
+          });
+      }
 
       conversations[convId] = { [msgId]: _message };
       socket.emit("chat", _message);
@@ -638,5 +732,7 @@ export function useVideoDBAgent(config) {
     uploadMedia,
     generateImageUrl,
     generateAudioUrl,
+    makeSessionPublic,
+    renameSession,
   };
 }
