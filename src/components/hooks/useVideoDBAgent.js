@@ -614,12 +614,6 @@ export function useVideoDBAgent(config) {
   const addMessage = (message) => {
     if (debug) console.log("debug :videodb-chat addMessage", message);
     if (session.isConnected) {
-      if (!sessions.value.some((s) => s.session_id === session.sessionId)) {
-        sessions.value.push({
-          session_id: session.sessionId,
-          created_at: Date.now() / 1000,
-        });
-      }
       const convId = Date.now();
       const msgId = convId + 1;
       const _message = {
@@ -635,6 +629,36 @@ export function useVideoDBAgent(config) {
         video_id: session.videoId ? String(session.videoId) : null,
         ...message,
       };
+
+      if (!sessions.value.some((s) => s.session_id === session.sessionId)) {
+        const sessionData = {
+          session_id: session.sessionId,
+          message: _message,
+          created_at: Date.now(new Date()),
+        };
+        fetch(`${httpUrl}/session/${session.sessionId}`, {
+          method: "POST",
+          body: JSON.stringify(sessionData),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            sessions.value.push({
+              session_id: data.session_id,
+              created_at: data.created_at,
+              name: data.name,
+            });
+
+            sessions.value = sessions.value.sort(
+              (a, b) => b.created_at - a.created_at,
+            );
+
+            session.sessionId = data.session_id;
+            session.name = data.name;
+          });
+      }
 
       conversations[convId] = { [msgId]: _message };
       socket.emit("chat", _message);
