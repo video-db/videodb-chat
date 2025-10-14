@@ -628,13 +628,29 @@ const isFreshUser = computed(() => {
   return false;
 });
 
-const chatLoading = computed(() =>
-  Object.values(conversations).some((conv) =>
-    Object.values(conv).some(
-      (content) => content.status === "progress" || content.clientLoading,
-    ),
-  ),
-);
+const chatLoading = computed(() => {
+  const allMessages = Object.values(conversations).flatMap((conv) =>
+    Object.values(conv),
+  );
+
+  const anyProgress = allMessages.some(
+    (m) => m?.status === "progress" || m?.clientLoading,
+  );
+
+  const meetingRecorderProgress = allMessages.some((m) => {
+    const isProgress = m?.status === "progress" || m?.clientLoading;
+    if (!isProgress) return false;
+    const hasAgent = Array.isArray(m?.agents)
+      ? m.agents.includes("meeting_recorder")
+      : false;
+    const hasMeetingContent = Array.isArray(m?.content)
+      ? m.content.some((c) => c?.type === "meeting_recorder")
+      : false;
+    return hasAgent || hasMeetingContent;
+  });
+
+  return anyProgress && !meetingRecorderProgress;
+});
 
 const isDefaultScreen = computed(
   () => Object.keys(conversations).length === 0 && !showCollectionView.value,

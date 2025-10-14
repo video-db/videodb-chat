@@ -275,8 +275,24 @@ const canSave = computed(
 const { saveMeetingContext, fetchMeetingContext, openCanvas, canvasState } =
   useVideoDBChat();
 
+function normalizeContent(input) {
+  if (!input) return null;
+  if (Array.isArray(input)) {
+    const pick =
+      input.find(
+        (x) =>
+          x?.type === "meeting_recorder" ||
+          x?.live_analysis ||
+          x?.meeting_assistant ||
+          x?.meeting_context,
+      ) || input[0];
+    return pick || null;
+  }
+  return input;
+}
+
 onMounted(async () => {
-  openCanvas && openCanvas("meeting_recorder", props.content);
+  openCanvas && openCanvas("meeting_recorder", normalizeContent(props.content));
   if (props.content?.ui_id) {
     const res = await fetchMeetingContext(props.content.ui_id);
     if (res.status === "success" && res.data) {
@@ -298,7 +314,19 @@ watch(
   () => props.content,
   (c) => {
     if (canvasState.show && canvasState.type === "meeting_recorder") {
-      canvasState.content = c;
+      canvasState.content = normalizeContent(c);
+    }
+
+    const normalized = normalizeContent(c) || {};
+    const ctxWrapper = normalized?.meeting_context;
+    const ctx = ctxWrapper?.meeting_context || ctxWrapper;
+    if (ctx && typeof ctx === "object") {
+      if (Array.isArray(ctx.main_goals))
+        selectedMainGoals.value = new Set(ctx.main_goals);
+      if (typeof ctx.objective === "string") objective.value = ctx.objective;
+      if (Array.isArray(ctx.topics)) selectedTopics.value = new Set(ctx.topics);
+      if (typeof ctx.discussion_topic_text === "string")
+        discussionTopicText.value = ctx.discussion_topic_text;
     }
   },
   { deep: true, immediate: true },
@@ -317,7 +345,7 @@ async function handleSave() {
 
   const targetMsgId = props.content?.msg_id || props.msgId;
   saveMeetingContext(targetMsgId, meetingContext);
-  openCanvas && openCanvas("meeting_recorder", props.content);
+  openCanvas && openCanvas("meeting_recorder", normalizeContent(props.content));
 
   // 2) Auto-close the drawer
   isOpen.value = false;
