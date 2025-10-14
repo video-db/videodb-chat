@@ -9,7 +9,7 @@
     <div class="vdb-c-flex vdb-c-h-full vdb-c-w-full">
       <!-- Collapsible Sidebar -->
       <Sidebar
-        v-if="sidebarConfig.enabled"
+        v-if="showSidebar && sidebarConfig.enabled"
         ref="sidebarRef"
         :status="
           configStatus !== null && isSetupComplete ? 'active' : 'inactive'
@@ -35,6 +35,7 @@
         @create-collection="showCreateCollectionModal = true"
         @delete-session="showDeleteSessionDialog"
         @delete-collection="promptDeleteCollection"
+        @update-session-name="handleUpdateSessionName"
         @agent-click="
           if (!chatLoading) {
             handleTagAgent($event, false);
@@ -43,16 +44,19 @@
         "
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
+        @share-session="handleShareSession"
       />
 
       <!-- Main Content -->
-      <div class="vdb-c-flex vdb-c-w-full vdb-c-flex-1 vdb-c-flex-col">
+      <div
+        class="vdb-c-flex vdb-c-h-screen vdb-c-w-full vdb-c-flex-1 vdb-c-flex-col"
+      >
         <div
           class="vdb-c-relative vdb-c-flex vdb-c-h-full vdb-c-flex-1 vdb-c-flex-col vdb-c-justify-between vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
         >
           <div
             :class="[
-              'vdb-c-chat-parent vdb-c-relative vdb-c-flex vdb-c-flex-1 vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden vdb-c-px-12 md:vdb-c-px-[30px]',
+              'vdb-c-chat-parent vdb-c-relative vdb-c-flex vdb-c-flex-1 vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden',
             ]"
           >
             <setup-screen
@@ -61,13 +65,12 @@
             />
             <section
               v-else
-              ref="chatWindowRef"
-              class="vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
-              @scroll="handleScroll"
+              class="vdb-c-flex vdb-c-h-full vdb-c-max-h-[calc(100vh-90px)] vdb-c-w-full vdb-c-flex-1 vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-hidden"
             >
               <!-- Header -->
               <div
-                class="vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-white"
+                v-if="showHeader"
+                class="vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-white vdb-c-px-12 md:vdb-c-px-[30px]"
                 ref="headerRef"
               >
                 <template v-if="$slots.header">
@@ -161,25 +164,45 @@
               </div>
 
               <!-- Message Container -->
-              <chat-message-container
-                v-for="(key, i) in Object.keys(conversations)"
-                :key="key"
-                :conversation="conversations[key]"
-                :search-term="chatInput"
-                :is-static-page="isStaticPage"
-                :is-last-conv="i === Object.keys(conversations).length - 1"
-                class="vdb-c-px-30 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-px-60"
-                :class="{
-                  'last-conv-height':
-                    i === Object.keys(conversations).length - 1,
-                }"
-              />
+              <div
+                class="vdb-c-relative vdb-c-flex vdb-c-w-full vdb-c-flex-1 vdb-c-overflow-hidden"
+              >
+                <!-- Chat messages (scrollable area) -->
+                <div
+                  ref="chatWindowRef"
+                  class="scrollbar-hide vdb-c-h-full vdb-c-w-full vdb-c-overflow-y-auto"
+                >
+                  <chat-message-container
+                    v-for="(key, i) in Object.keys(conversations)"
+                    :key="key"
+                    :conversation="conversations[key]"
+                    :search-term="chatInput"
+                    :is-static-page="isStaticPage"
+                    :is-last-conv="i === Object.keys(conversations).length - 1"
+                    class="vdb-c-px-30 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-px-60"
+                    :class="{
+                      'last-conv-height':
+                        i === Object.keys(conversations).length - 1,
+                    }"
+                  />
+                  <div class="vdb-c-h-[90px]"></div>
+                </div>
+
+                <component
+                  v-if="canvasState.show"
+                  :is="canvasHandlers[canvasState.type]"
+                  :content="canvasState.content"
+                  :onClose="closeCanvas"
+                  :isOpen="canvasState.show"
+                />
+              </div>
             </section>
             <UploadNotifications ref="uploadNotificationsRef" />
           </div>
 
           <!-- Chat Input -->
           <div
+            v-if="showChatInput"
             class="vdb-c-chat-input-container vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out"
             :class="{
               'vdb-c-pointer-events-none vdb-c-opacity-20': !(
@@ -306,6 +329,15 @@
       @upload="handleUpload"
       @cancel-upload="showUploadDialog = false"
     />
+
+    <!-- Share Modal -->
+    <ShareModal
+      :show-dialog="showShareModal"
+      :session-id="sessionToShare?.session_id"
+      :is-public="sessionToShare?.is_public"
+      :on-make-public="makeSessionPublic"
+      @close="showShareModal = false"
+    />
   </section>
 </template>
 
@@ -328,6 +360,7 @@ import UploadVideoQueryCard from "./elements/UploadVideoQueryCard.vue";
 import ConfirmModal from "../modals/ConfirmModal.vue";
 import CreateCollectionModal from "../modals/CreateCollectionModal.vue";
 import DeleteCollectionErrorModal from "../modals/DeleteCollectionErrorModal.vue";
+import ShareModal from "../modals/ShareModal.vue";
 import UploadModal from "../modals/UploadModal.vue";
 import Header from "./elements/Header.vue";
 
@@ -337,6 +370,8 @@ import ChatVideos from "../message-handlers/ChatVideos.vue";
 import ImageHandler from "../message-handlers/ImageHandler.vue";
 import TextResponse from "../message-handlers/TextResponse.vue";
 
+import MeetingRecorderCanvas from "../canvas-handlers/meeting-recorder/MeetingRecorderCanvas.vue";
+
 import CheckIcon from "../icons/Check.vue";
 import CollectionIcon from "../icons/Collection.vue";
 import DeleteIcon from "../icons/Delete3.vue";
@@ -344,6 +379,7 @@ import DirectorIcon from "../icons/Director.vue";
 import ExternalLink from "../icons/ExternalLink.vue";
 import QueryIcon from "../icons/Query.vue";
 import SearchIcon from "../icons/SearchIcon.vue";
+import MeetingRecorder from "../message-handlers/MeetingRecorder.vue";
 
 const props = defineProps({
   chatInputPlaceholder: {
@@ -424,6 +460,18 @@ const props = defineProps({
       ],
     }),
   },
+  showSidebar: {
+    type: Boolean,
+    default: true,
+  },
+  showHeader: {
+    type: Boolean,
+    default: true,
+  },
+  showChatInput: {
+    type: Boolean,
+    default: true,
+  },
 });
 const emit = defineEmits([]);
 
@@ -466,6 +514,10 @@ const {
   deleteVideo,
   deleteAudio,
   deleteImage,
+  renameSession,
+  saveMeetingContext,
+  fetchMeetingContext,
+  makeSessionPublic,
 } = useChatHook(props.chatHookConfig);
 
 const {
@@ -474,6 +526,12 @@ const {
   setChatInput,
   messageHandlers,
   registerMessageHandler,
+  canvasHandlers,
+  registerCanvasHandler,
+  canvasState,
+  openCanvas,
+  closeCanvas,
+  setShrinkChat,
 } = useChatInterface();
 
 // Watch chatAttachments for new uploads
@@ -517,6 +575,9 @@ registerMessageHandler("videos", ChatVideos);
 registerMessageHandler("text", TextResponse);
 registerMessageHandler("search_results", ChatSearchResults);
 registerMessageHandler("image", ImageHandler);
+registerMessageHandler("meeting_recorder", MeetingRecorder);
+
+registerCanvasHandler("meeting_recorder", MeetingRecorderCanvas);
 
 const isStaticPage = ref(false);
 const chatWindowRef = ref(null);
@@ -531,6 +592,8 @@ const showDeleteImageDialog = ref(false);
 const imageToDelete = ref(null);
 const showDeleteCollectionErrorModal = ref(false);
 const deleteCollectionErrorCode = ref(null);
+const showShareModal = ref(false);
+const sessionToShare = ref(null);
 
 const isSetupComplete = computed(() => {
   return (
@@ -565,13 +628,29 @@ const isFreshUser = computed(() => {
   return false;
 });
 
-const chatLoading = computed(() =>
-  Object.values(conversations).some((conv) =>
-    Object.values(conv).some(
-      (content) => content.status === "progress" || content.clientLoading,
-    ),
-  ),
-);
+const chatLoading = computed(() => {
+  const allMessages = Object.values(conversations).flatMap((conv) =>
+    Object.values(conv),
+  );
+
+  const anyProgress = allMessages.some(
+    (m) => m?.status === "progress" || m?.clientLoading,
+  );
+
+  const meetingRecorderProgress = allMessages.some((m) => {
+    const isProgress = m?.status === "progress" || m?.clientLoading;
+    if (!isProgress) return false;
+    const hasAgent = Array.isArray(m?.agents)
+      ? m.agents.includes("meeting_recorder")
+      : false;
+    const hasMeetingContent = Array.isArray(m?.content)
+      ? m.content.some((c) => c?.type === "meeting_recorder")
+      : false;
+    return hasAgent || hasMeetingContent;
+  });
+
+  return anyProgress && !meetingRecorderProgress;
+});
 
 const isDefaultScreen = computed(
   () => Object.keys(conversations).length === 0 && !showCollectionView.value,
@@ -671,7 +750,7 @@ const scrollToBottom = () => {
   if (!chatWindow) return;
   nextTick(() => {
     chatWindow.scroll({
-      top: chatWindow.scrollHeight - 50,
+      top: chatWindow.scrollHeight,
       behavior: "smooth",
     });
   });
@@ -682,6 +761,24 @@ watch(chatLoading, (val) => {
     scrollToBottom();
   }
 });
+
+// Auto-close canvas when session changes
+watch(sessionId, () => {
+  if (canvasState.show) {
+    closeCanvas();
+  }
+});
+
+// Auto-close canvas when conversations are cleared or become empty
+watch(
+  () => Object.keys(conversations).length,
+  (newLength, oldLength) => {
+    // Close canvas if conversations go from having items to being empty
+    if (oldLength > 0 && newLength === 0 && canvasState.show) {
+      closeCanvas();
+    }
+  },
+);
 
 // -- Header Click handlers --
 const toggleSidebar = () => {
@@ -723,6 +820,19 @@ const confirmDeleteSession = () => {
   deleteSession(sessionToDelete.value);
   showDeleteDialog.value = false;
   sessionToDelete.value = null;
+};
+
+const handleUpdateSessionName = async ({ sessionId: _sessionId, name }) => {
+  try {
+    await renameSession(_sessionId, name);
+  } catch (error) {
+    console.error("Error renaming session:", error?.message || error);
+  }
+};
+
+const handleShareSession = (session) => {
+  sessionToShare.value = session;
+  showShareModal.value = true;
 };
 
 // --- Upload Dialog Handlers ---
@@ -991,6 +1101,12 @@ defineExpose({
   registerMessageHandler,
   uploadMedia,
   isScrolled,
+  canvasState,
+  openCanvas,
+  closeCanvas,
+  setShrinkChat,
+  saveMeetingContext,
+  fetchMeetingContext,
 });
 
 provide("videodb-chat", {
@@ -1008,6 +1124,14 @@ provide("videodb-chat", {
   setChatInput,
   registerMessageHandler,
   uploadMedia,
+  canvasHandlers,
+  registerCanvasHandler,
+  canvasState,
+  openCanvas,
+  closeCanvas,
+  setShrinkChat,
+  saveMeetingContext,
+  fetchMeetingContext,
 });
 </script>
 
@@ -1071,5 +1195,13 @@ provide("videodb-chat", {
   -ms-animation: rotating 2s linear infinite;
   -o-animation: rotating 2s linear infinite;
   animation: rotating 2s linear infinite;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>

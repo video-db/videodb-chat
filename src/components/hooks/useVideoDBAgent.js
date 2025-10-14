@@ -1,5 +1,4 @@
 import io from "socket.io-client";
-import { v4 as uuidv4 } from "uuid";
 import { computed, onBeforeMount, reactive, ref, toRefs, watch } from "vue";
 
 const fetchData = async (rootUrl, endpoint) => {
@@ -137,6 +136,94 @@ export function useVideoDBAgent(config) {
     return res;
   };
 
+  const saveMeetingContext = async (msgId, context) => {
+    const res = {};
+    try {
+      const response = await fetch(
+        `${httpUrl}/session/message/${msgId}/meeting_context`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(context),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      res.status = "success";
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
+  const fetchMeetingContext = async (uiId) => {
+    const res = {};
+    try {
+      const response = await fetch(
+        `${httpUrl}/session/meeting_context/${uiId}`,
+      );
+      if (response.status === 404) {
+        res.status = "not_found";
+        return res;
+      }
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      res.status = "success";
+      res.data = data;
+    } catch (error) {
+      res.status = "error";
+      res.error = error;
+    }
+    return res;
+  };
+
+  const makeSessionPublic = async (sessionId, isPublic = true) => {
+    const res = {};
+    try {
+      const response = await fetch(`${httpUrl}/session/${sessionId}/public`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ is_public: isPublic }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      res.status = "success";
+      res.success = true;
+      res.data = data;
+
+      const idx = sessions.value.findIndex((s) => s.session_id === sessionId);
+      if (idx !== -1) {
+        sessions.value[idx] = {
+          ...sessions.value[idx],
+          is_public: isPublic,
+        };
+      }
+    } catch (error) {
+      res.status = "error";
+      res.success = false;
+      res.error = error.message;
+    }
+    return res;
+  };
+
   const refetchCollectionVideos = async () => {
     fetchCollectionVideos(session.collectionId).then((res) => {
       activeCollectionVideos.value = res.data;
@@ -270,7 +357,7 @@ export function useVideoDBAgent(config) {
   const loadSession = (sessionId) => {
     let fetchPastMessages = true;
     if (!sessionId) {
-      sessionId = uuidv4();
+      sessionId = crypto.randomUUID();
       fetchPastMessages = false;
     }
     if (debug) console.log("debug :videodb-chat session loading", sessionId);
@@ -638,5 +725,8 @@ export function useVideoDBAgent(config) {
     uploadMedia,
     generateImageUrl,
     generateAudioUrl,
+    saveMeetingContext,
+    fetchMeetingContext,
+    makeSessionPublic,
   };
 }
