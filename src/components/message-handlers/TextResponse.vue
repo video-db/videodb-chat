@@ -20,13 +20,13 @@
         "
         class="vdb-c-flex vdb-c-flex-col"
       >
-        <p
+        <div
           :class="[
             'markdown-body vdb-c-overflow-hidden vdb-c-text-kilvish-900',
             isUser ? 'vdb-c-font-semibold' : 'vdb-c-font-normal',
           ]"
-          v-html="getMarkedMsg(text)"
-        ></p>
+          v-html="getMarkedMsg(processedText)"
+        ></div>
       </div>
       <div
         v-else-if="content.status === 'progress'"
@@ -52,7 +52,7 @@ import Prism from "prismjs";
 import { marked } from "marked";
 import markedKatex from "marked-katex-extension";
 import "prismjs/themes/prism.css";
-import "prismjs/components/prism-python"
+import "prismjs/components/prism-python";
 import LoadingMessage from "./elements/LoadingMessage.vue";
 import { useVideoDBChat } from "../../context.js";
 const options = {
@@ -87,6 +87,19 @@ const props = defineProps({
 });
 
 const text = computed(() => props.content?.text || "");
+const stripHeadingsToBold = (msg) => {
+  if (!msg) return "";
+  const atxConverted = msg.replace(/^#{1,4}\s+(.+?)\s*#*\s*$/gm, "**$1**");
+
+  const setextConverted = atxConverted.replace(
+    /(^|\n)([^\n]+)\n\s*(=+|-+)\s*(?=\n|$)/g,
+    (match, prefix, title, underline) => `${prefix}**${title.trim()}**`,
+  );
+  return setextConverted;
+};
+const processedText = computed(() =>
+  props.isUser ? stripHeadingsToBold(text.value) : text.value,
+);
 const { conversations } = useVideoDBChat();
 
 marked.setOptions({
@@ -117,6 +130,20 @@ const message = computed(() => {
     rgba(255, 255, 255, 0.3) 0%,
     rgba(255, 255, 255, 1) 100%
   );
+}
+
+.markdown-body pre,
+.markdown-body code,
+.markdown-body pre code {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.markdown-body pre {
+  padding: 1rem;
+  border-radius: 0.5rem;
 }
 
 .fade-enter-active,
