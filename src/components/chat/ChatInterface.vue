@@ -44,7 +44,6 @@
         "
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
-        @share-session="handleShareSession"
       />
 
       <!-- Main Content -->
@@ -472,6 +471,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  customCanvasHandlers: {
+    type: Array,
+    default: () => [],
+  },
 });
 const emit = defineEmits([]);
 
@@ -563,7 +566,7 @@ watch(chatAttachments, async (newAttachments) => {
           throw Error("Upload failed");
         }
       } catch (e) {
-        console.log("something went wrong", e);
+        console.error("something went wrong", e);
         attachment.upload_status = "error";
       }
     }
@@ -578,6 +581,14 @@ registerMessageHandler("image", ImageHandler);
 registerMessageHandler("meeting_recorder", MeetingRecorder);
 
 registerCanvasHandler("meeting_recorder", MeetingRecorderCanvas);
+
+if (Array.isArray(props.customCanvasHandlers)) {
+  for (const handler of props.customCanvasHandlers) {
+    if (handler && handler.type && handler.component) {
+      registerCanvasHandler(handler.type, handler.component);
+    }
+  }
+}
 
 const isStaticPage = ref(false);
 const chatWindowRef = ref(null);
@@ -729,20 +740,28 @@ watch(
   { immediate: true },
 );
 
-const scrollToBottom = () => {
+const scrollToLatestUserMessage = () => {
   const chatWindow = chatWindowRef.value;
   if (!chatWindow) return;
+
   nextTick(() => {
-    chatWindow.scroll({
-      top: chatWindow.scrollHeight,
-      behavior: "smooth",
-    });
+    const userMessages = chatWindow.querySelectorAll('[data-msg-type="input"]');
+
+    if (userMessages.length > 0) {
+      const latestUserMessage = userMessages[userMessages.length - 1];
+
+      latestUserMessage.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+      });
+    }
   });
 };
 
 watch(chatLoading, (val) => {
   if (val) {
-    scrollToBottom();
+    scrollToLatestUserMessage();
   }
 });
 
@@ -812,11 +831,6 @@ const handleUpdateSessionName = async ({ sessionId: _sessionId, name }) => {
   } catch (error) {
     console.error("Error renaming session:", error?.message || error);
   }
-};
-
-const handleShareSession = (session) => {
-  sessionToShare.value = session;
-  showShareModal.value = true;
 };
 
 // --- Upload Dialog Handlers ---

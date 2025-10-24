@@ -259,8 +259,6 @@ const props = defineProps({
   },
 });
 
-console.log(props.isContentLoading, props.previewMedia);
-
 const collectionName = computed(() => props.collectionData?.name);
 
 defineEmits([

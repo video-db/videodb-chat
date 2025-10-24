@@ -327,15 +327,6 @@
                           >Rename</span
                         >
                       </button>
-                      <button
-                        @click.stop="shareSession(session)"
-                        class="vdb-c-mb-[2.5px] vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-gap-8 vdb-c-rounded-lg vdb-c-px-12 vdb-c-py-8 hover:vdb-c-bg-roy"
-                      >
-                        <ShareIcon />
-                        <span class="vdb-c-text-sm vdb-c-text-black"
-                          >Share</span
-                        >
-                      </button>
                       <div
                         class="vdb-c-my-2 vdb-c-mb-[2.5px] vdb-c-h-px vdb-c-bg-[#EDEDED]"
                       ></div>
@@ -525,7 +516,6 @@ const emit = defineEmits([
   "create-collection",
   "delete-collection",
   "update-session-name",
-  "share-session",
 ]);
 
 const closeSidebar = () => {
@@ -640,10 +630,6 @@ const copySessionId = async (sessionId) => {
   } catch (error) {
     console.error("Failed to copy session ID", error);
   }
-};
-
-const shareSession = (session) => {
-  emit("share-session", session);
 };
 </script>
 

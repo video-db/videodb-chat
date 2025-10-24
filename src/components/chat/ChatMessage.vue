@@ -4,7 +4,8 @@
     :class="[
       'vdb-c-flex vdb-c-h-auto vdb-c-w-full vdb-c-justify-start vdb-c-py-8 md:vdb-c-py-12',
       {
-        'vdb-c-border-b vdb-c-border-kilvish-300 vdb-c-bg-white': isUser,
+        'user-message vdb-c-border-b vdb-c-border-kilvish-300 vdb-c-bg-white':
+          isUser,
       },
     ]"
   >
