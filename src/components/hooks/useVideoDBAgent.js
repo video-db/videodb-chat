@@ -191,31 +191,9 @@ export function useVideoDBAgent(config) {
   const makeSessionPublic = async (sessionId, isPublic = true) => {
     const res = {};
     try {
-      const response = await fetch(`${httpUrl}/session/${sessionId}/public`, {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ is_public: isPublic }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
       res.status = "success";
       res.success = true;
-      res.data = data;
-
-      const idx = sessions.value.findIndex((s) => s.session_id === sessionId);
-      if (idx !== -1) {
-        sessions.value[idx] = {
-          ...sessions.value[idx],
-          is_public: isPublic,
-        };
-      }
+      res.data = {};
     } catch (error) {
       res.status = "error";
       res.success = false;

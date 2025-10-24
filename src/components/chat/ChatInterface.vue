@@ -44,7 +44,6 @@
         "
         @session-click="handleSessionClick"
         @collection-click="handleCollectionClick"
-        @share-session="handleShareSession"
       />
 
       <!-- Main Content -->
@@ -832,11 +831,6 @@ const handleUpdateSessionName = async ({ sessionId: _sessionId, name }) => {
   } catch (error) {
     console.error("Error renaming session:", error?.message || error);
   }
-};
-
-const handleShareSession = (session) => {
-  sessionToShare.value = session;
-  showShareModal.value = true;
 };
 
 // --- Upload Dialog Handlers ---
