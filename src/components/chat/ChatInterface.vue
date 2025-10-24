@@ -566,7 +566,7 @@ watch(chatAttachments, async (newAttachments) => {
           throw Error("Upload failed");
         }
       } catch (e) {
-        console.log("something went wrong", e);
+        console.error("something went wrong", e);
         attachment.upload_status = "error";
       }
     }
