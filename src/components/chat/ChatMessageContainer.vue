@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="vdb-c-relative vdb-c-h-auto vdb-c-w-full"
-  >
+  <div class="vdb-c-relative vdb-c-h-auto vdb-c-w-full">
     <div
       v-for="(message, i) in messages"
       :key="message.msg_id"
@@ -15,6 +13,8 @@
         :current-index="i"
         :message-loading="messageLoading"
         :search-term="searchTerm"
+        :call-api="callApi"
+        :add-message="addMessage"
       />
     </div>
   </div>
@@ -28,6 +28,14 @@ const props = defineProps({
   conversation: {
     type: Object,
     default: () => ({}),
+  },
+  callApi: {
+    type: Function,
+    default: null,
+  },
+  addMessage: {
+    type: Function,
+    default: null,
   },
   isStaticPage: {
     type: Boolean,

@@ -38,7 +38,8 @@
     "lint": "eslint 'src/**/*.{ts,vue}'",
     "test": "vitest",
     "test-ci": "vitest --run",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "prepare": "npm run build"
   },
   "peerDependencies": {
     "vue": "^3.0.4"
