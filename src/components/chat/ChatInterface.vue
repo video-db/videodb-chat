@@ -557,9 +557,7 @@ registerMessageHandler("image", ImageHandler);
 
 if (Array.isArray(props.customMessageHandlers)) {
   for (const handler of props.customMessageHandlers) {
-    if (handler && typeof handler.type === "string" && handler.component) {
-      registerMessageHandler(handler.type, handler.component);
-    }
+    registerMessageHandler(handler.type, handler.component);
   }
 }
 
