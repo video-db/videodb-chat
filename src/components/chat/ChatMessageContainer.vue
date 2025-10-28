@@ -1,11 +1,11 @@
 <template>
-  <div
-    class="vdb-c-relative vdb-c-h-auto vdb-c-w-full"
-  >
+  <div class="vdb-c-relative vdb-c-h-auto vdb-c-w-full">
     <div
       v-for="(message, i) in messages"
       :key="message.msg_id"
       class="vdb-c-w-full"
+      :data-msg-id="message.msg_id"
+      :data-msg-type="message.msg_type"
     >
       <chat-message
         :message="message"
@@ -15,6 +15,11 @@
         :current-index="i"
         :message-loading="messageLoading"
         :search-term="searchTerm"
+        :open-canvas="openCanvas"
+        :canvas-state="canvasState"
+        :close-canvas="closeCanvas"
+        :call-api="callApi"
+        :add-message="addMessage"
       />
     </div>
   </div>
@@ -29,6 +34,14 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  callApi: {
+    type: Function,
+    default: null,
+  },
+  addMessage: {
+    type: Function,
+    default: null,
+  },
   isStaticPage: {
     type: Boolean,
     default: false,
@@ -40,6 +53,18 @@ const props = defineProps({
   searchTerm: {
     type: String,
     default: "",
+  },
+  openCanvas: {
+    type: Function,
+    default: null,
+  },
+  canvasState: {
+    type: Object,
+    default: () => ({}),
+  },
+  closeCanvas: {
+    type: Function,
+    default: null,
   },
 });
 
@@ -220,6 +245,7 @@ const messageLoading = computed(() => {
 .markdown-body [type="reset"],
 .markdown-body [type="submit"] {
   -webkit-appearance: button;
+  appearance: button;
 }
 
 .markdown-body [type="checkbox"],
@@ -236,6 +262,7 @@ const messageLoading = computed(() => {
 .markdown-body [type="search"]::-webkit-search-cancel-button,
 .markdown-body [type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
+  appearance: none;
 }
 
 .markdown-body ::-webkit-input-placeholder {
@@ -245,6 +272,7 @@ const messageLoading = computed(() => {
 
 .markdown-body ::-webkit-file-upload-button {
   -webkit-appearance: button;
+  appearance: button;
   font: inherit;
 }
 

@@ -46,13 +46,15 @@
       />
 
       <!-- Main Content -->
-      <div class="vdb-c-flex vdb-c-w-full vdb-c-flex-1 vdb-c-flex-col">
+      <div
+        class="vdb-c-flex vdb-c-h-screen vdb-c-w-full vdb-c-flex-1 vdb-c-flex-col"
+      >
         <div
           class="vdb-c-relative vdb-c-flex vdb-c-h-full vdb-c-flex-1 vdb-c-flex-col vdb-c-justify-between vdb-c-bg-white vdb-c-shadow-2 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-w-full"
         >
           <div
             :class="[
-              'vdb-c-chat-parent vdb-c-relative vdb-c-flex vdb-c-flex-1 vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden vdb-c-px-12 md:vdb-c-px-[30px]',
+              'vdb-c-chat-parent vdb-c-relative vdb-c-flex vdb-c-flex-1 vdb-c-items-center vdb-c-justify-center vdb-c-overflow-hidden',
             ]"
           >
             <setup-screen
@@ -61,13 +63,11 @@
             />
             <section
               v-else
-              ref="chatWindowRef"
-              class="vdb-c-flex vdb-c-h-full vdb-c-max-h-full vdb-c-w-full vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-auto"
-              @scroll="handleScroll"
+              class="vdb-c-flex vdb-c-h-full vdb-c-max-h-[calc(100vh-90px)] vdb-c-w-full vdb-c-flex-1 vdb-c-flex-col vdb-c-items-center vdb-c-overflow-x-auto vdb-c-overflow-y-hidden"
             >
               <!-- Header -->
               <div
-                class="vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-white"
+                class="vdb-c-sticky vdb-c-top-0 vdb-c-z-40 vdb-c-flex vdb-c-w-full vdb-c-items-center vdb-c-justify-center vdb-c-bg-white vdb-c-px-12 md:vdb-c-px-[30px]"
                 ref="headerRef"
               >
                 <template v-if="$slots.header">
@@ -161,19 +161,42 @@
               </div>
 
               <!-- Message Container -->
-              <chat-message-container
-                v-for="(key, i) in Object.keys(conversations)"
-                :key="key"
-                :conversation="conversations[key]"
-                :search-term="chatInput"
-                :is-static-page="isStaticPage"
-                :is-last-conv="i === Object.keys(conversations).length - 1"
-                class="vdb-c-px-30 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-px-60"
-                :class="{
-                  'last-conv-height':
-                    i === Object.keys(conversations).length - 1,
-                }"
-              />
+              <div
+                class="vdb-c-relative vdb-c-flex vdb-c-w-full vdb-c-flex-1 vdb-c-overflow-hidden"
+              >
+                <!-- Chat messages (scrollable area) -->
+                <div
+                  ref="chatWindowRef"
+                  class="scrollbar-hide vdb-c-h-full vdb-c-w-full vdb-c-overflow-y-auto"
+                >
+                  <chat-message-container
+                    v-for="(key, i) in Object.keys(conversations)"
+                    :key="key"
+                    :conversation="conversations[key]"
+                    :search-term="chatInput"
+                    :call-api="callApi"
+                    :add-message="addMessage"
+                    :is-static-page="isStaticPage"
+                    :is-last-conv="i === Object.keys(conversations).length - 1"
+                    :open-canvas="openCanvas"
+                    :canvas-state="canvasState"
+                    :close-canvas="closeCanvas"
+                    class="vdb-c-px-30 vdb-c-transition-all vdb-c-duration-300 vdb-c-ease-in-out md:vdb-c-px-60"
+                    :class="{
+                      'last-conv-height':
+                        i === Object.keys(conversations).length - 1,
+                    }"
+                  />
+                  <div class="vdb-c-h-[90px]"></div>
+                </div>
+
+                <component
+                  v-if="canvasState.show"
+                  :is="canvasHandlers[canvasState.type]"
+                  :canvas-state="canvasState"
+                  :closeCanvas="closeCanvas"
+                />
+              </div>
             </section>
             <UploadNotifications ref="uploadNotificationsRef" />
           </div>
@@ -424,6 +447,14 @@ const props = defineProps({
       ],
     }),
   },
+  customMessageHandlers: {
+    type: Array,
+    default: () => [],
+  },
+  customCanvasHandlers: {
+    type: Array,
+    default: () => [],
+  },
 });
 const emit = defineEmits([]);
 
@@ -466,6 +497,7 @@ const {
   deleteVideo,
   deleteAudio,
   deleteImage,
+  callApi,
 } = useChatHook(props.chatHookConfig);
 
 const {
@@ -474,6 +506,11 @@ const {
   setChatInput,
   messageHandlers,
   registerMessageHandler,
+  canvasHandlers,
+  registerCanvasHandler,
+  canvasState,
+  openCanvas,
+  closeCanvas,
 } = useChatInterface();
 
 // Watch chatAttachments for new uploads
@@ -518,6 +555,20 @@ registerMessageHandler("text", TextResponse);
 registerMessageHandler("search_results", ChatSearchResults);
 registerMessageHandler("image", ImageHandler);
 
+if (Array.isArray(props.customMessageHandlers)) {
+  for (const handler of props.customMessageHandlers) {
+    registerMessageHandler(handler.type, handler.component);
+  }
+}
+
+if (Array.isArray(props.customCanvasHandlers)) {
+  for (const handler of props.customCanvasHandlers) {
+    if (handler && typeof handler.type === "string" && handler.component) {
+      registerCanvasHandler(handler.type, handler.component);
+    }
+  }
+}
+
 const isStaticPage = ref(false);
 const chatWindowRef = ref(null);
 const headerRef = ref(null);
@@ -531,6 +582,8 @@ const showDeleteImageDialog = ref(false);
 const imageToDelete = ref(null);
 const showDeleteCollectionErrorModal = ref(false);
 const deleteCollectionErrorCode = ref(null);
+const showShareModal = ref(false);
+const sessionToShare = ref(null);
 
 const isSetupComplete = computed(() => {
   return (
@@ -666,22 +719,44 @@ watch(
   { immediate: true },
 );
 
-const scrollToBottom = () => {
+const scrollToLatestUserMessage = () => {
   const chatWindow = chatWindowRef.value;
   if (!chatWindow) return;
   nextTick(() => {
-    chatWindow.scroll({
-      top: chatWindow.scrollHeight - 50,
-      behavior: "smooth",
-    });
+    const userMessages = chatWindow.querySelectorAll('[data-msg-type="input"]');
+
+    if (userMessages.length > 0) {
+      const latestUserMessage = userMessages[userMessages.length - 1];
+
+      latestUserMessage.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+      });
+    }
   });
 };
 
 watch(chatLoading, (val) => {
   if (val) {
-    scrollToBottom();
+    scrollToLatestUserMessage();
   }
 });
+
+watch(sessionId, () => {
+  if (canvasState.show) {
+    closeCanvas();
+  }
+});
+
+watch(
+  () => Object.keys(conversations).length,
+  (newLength, oldLength) => {
+    if (oldLength > 0 && newLength === 0 && canvasState.show) {
+      closeCanvas();
+    }
+  },
+);
 
 // -- Header Click handlers --
 const toggleSidebar = () => {
@@ -991,6 +1066,9 @@ defineExpose({
   registerMessageHandler,
   uploadMedia,
   isScrolled,
+  canvasState,
+  openCanvas,
+  closeCanvas,
 });
 
 provide("videodb-chat", {
@@ -1008,6 +1086,11 @@ provide("videodb-chat", {
   setChatInput,
   registerMessageHandler,
   uploadMedia,
+  canvasHandlers,
+  registerCanvasHandler,
+  canvasState,
+  openCanvas,
+  closeCanvas,
 });
 </script>
 
@@ -1071,5 +1154,13 @@ provide("videodb-chat", {
   -ms-animation: rotating 2s linear infinite;
   -o-animation: rotating 2s linear infinite;
   animation: rotating 2s linear infinite;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>

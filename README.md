@@ -69,8 +69,6 @@ If you are using [Director](https://github.com/video-db/Director), make sure it'
 
 ![Structure](https://github.com/user-attachments/assets/3dd8feaa-483a-4f28-bfd2-e8bc23dfffea)
 
-
-
 The `ChatInterface` component is composed of two primary sub-components:
 
 - `<ChatMessageContainer/>`
@@ -100,7 +98,6 @@ _This package includes other UI components that enhance the chat experience_
 
 ![image (1)](https://github.com/user-attachments/assets/f4524358-882b-4563-9d0b-b5c864d46dd4)
 
-
 ### `<Sidebar/>`
 
 This component facilitates navigation between different sessions and collections. It can be used to switch between various conversations or collections.
@@ -117,7 +114,7 @@ This component displays the default screen when there are no conversations in th
 
 These components are used to display collection and video views, helping users better understand the context of the conversation.
 
-# 🧑‍💻 Concepts 
+# 🧑‍💻 Concepts
 
 ### 🔧 Message Handlers
 
@@ -127,44 +124,126 @@ Message handlers are UI components that are used to render the content of a mess
 
 These are the default message handlers that are currently supported by this package:
 
-**Text**:  
----
-  `contentType`: `text`   
-  _Renders the text/markdown of the message_    
-     
+## **Text**:
+
+`contentType`: `text`  
+ _Renders the text/markdown of the message_
+
 ![TextResponse](https://github.com/user-attachments/assets/6e7cb7a8-0f5a-473d-8b46-a104da92922d)
 
-  [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/TextResponse.vue)
+[View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/TextResponse.vue)
 
-**Video**:  
----
-  `contentType`: `video`  
-  _Renders the video(streaming urls) of  the message_
-     
-  ![chatvideo](https://github.com/user-attachments/assets/e3b07ad3-5258-42c0-9276-49321d840e95)
+## **Video**:
 
+`contentType`: `video`  
+ _Renders the video(streaming urls) of the message_
 
-  [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ChatVideo.vue)
+![chatvideo](https://github.com/user-attachments/assets/e3b07ad3-5258-42c0-9276-49321d840e95)
 
-**Image**:  
----
-  `contentType`: `image`  
-  _Renders the image of the message_    
-  
+[View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ChatVideo.vue)
+
+## **Image**:
+
+`contentType`: `image`  
+ _Renders the image of the message_
+
 ![ImageHandler](https://github.com/user-attachments/assets/afc02ffb-2704-43ab-8f62-c66e2a0c2178)
 
+[View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ImageHandler.vue)
 
-  [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ImageHandler.vue)
+## **Search Results**:
 
-**Search Results**:  
----
-  `contentType`: `search_results`  
-  _Renders the search results of the video_ 
-  
+`contentType`: `search_results`  
+ _Renders the search results of the video_
+
 ![ChatSearchResults](https://github.com/user-attachments/assets/2192a1c0-def2-4472-9c08-14e08d66f6da)
 
-  [View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ChatSearchResults.vue)
+[View implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/ChatSearchResults.vue)
 
+### 🪟 Canvas Views
+
+---
+
+Canvas Views let message handlers open a UI outside the message flow (overlay) or alongside the chat. They are useful for rich interactions like editors, previews, or multi-step tools.
+
+Core APIs are provided by the chat interface hook and are threaded to handlers:
+
+- `openCanvas(type: string, content?: any)`
+- `closeCanvas()`
+- `canvasState: { show: boolean; type: string|null; content: any }`
+- `registerCanvasHandler(type: string, component)` (via `ref`/provide on `ChatInterface`)
+
+How it works:
+
+- Provide canvas components using the `customCanvasHandlers` prop, or register imperatively with `registerCanvasHandler(type, component)`.
+- From any message handler, call `openCanvas("my_canvas_type", payload)` to display the canvas.
+- The `ChatInterface` will render the corresponding canvas component and pass two props:
+  - `canvas-state`: the reactive `canvasState`
+  - `closeCanvas`: a function to close the canvas
+
+Example: Declare canvases via prop
+
+```html
+<script setup>
+  import { ref } from "vue";
+  import { ChatInterface } from "@videodb/chat-vue";
+  import MyCanvas from "./MyCanvas.vue";
+
+  const customCanvasHandlers = [
+    { type: "my_canvas", component: MyCanvas },
+    // { type: "inspector", component: InspectorCanvas },
+  ];
+</script>
+
+<template>
+  <ChatInterface :custom-canvas-handlers="customCanvasHandlers" />
+</template>
+```
+
+Handler usage:
+
+```vue
+<!-- Inside your custom message handler -->
+<script setup>
+const props = defineProps({
+  content: Object,
+  openCanvas: Function,
+  closeCanvas: Function,
+  canvasState: Object,
+});
+
+function openDetails() {
+  props.openCanvas("my_canvas", { id: props.content?.id });
+}
+</script>
+
+<template>
+  <button @click="openDetails">Open Details</button>
+</template>
+```
+
+Canvas component contract:
+
+```vue
+<script setup>
+const props = defineProps({
+  canvasState: Object, // { show, type, content }
+  closeCanvas: Function,
+});
+</script>
+
+<template>
+  <div v-if="canvasState.show" class="my-canvas">
+    <!-- render using canvasState.content -->
+    <button @click="closeCanvas()">Close</button>
+  </div>
+</template>
+```
+
+Notes:
+
+- `ChatInterface` renders the active canvas via the registered handlers: `:is="canvasHandlers[canvasState.type]"` and passes `:canvas-state` and `:closeCanvas`.
+- Handlers also receive `openCanvas`, `closeCanvas`, and `canvasState` as props, so they can control canvases directly.
 
 ### 🔧 Custom Message Handler
 
@@ -182,15 +261,55 @@ The `ChatInterface` component exposes a method `registerMessageHandler` accessib
 
 **The handler component will receive the following props:**
 
-- `content`: _Object_  
-  The content object of matched content type.
+- `content` (Object): The matched content object for this type
+- `isLastConv` (Boolean): Whether this message is in the last conversation block
+- `isUser` (Boolean): Whether the message is authored by the user
+- `searchTerm` (String): Current chat search term (if any)
+- `convId` (String): Conversation ID for this message
+- `msgId` (String): Message ID for this message
+- `callApi` (Function): Helper for calling backend endpoints bound to `httpUrl`
+- `addMessage` (Function): Add a message to the conversation programmatically
+- `openCanvas` (Function): Open a canvas view with a given `type` and `content`
+- `closeCanvas` (Function): Close the currently open canvas
+- `canvasState` (Object): Reactive canvas state `{ show, type, content }`
 
-- `isLastConv`: _Boolean_  
-  Indicates if the message is the last conversation.
+#### Register via prop: customMessageHandlers
+
+You can also declare handlers declaratively using the `customMessageHandlers` prop on `ChatInterface`.
+
+Schema for each handler item:
+
+- `type`: String → matched against `content.type`
+- `component`: Vue component → rendered when the type matches; receives the same props as built-in handlers
+
+Example:
+
+```html
+<script setup>
+  import { ChatInterface } from "@videodb/chat-vue";
+  import MyCustomHandler from "./MyCustomHandler.vue";
+
+  const socketUrl = "http://127.0.0.1:8000/chat";
+  const httpUrl = "http://127.0.0.1:8000";
+
+  const customMessageHandlers = [
+    { type: "chart", component: MyCustomHandler },
+    // add more handlers here
+  ];
+</script>
+
+<template>
+  <ChatInterface
+    :chat-hook-config="{ socketUrl, httpUrl }"
+    :custom-message-handlers="customMessageHandlers"
+  />
+</template>
+```
 
 **Checkout these resources to understand better:**
 
 - [View default message handlers Implementation](https://github.com/video-db/videodb-chat/blob/main/src/components/message-handlers/)
+
 ### 🔧 Custom ChatHook
 
 ---
@@ -202,8 +321,10 @@ The Custom ChatHook is an advanced feature of this package that allows you to:
 - Control conversation state and manage side effects.
 
 To use a custom hook, pass a function to the `customChatHook` prop. This function should return an object with the following properties:
+
 - `session`: _Object_ (reactive)  
   Session object.
+
   ```js
   {
     isConnected: false,
@@ -255,21 +376,25 @@ To use a custom hook, pass a function to the `customChatHook` prop. This functio
 
 The ChatInterface component accepts the following props:
 
-- `chatInputPlaceholder`: 
+- `chatInputPlaceholder`:
+
   - default: "Ask Speilberg"
   - Customizes the placeholder text for the chat input field.
 
-- `size(string)`: 
-  - default: full  
-  - Determines the size of the chat interface. Options are `full` or `embedded`.
-      Full takes up the entire width of the screen.
-      Embedded takes up space of the parent container.
+- `size(string)`:
 
-- `customChatHook(Function)`: 
+  - default: full
+  - Determines the size of the chat interface. Options are `full` or `embedded`.
+    Full takes up the entire width of the screen.
+    Embedded takes up space of the parent container.
+
+- `customChatHook(Function)`:
+
   - default: [videoDBChatHook](https://github.com/video-db/videodb-chat/blob/main/src/components/hooks/useVideoDBAgent.js)
   - Allows for a custom hook to handle chat functionality.
 
-- `chatHookConfig(object)`: 
+- `chatHookConfig(object)`:
+
   - Configures the chat hook. For the default chat hook, it includes:
   - default
     ```js
@@ -278,8 +403,9 @@ The ChatInterface component accepts the following props:
       debug: false,
     ```
 
-- `sidebarConfig(string)`: 
-  - Customizes the sidebar.  
+- `sidebarConfig(string)`:
+
+  - Customizes the sidebar.
   - default:
     ```js
     {
@@ -293,24 +419,22 @@ The ChatInterface component accepts the following props:
     }
     ```
 
-- `defaultScreenConfig(Object)`: 
-  - default: a list of action cards with default queries  
+- `defaultScreenConfig(Object)`:
+  - default: a list of action cards with default queries
   - Customizes the default screen.
 
 ### Exposed Variables
 
 #### State Variables
 
-- `conversations`: Object  
+- `conversations`: Object
 
 #### Methods
 
-- `addMessage(message)`:   
-    Adds a message to the conversation.
-- `registerMessageHandler(contentType, handler)`:   
+- `addMessage(message)`:  
+   Adds a message to the conversation.
+- `registerMessageHandler(contentType, handler)`:  
   Registers a custom message handler for a specific content type.
-
-
 
 [npm-shield]: https://img.shields.io/npm/v/@videodb/chat-vue?style=for-the-badge
 [npm-url]: https://www.npmjs.com/package/@videodb/chat-vue
