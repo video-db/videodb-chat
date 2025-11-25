@@ -20,9 +20,11 @@ const fetchData = async (rootUrl, endpoint) => {
 };
 
 export function useVideoDBAgent(config) {
-  const { debug = false, socketUrl, httpUrl } = config;
+  const { debug = false, socketUrl, httpUrl, withCredentials } = config;
   if (debug) console.log("debug :videodb-chat config", config);
-  const socket = io(socketUrl);
+  const socket = io(socketUrl, {
+    withCredentials: typeof withCredentials === "boolean" ? withCredentials : true,
+  });
 
   const session = reactive({
     isConnected: false,
